@@ -6,63 +6,66 @@ package parser;
  
 program : expr EOF ;
  
-expr	: string-constant 
-| integer-constant 
-| nil 
-| lvalue 
-| - expr 
-| expr binary-operator expr 
-| lvalue := expr 
-| id ( expr-list ) // optional expr-list
-| ( expr-seq ) // optional expre-seq
-| type-id { field-listopt } 
-| type-id [ expr ] of expr 
-| if expr then expr if expr 
-| then expr else expr 
-| while expr do expr 
-| for id := expr to expr do expr 
-| break 
-| let declaration-list in expr-seq end // optional expre-seq
-;
+expr	: STR
+       | INT
+       | 'nil'
+       ;
+/* 
+       | lvalue 
+       | '-' expr 
+       | expr binary_operator expr 
+       | lvalue ':=' expr 
+       | ID '(' expr_list ')' // optional expr-list
+       | '(' expr_seq ')' //; optional expre-seq
+       | TYPE_ID '{' field_listopt '}' 
+       | TYPE_ID '[' expr ']' 'of' expr 
+       | 'if' expr 'then' expr 
+       | 'if' expr 'then' expr 'else' expr 
+       | 'while' expr 'do' expr 
+       | 'for' ID ':=' expr 'to' expr 'do' expr 
+       | 'break' 
+       | 'let' declaration_list 'in' expr_seq 'end' // optional expre-seq
+       ;
  
-expr-seq : expr 
-| expr-seq ; expr
-; 
+expr_seq : expr 
+       | expr_seq ';' expr
+       ; 
  
-expr-list: expr
-| expr-list , expr 
-;
+expr_list: expr
+       | expr_list ',' expr 
+       ;
  
-field-list: id = expr 
-| field-list , id = expr 
+field_list: ID '=' expr 
+       | field_list ',' ID '=' expr 
+       ;
  
-lvalue: id 
-| lvalue . id 
-| lvalue [ expr ]
+lvalue: ID 
+       | lvalue '.' ID
+       | lvalue '[' expr ']'
 	;
-declaration-list: declaration 
-| declaration-list declaration 
-;
+declaration_list: declaration 
+       | declaration_list declaration 
+       ;
  
-declaration: type-declaration 
-| variable-declaration 
-| function-declaration
-;
+declaration: type_declaration 
+       | variable_declaration 
+       | function_declaration
+       ;
  
-type-declaration: type type-id = type 
+type_declaration: type  TYPE_ID '=' type 
 	;
  
-type: type-id 
-| { type-fields } // optional declaration
-| array of type-id 
-;
+type:  TYPE_ID 
+       | '{' type_fields '}' // optional declaration
+       | 'array' 'of'  TYPE_ID 
+       ;
  
-type-fields: type-field 
-| type-fields , type-field 
-;
+type_fields: type_field 
+       | type_fields ',' type_field 
+       ;
  
-type-field: id : type-id
-	;
+type_field: ID ':'  TYPE_ID
+	;*/
  
  
  
@@ -70,13 +73,16 @@ type-field: id : type-id
  
 // Les terminaux (def des exp régulières reconnaissant les tokens)
  
-ID     : 'a'..'z'|'A'..'Z')(‘_’|'a'..'z'|'A'..'Z'|'0'..'9')*
+ID     : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
        ;
  
+TYPE_ID     : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+       ;
+
 INT    : ('0'..'9')+
        ;
  
-STR    : ‘“‘(‘!’|'#'..'[' | ']'..'~'|’\n’|’\t’|’\\’|’\”’|’\^c’|’\ddd’|’ ‘)*’”’
+STR    : '"'('a'..'z'|'A'..'Z'|'0'..'9')*'"'
 	  ;
  
 WS     : [ \n\t\r]+ ->skip
