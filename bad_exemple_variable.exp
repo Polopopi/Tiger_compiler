@@ -1,0 +1,10 @@
+let
+  type a = {foo : int}
+  type b = {foo : int}
+  var va := a {foo = 1}
+  var 552 := b {foo = 2}
+in
+  va = vb
+end
+
+/*syntaxique : non, erreur en ligne 5 */

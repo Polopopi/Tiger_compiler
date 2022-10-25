@@ -1,0 +1,16 @@
+let
+  var a := 1
+in
+  a := (
+         print("ok\n");
+         print("okk\n");
+         a := a + 1;
+         a
+       ) + 42;
+  print("valeur a est : ");
+  printi(a);
+  print("\n")
+end
+
+/*syntaxique : ok
+  sémantique : ok*/
