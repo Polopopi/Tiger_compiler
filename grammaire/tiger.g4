@@ -50,33 +50,33 @@ value
        | '(' expr ')'
        ;
 
-lvalue :
-       | ('.' id ('[' expr ']')?)* affect?
+lvalue 
+       : ('.' id ('[' expr ']')?)* affect?
        ;
 
-affect :
-       | ':=' expr
+affect 
+       : ':=' expr
        ;
 
-call : 
-       | '(' expr* ')'
+call 
+       : '(' expr* ')'
        ;
 
-id :
-       | ID  
+id 
+       : ID  
        ;
 
-type_id :
-       |ID
+type_id 
+       :ID
        ;
 
-conditionnel :
-       | 'if' expr 'then' expr ('else' expr)?
+conditionnel 
+       : 'if' expr 'then' expr ('else' expr)?
        ;
 
 
-declaration :
-       | //type_declaration
+declaration 
+       : //type_declaration
        | //variable_declaration
        | //function_declaration
        ;
