@@ -27,6 +27,14 @@ fct2
        : '=' expr
        | ':' TYPE_ID '=' expr
        ;
+/*
+type_declaration 
+       : type type-id=type 
+       ;
+type
+       :type-id
+       {
+ */
 
 op_egal 
        : ('='|'<>') expr                  // pour faire = (==) et <> (!=)
