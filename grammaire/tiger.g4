@@ -11,6 +11,8 @@ expr
        : STR
        | 'nil'
        | '-' expr
+       | conditionnel
+       | 'let' declaration* 'in' expr (';' expr)* 'end'
        | operator
        ;
 
@@ -18,6 +20,16 @@ operator
        : plus
        | expr op_egal         
        ;
+
+fct    
+       : 'function' ID '(' 'type_fieldsopt' ')'  fct2
+       ;
+
+fct2   
+       : '=' expr
+       | ':' TYPE_ID '=' expr
+       ;
+
 
 op_egal 
        : ('='|'<>') expr                  // pour faire = (==) et <> (!=)
@@ -42,6 +54,38 @@ value
 var_declaration
        : 'var' ID ':=' expr
        | 'var' ID ':' type_id ':=' expr
+       ;
+
+lvalue 
+       :
+       | ('.' id ('[' expr ']')?)* affect?
+       ;
+
+affect 
+       : ':=' expr
+       ;
+
+call 
+       : '(' expr* ')'
+       ;
+
+id 
+       : ID  
+       ;
+
+type_id 
+       : ID
+       ;
+
+conditionnel 
+       : 'if' expr 'then' expr ('else' expr)?
+       ;
+
+
+declaration 
+       : //type_declaration
+       | //variable_declaration
+       | //function_declaration
        ;
 
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
