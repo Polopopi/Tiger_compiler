@@ -62,7 +62,7 @@ var_declaration
 
 lvalue 
        :
-       | ('.' id ('[' expr ']')?)* affect?
+       | ('.' id ('[' expr ']')*)* affect?
        ;
 
 affect 
