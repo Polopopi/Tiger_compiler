@@ -14,6 +14,8 @@ expr
        | conditionnel
        | 'let' declaration* 'in' expr (';' expr)* 'end'
        | operator
+       | 'break'
+       | id (lvalue|call)?
        ;
 
 operator 
