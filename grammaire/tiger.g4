@@ -13,10 +13,14 @@ expr
        | '-' expr
        | conditionnel
        | 'let' declaration* 'in' expr (';' expr)* 'end'
+       | 'for' ID ':=' expr 'to' expr 'do' expr
+       | 'while' expr 'do' expr
        | operator
+       | 'break'
+       | id (lvalue|call)?
        ;
 
-operator 
+operator
        : plus
        | expr op_egal         
        ;
@@ -38,28 +42,35 @@ type
        {
  */
 
+
 op_egal 
        : ('='|'<>') expr                  // pour faire = (==) et <> (!=)
        | ('<'|'>'|'<='|'>=') expr         // pour faire <, >, >=, <=
        ;
 
-plus   
+plus    
        : mult(('+'|'/') mult)*
        ;
 
-mult    
+mult   
        : value (('*'|'/')value)*
        ;
 
 
-value   
+value  
        : INT
        | ID
        | '(' expr ')'
        ;
 
+var_declaration
+       : 'var' ID ':=' expr
+       | 'var' ID ':' type_id ':=' expr
+       ;
+
 lvalue 
-       : ('.' id ('[' expr ']')?)* affect?
+       :
+       | ('.' id ('[' expr ']')?)* affect?
        ;
 
 affect 
@@ -75,7 +86,7 @@ id
        ;
 
 type_id 
-       :ID
+       : ID
        ;
 
 conditionnel 
