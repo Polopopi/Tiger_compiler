@@ -13,6 +13,8 @@ expr
        | '-' expr
        | conditionnel
        | 'let' declaration* 'in' expr (';' expr)* 'end'
+       | 'for' ID ':=' expr 'to' expr 'do' expr
+       | 'while' expr 'do' expr
        | operator
        ;
 
