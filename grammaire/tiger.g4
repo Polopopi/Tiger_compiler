@@ -14,18 +14,9 @@ expr
        | operator
        ;
 
-operator 
+operator
        : plus
        | expr op_egal         
-       ;
-
-fct    
-       : 'function' ID '(' 'type_fieldsopt' ')'  fct2
-       ;
-
-fct2   
-       : '=' expr
-       | ':' TYPE_ID '=' expr
        ;
 
 op_egal 
@@ -33,19 +24,24 @@ op_egal
        | ('<'|'>'|'<='|'>=') expr         // pour faire <, >, >=, <=
        ;
 
-plus   
+plus    
        : mult(('+'|'/') mult)*
        ;
 
-mult    
+mult   
        : value (('*'|'/')value)*
        ;
 
 
-value   
+value  
        : INT
        | ID
        | '(' expr ')'
+       ;
+
+var_declaration
+       : 'var' ID ':=' expr
+       | 'var' ID ':' type_id ':=' expr
        ;
 
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
