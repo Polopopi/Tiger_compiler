@@ -11,10 +11,9 @@ expr   :
        | STR
        | INT
        | 'nil'
-       | ID
        | '-' expr
        | operator
-       | ID (lvalue|call)
+       | id (lvalue|call)
        ;
 
 operator :
@@ -44,7 +43,7 @@ value   : INT
         ;
 
 lvalue :
-       | ('.' ID ('[' expr ']')?)* affect?
+       | ('.' id ('[' expr ']')?)* affect?
        ;
 
 affect :
@@ -55,6 +54,14 @@ call :
        | '(' expr* ')'
        ;
 
+id :
+       | ID  
+       ;
+
+type_id :
+       |ID
+       ;
+
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
 //  mais il y a beaucoup de chose récursive gauche à traité et de factorisation à faire.
 // Adrien
@@ -63,9 +70,6 @@ call :
 // Les terminaux (def des exp régulières reconnaissant les tokens)
  
 ID     : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-       ;
- 
-TYPE_ID     : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
        ;
 
 INT    : ('0'..'9')+
