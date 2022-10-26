@@ -14,6 +14,7 @@ expr   :
        | ID
        | '-' expr
        | operator
+       | ID (lvalue|call)
        ;
 
 operator :
@@ -41,6 +42,18 @@ value   : INT
         | ID
         | '(' expr ')'
         ;
+
+lvalue :
+       | ('.' ID ('[' expr ']')?)* affect?
+       ;
+
+affect :
+       | ':=' expr
+       ;
+
+call : 
+       | '(' expr* ')'
+       ;
 
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
 //  mais il y a beaucoup de chose récursive gauche à traité et de factorisation à faire.
