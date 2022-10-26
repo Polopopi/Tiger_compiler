@@ -95,11 +95,29 @@ conditionnel
 
 
 declaration 
-       : //type_declaration
+       : type_declaration
        | //variable_declaration
        | //function_declaration
        ;
-
+type_declaration 
+       : type type_id '='type 
+       ;
+type
+       :type_id
+       |'{' type_fields '}'
+       |'{''}'
+       |'array''of'type_id
+       ;
+type_fields
+       :type_field type_fields2
+       ;
+type_fields2
+       :(','type_field type_fields2)?
+       ;
+       //changé la récursivité gauche
+type_field
+       :id ':'type_id
+       ;
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
 //  mais il y a beaucoup de chose récursive gauche à traité et de factorisation à faire.
 // Adrien
