@@ -2,6 +2,4 @@
 5;        		
 54869>-12546;
 if 5=5 then test :=ok)
-/* syntaxique : ok sémantique : non*/  		
-
-
+/* syntaxique : ok sémantique : non*/ 
