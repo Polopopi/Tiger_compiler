@@ -11,6 +11,8 @@ expr
        : STR
        | 'nil'
        | '-' expr
+       | conditionnel
+       | 'let' declaration* 'in' expr (';' expr)* 'end'
        | operator
        ;
 
@@ -54,6 +56,37 @@ value
        : INT
        | ID
        | '(' expr ')'
+       ;
+
+lvalue 
+       : ('.' id ('[' expr ']')?)* affect?
+       ;
+
+affect 
+       : ':=' expr
+       ;
+
+call 
+       : '(' expr* ')'
+       ;
+
+id 
+       : ID  
+       ;
+
+type_id 
+       :ID
+       ;
+
+conditionnel 
+       : 'if' expr 'then' expr ('else' expr)?
+       ;
+
+
+declaration 
+       : //type_declaration
+       | //variable_declaration
+       | //function_declaration
        ;
 
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
