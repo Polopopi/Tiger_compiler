@@ -4,16 +4,18 @@ grammar tiger;
 package parser;
 }
  
-program : expr EOF ;
- 
+program : exprop EOF ;
+
+exprop :
+       | expr (operator expr)*
+       ;
 
 expr   :
        | STR
-       | INT
        | 'nil'
        | '-' expr
-       | operator
        | id (lvalue|call)
+       | conditionnel
        ;
 
 operator :
@@ -60,6 +62,10 @@ id :
 
 type_id :
        |ID
+       ;
+
+conditionnel :
+       | 'if' expr 'then' expr ('else' expr)?
        ;
 
 // J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
