@@ -51,12 +51,12 @@ operator
        ;
 
 fct_declaration    
-       : 'function' ID '(' 'type_fieldsopt' ')'  fct2_declaration
+       : 'function' id '(' 'type_fieldsopt' ')'  fct2_declaration
        ;
 
 fct2_declaration   
        : '=' expr
-       | ':' TYPE_ID '=' expr
+       | ':' type_id '=' expr
        ;
 
 
@@ -76,12 +76,12 @@ mult
 
 value  
        : INT
-       | ID
+       | id
        | '(' expr ')'
        ;
 
 var_declaration
-       : 'var' ID (':' type_id)? ':=' expr
+       : 'var' id (':' type_id)? ':=' expr
        ;
 
 lvalue 
@@ -144,10 +144,6 @@ type_field
 // Les terminaux (def des exp régulières reconnaissant les tokens)
  
 ID     
-       : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-       ;
- 
-TYPE_ID     
        : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
        ;
 
