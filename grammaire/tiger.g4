@@ -51,7 +51,7 @@ operator
        ;
 
 fct_declaration    
-       : 'function' id '(' 'type_fieldsopt' ')'  fct2_declaration
+       : 'function' id '(' type_fields? ')'  fct2_declaration
        ;
 
 fct2_declaration   
@@ -125,7 +125,7 @@ type
        ;
 
 type_fields
-       : (type_field type_fields2)?
+       : type_field type_fields2
        ;
 
 type_fields2
