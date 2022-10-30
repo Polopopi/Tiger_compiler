@@ -124,7 +124,7 @@ type
        ;
 
 type_fields
-       :type_field type_fields2
+       : type_field type_fields2
        ;
 
 type_fields2
