@@ -40,7 +40,7 @@ expr
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
        | 'break'
-       | id (lvalue|call)?
+       | id (lvalue|call|record|array)?
        | '('(expr_or (';' expr_or)*)?')'
        ;
 /*
@@ -49,6 +49,15 @@ operator
        | expr op_egal         
        ;
 */
+
+array
+       : '[' expr_or ']' 'of'  expr_or
+       ;
+
+record
+       : '{' id '=' expr_or (id '=' expr_or)*  '}'
+       ;
+
 fct_declaration    
        : 'function' id '(' type_fields? ')'  fct2_declaration
        ;
@@ -103,6 +112,7 @@ type_id
        : ID
        ;
 
+
 conditionnel 
        : 'if' expr 'then' expr ('else' expr)?
        ;
@@ -114,7 +124,7 @@ declaration
        | fct_declaration
        ;
 type_declaration 
-       : type type_id '='type 
+       : 'type' type_id '='type 
        ;
 type
        :type_id
