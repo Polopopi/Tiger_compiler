@@ -63,7 +63,7 @@ fct_declaration
        ;
 
 fct2_declaration   
-       : '=' expr
+       : '=' expr_or
        | ':' type_id '=' expr
        ;
 
@@ -89,19 +89,19 @@ value
        ;
 */
 var_declaration
-       : 'var' id (':' type_id)? ':=' expr
+       : 'var' id (':' type_id)? ':=' expr_or
        ;
 
 lvalue 
-       : ('.' id ('[' expr ']')*)* affect?
+       : ('.' id ('[' expr_or ']')*)* affect?
        ;
 
 affect 
-       : ':=' expr
+       : ':=' expr_or
        ;
 
 call 
-       : '(' expr* ')'
+       : '(' expr_or* ')'
        ;
 
 id 
@@ -114,7 +114,7 @@ type_id
 
 
 conditionnel 
-       : 'if' expr 'then' expr ('else' expr)?
+       : 'if' expr_or 'then' expr_or ('else' expr_or)?
        ;
 
 
@@ -129,8 +129,7 @@ type_declaration
 type
        :type_id
        |'{' type_fields? '}'
-       |'{''}'
-       |'array''of'type_id
+       | type_id ('[' expr_or ']')* 'of' expr_or
        ;
 
 type_fields
