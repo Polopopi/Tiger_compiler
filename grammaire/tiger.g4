@@ -3,12 +3,36 @@ grammar tiger;
 @header{
 package parser;
 }
+
+// options{ backtracking = false;}
  
-program : expr EOF ;
- 
+program : expr_or EOF ;
+
+expr_or 
+       : expr_and ('|' expr_or)?
+       ;
+
+expr_and
+       : expr_test ('&' expr_and)?
+       ;
+
+expr_test
+       : expr_plus (('='|'<>'|'<'|'>'|'<='|'>=') expr_plus)?
+       ;
+
+expr_plus
+       : expr_fois (('+'|'-') expr_plus)?
+       ;
+
+expr_fois
+       : expr (('*'|'/') expr_fois)?
+       ;
+
+
 
 expr   
        : STR
+       | INT
        | 'nil'
        | '-' expr
        | conditionnel
@@ -18,6 +42,7 @@ expr
        | operator
        | 'break'
        | id (lvalue|call)?
+       | '('(expr (';' expr)*)?')'
        ;
 
 operator
@@ -25,22 +50,14 @@ operator
        | expr op_egal         
        ;
 
-fct    
-       : 'function' ID '(' 'type_fieldsopt' ')'  fct2
+fct_declaration    
+       : 'function' ID '(' 'type_fieldsopt' ')'  fct2_declaration
        ;
 
-fct2   
+fct2_declaration   
        : '=' expr
        | ':' TYPE_ID '=' expr
        ;
-/*
-type_declaration 
-       : type type-id=type 
-       ;
-type
-       :type-id
-       {
- */
 
 
 op_egal 
@@ -64,8 +81,7 @@ value
        ;
 
 var_declaration
-       : 'var' ID ':=' expr
-       | 'var' ID ':' type_id ':=' expr
+       : 'var' ID (':' type_id)? ':=' expr
        ;
 
 lvalue 
@@ -96,8 +112,8 @@ conditionnel
 
 declaration 
        : type_declaration
-       | //variable_declaration
-       | //function_declaration
+       | var_declaration
+       | fct_declaration
        ;
 type_declaration 
        : type type_id '='type 
@@ -108,13 +124,16 @@ type
        |'{''}'
        |'array''of'type_id
        ;
+
 type_fields
        :type_field type_fields2
        ;
+
 type_fields2
        :(','type_field type_fields2)?
        ;
        //changé la récursivité gauche
+
 type_field
        :id ':'type_id
        ;
