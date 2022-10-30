@@ -37,7 +37,7 @@ expr
        | '-' expr
        | conditionnel
        | 'let' declaration* 'in' expr (';' expr)* 'end'
-       | 'for' ID ':=' expr 'to' expr 'do' expr
+       | 'for' id ':=' expr 'to' expr 'do' expr
        | 'while' expr 'do' expr
        | operator
        | 'break'
@@ -85,8 +85,7 @@ var_declaration
        ;
 
 lvalue 
-       :
-       | ('.' id ('[' expr ']')*)* affect?
+       : ('.' id ('[' expr ']')*)* affect?
        ;
 
 affect 
@@ -98,7 +97,7 @@ call
        ;
 
 id 
-       : ID  
+       : ID
        ;
 
 type_id 
