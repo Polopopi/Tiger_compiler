@@ -119,7 +119,6 @@ type_declaration
 type
        :type_id
        |'{' type_fields? '}'
-       | type_id ('[' expr_or ']')* 'of' expr_or
        ;
 
 type_fields
@@ -158,6 +157,5 @@ WS
        ;
  
 COM    
-       : [(‘\*’.*‘*\’)]+ ->skip
+       : ('/*' ID '*/')+ -> skip
        ;
- 
