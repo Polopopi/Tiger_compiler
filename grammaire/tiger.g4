@@ -36,22 +36,21 @@ expr
        | 'nil'
        | '-' expr
        | conditionnel
-       | 'let' declaration* 'in' expr (';' expr)* 'end'
-       | 'for' id ':=' expr 'to' expr 'do' expr
-       | 'while' expr 'do' expr
-       | operator
+       | 'let' declaration* 'in' expr_or (';' expr_or)* 'end'
+       | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
+       | 'while' expr_or 'do' expr_or
        | 'break'
        | id (lvalue|call)?
-       | '('(expr (';' expr)*)?')'
+       | '('(expr_or (';' expr_or)*)?')'
        ;
-
+/*
 operator
        : plus
        | expr op_egal         
        ;
-
+*/
 fct_declaration    
-       : 'function' id '(' 'type_fieldsopt' ')'  fct2_declaration
+       : 'function' id '(' type_fields? ')'  fct2_declaration
        ;
 
 fct2_declaration   
@@ -59,7 +58,7 @@ fct2_declaration
        | ':' type_id '=' expr
        ;
 
-
+/*
 op_egal 
        : ('='|'<>') expr                  // pour faire = (==) et <> (!=)
        | ('<'|'>'|'<='|'>=') expr         // pour faire <, >, >=, <=
@@ -79,7 +78,7 @@ value
        | id
        | '(' expr ')'
        ;
-
+*/
 var_declaration
        : 'var' id (':' type_id)? ':=' expr
        ;
@@ -119,13 +118,13 @@ type_declaration
        ;
 type
        :type_id
-       |'{' type_fields '}'
+       |'{' type_fields? '}'
        |'{''}'
        |'array''of'type_id
        ;
 
 type_fields
-       : (type_field type_fields2)?
+       :type_field type_fields2
        ;
 
 type_fields2
