@@ -64,7 +64,7 @@ fct_declaration
 
 fct2_declaration   
        : '=' expr_or
-       | ':' type_id '=' expr
+       | ':' type_id '=' expr_or
        ;
 
 /*
@@ -169,6 +169,8 @@ WS
        ;
  
 COM    
-       : [(‘\*’.*‘*\’)]+ ->skip
+       : ('/*' STR '*/')+ -> skip
+
        ;
+
  
