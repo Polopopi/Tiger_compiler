@@ -85,8 +85,7 @@ var_declaration
        ;
 
 lvalue 
-       :
-       | ('.' id ('[' expr ']')*)* affect?
+       : ('.' id ('[' expr ']')*)* affect?
        ;
 
 affect 
@@ -126,7 +125,7 @@ type
        ;
 
 type_fields
-       :type_field type_fields2
+       : (type_field type_fields2)?
        ;
 
 type_fields2
