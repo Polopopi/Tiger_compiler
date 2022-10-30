@@ -129,7 +129,7 @@ type_declaration
 type
        :type_id
        |'{' type_fields? '}'
-       | type_id ('[' expr_or ']')* 'of' expr_or
+       | 'array' 'of' type_id
        ;
 
 type_fields
@@ -144,9 +144,6 @@ type_fields2
 type_field
        :id ':'type_id
        ;
-// J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
-//  mais il y a beaucoup de chose récursive gauche à traité et de factorisation à faire.
-// Adrien
 
  
 // Les terminaux (def des exp régulières reconnaissant les tokens)
