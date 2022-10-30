@@ -114,12 +114,11 @@ declaration
        | fct_declaration
        ;
 type_declaration 
-       : type type_id '='type 
+       : 'type' type_id '='type 
        ;
 type
        :type_id
        |'{' type_fields? '}'
-       |'{''}'
        |'array''of'type_id
        ;
 
