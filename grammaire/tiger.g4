@@ -40,7 +40,7 @@ expr
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
        | 'break'
-       | id (lvalue|call)?
+       | gen_id (lvalue|call|record|array)?
        | '('(expr_or (';' expr_or)*)?')'
        ;
 /*
@@ -49,13 +49,22 @@ operator
        | expr op_egal         
        ;
 */
+
+array
+       : '[' expr_or ']' 'of'  expr_or
+       ;
+
+record
+       : '{' id '=' expr_or (id '=' expr_or)*  '}'
+       ;
+
 fct_declaration    
        : 'function' id '(' type_fields? ')'  fct2_declaration
        ;
 
 fct2_declaration   
        : '=' expr_or
-       | ':' type_id '=' expr
+       | ':' type_id '=' expr_or
        ;
 
 /*
@@ -103,6 +112,11 @@ type_id
        : ID
        ;
 
+gen_id
+       : ID
+       ;
+
+
 conditionnel 
        : 'if' expr_or 'then' expr_or ('else' expr_or)?
        ;
@@ -119,6 +133,7 @@ type_declaration
 type
        :type_id
        |'{' type_fields? '}'
+       | 'array' 'of' type_id
        ;
 
 type_fields
@@ -133,9 +148,6 @@ type_fields2
 type_field
        :id ':'type_id
        ;
-// J'ai tout supprimer pour l'instant pour pas qu'on soit trop influencé, on peut s'inspirer de la grammaire du manuel,
-//  mais il y a beaucoup de chose récursive gauche à traité et de factorisation à faire.
-// Adrien
 
  
 // Les terminaux (def des exp régulières reconnaissant les tokens)
@@ -157,5 +169,5 @@ WS
        ;
  
 COM    
-       : ('/*' ID '*/')+ -> skip
+       : ('/*' STR '*/')+ -> skip
        ;

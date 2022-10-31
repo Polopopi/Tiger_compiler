@@ -1,4 +1,3 @@
-
 import java.util.Arrays;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,7 +11,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 
 import parser.*;
-import parser.exprParser.ProgramContext;
+import parser.tigerParser.ProgramContext;
 
 public class Main {
 
@@ -29,9 +28,9 @@ public class Main {
 
             //chargement du fichier et construction du parser
             CharStream input = CharStreams.fromFileName(testFile);
-            exprLexer lexer = new exprLexer(input); 
+            tigerLexer lexer = new tigerLexer(input); 
             CommonTokenStream stream = new CommonTokenStream(lexer);
-            exprParser parser = new exprParser(stream);
+            tigerParser parser = new tigerParser(stream);
 
             ProgramContext program = parser.program();
 
