@@ -1,0 +1,1 @@
+let var a : int := 0 in a := 5 + 2 end
