@@ -64,7 +64,7 @@ fct_declaration
 
 fct2_declaration   
        : '=' expr_or
-       | ':' type_id '=' expr
+       | ':' type_id '=' expr_or
        ;
 
 /*
@@ -161,14 +161,13 @@ INT
        ;
  
 STR    
-       : '"'('a'..'z'|'A'..'Z'|'0'..'9')*'"'
+       : '"' ('a'..'z'|'A'..'Z'|'0'..'9')* '"'
 	;
  
 WS     
        : [ \n\t\r]+ ->skip
        ;
  
-COM    
-       : [(‘\*’.*‘*\’)]+ ->skip
+COM
+       : ('/*' STR '*/')+ -> skip
        ;
- 

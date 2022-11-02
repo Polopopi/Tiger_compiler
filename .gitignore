@@ -1,0 +1,4 @@
+**/bin
+**/parser
+.antlr
+.vscode
