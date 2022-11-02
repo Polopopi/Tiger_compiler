@@ -1,0 +1,10 @@
+let
+  var variable1 := 1
+  var variable2 := 1
+in
+  variable2 := (variable1 := 2) + 1;
+  print(variable2)
+end
+
+/*syntaxique : ok sémantique : non 
+erreur ligne 5 :  type*/
