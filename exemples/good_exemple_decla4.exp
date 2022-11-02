@@ -1,0 +1,14 @@
+let
+  type bar = {foo : int}
+  var rec1 := bar{foo = 1}
+in
+  rec1 := let
+            var rec2 := bar{foo = 42}
+          in
+            rec2
+          end;
+  print_int(rec1.foo);
+  print("\n")
+end
+
+/* exemple du manual*/
