@@ -8,6 +8,8 @@ package parser;
  
 program : expr_or EOF ;
 
+
+// OPERATIONS
 expr_or 
        : expr_and ('|' expr_or)?
        ;
@@ -29,26 +31,82 @@ expr_fois
        ;
 
 
-
+// "RACINE"
 expr   
-       : STR
-       | INT
-       | 'nil'
-       | '-' expr
-       | conditionnel
+       : '-' expr
+       | 'if' expr_or 'then' expr_or ('else' expr_or)?
        | 'let' declaration* 'in' expr_or (';' expr_or)* 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
-       | 'break'
        | gen_id (lvalue|call|record|array)
        | '('(expr_or (';' expr_or)*)?')'
+       | STR
+       | INT
+       | 'break'
+       | 'nil'
        ;
-/*
-operator
-       : plus
-       | expr op_egal         
+
+
+// DECLARATIONS
+declaration 
+       : type_declaration
+       | var_declaration
+       | fct_declaration
        ;
-*/
+
+
+// DECLARATION TYPES
+type_declaration 
+       : 'type' type_id '='type 
+       ;
+
+type
+       :type_id
+       |'{' type_fields? '}'
+       | 'array' 'of' type_id
+       ;
+
+type_fields
+       : type_field type_fields2
+       ;
+
+type_fields2
+       :(','type_field type_fields2)?
+       ;
+       //changé la récursivité gauche
+
+type_field
+       :id ':'type_id
+       ;
+
+
+// DECLARATION VARIABLES
+var_declaration
+       : 'var' id (':' type_id)? ':=' expr_or
+       ;
+
+
+// DECLARATION FONCTIONS
+fct_declaration    
+       : 'function' id '(' type_fields? ')'  fct2_declaration
+       ;
+
+fct2_declaration   
+       : '=' expr_or
+       | ':' type_id '=' expr_or
+       ;
+
+
+
+
+// VARIABLES ET AFFECTATIONS
+lvalue 
+       : ('.' id ('[' expr_or ']')*)* affect?
+       ;
+
+affect 
+       : ':=' expr_or
+       ;
 
 array
        : '[' expr_or ']' 'of'  expr_or
@@ -58,14 +116,29 @@ record
        : '{' id '=' expr_or (',' id '=' expr_or)*  '}'
        ;
 
-fct_declaration    
-       : 'function' id '(' type_fields? ')'  fct2_declaration
+call 
+       : '(' expr_or* ')'
        ;
 
-fct2_declaration   
-       : '=' expr_or
-       | ':' type_id '=' expr_or
+id 
+       : ID
        ;
+
+type_id 
+       : ID
+       ;
+
+gen_id
+       : ID
+       ;
+
+
+/*
+operator
+       : plus
+       | expr op_egal         
+       ;
+*/
 
 /*
 op_egal 
@@ -88,68 +161,9 @@ value
        | '(' expr ')'
        ;
 */
-var_declaration
-       : 'var' id (':' type_id)? ':=' expr_or
-       ;
-
-lvalue 
-       : ('.' id ('[' expr_or ']')*)* affect?
-       ;
-
-affect 
-       : ':=' expr_or
-       ;
-
-call 
-       : '(' expr_or* ')'
-       ;
-
-id 
-       : ID
-       ;
-
-type_id 
-       : ID
-       ;
-
-gen_id
-       : ID
-       ;
 
 
-conditionnel 
-       : 'if' expr_or 'then' expr_or ('else' expr_or)?
-       ;
 
-
-declaration 
-       : type_declaration
-       | var_declaration
-       | fct_declaration
-       ;
-type_declaration 
-       : 'type' type_id '='type 
-       ;
-type
-       :type_id
-       |'{' type_fields? '}'
-       | 'array' 'of' type_id
-       ;
-
-type_fields
-       : type_field type_fields2
-       ;
-
-type_fields2
-       :(','type_field type_fields2)?
-       ;
-       //changé la récursivité gauche
-
-type_field
-       :id ':'type_id
-       ;
-
- 
 // Les terminaux (def des exp régulières reconnaissant les tokens)
  
 ID     
