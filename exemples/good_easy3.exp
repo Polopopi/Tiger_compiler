@@ -1,0 +1,19 @@
+let 
+    start := 10
+
+    class Vehicule extends Object {
+        var position := start
+        method move (int x ) = (position := position + x)
+    }
+
+    class Camion extends Vehicule {
+        method move (int x ) = if x <= 80 then position := position + x
+    }
+
+    var c := new Camion
+    var v : Vehicule := t
+in 
+    c.move(50)
+    v.move(100)
+end
+
