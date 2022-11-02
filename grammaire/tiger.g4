@@ -4,7 +4,7 @@ grammar tiger;
 package parser;
 }
 
-// options{ backtracking = false;}
+
  
 program : expr_or EOF ;
 
@@ -169,5 +169,5 @@ WS
        ;
  
 COM
-       : ('/*' STR '*/')+ -> skip
+       : '/*' .*? '*/' -> skip
        ;
