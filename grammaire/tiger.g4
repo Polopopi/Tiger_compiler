@@ -40,7 +40,7 @@ expr
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
        | 'break'
-       | gen_id (lvalue|call|record|array)?
+       | gen_id (lvalue | (call|record|array))
        | '('(expr_or (';' expr_or)*)?')'
        ;
 /*
