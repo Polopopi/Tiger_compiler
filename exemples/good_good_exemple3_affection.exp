@@ -8,7 +8,7 @@ in
          a
        ) + 42;
   print("valeur a est : ");
-  printi(a);
+  print(a);
   print("\n")
 end
 
