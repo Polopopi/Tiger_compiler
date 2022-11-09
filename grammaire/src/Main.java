@@ -1,4 +1,6 @@
 import java.util.Arrays;
+
+import javax.print.PrintException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -39,8 +41,14 @@ public class Main {
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(
                     parser.getRuleNames()),program);
-            viewer.setScale(0.6); // Scale a little
-            
+            viewer.setScale(5); // Scale a little
+            try{
+                String fileName = "test.png";
+                viewer.save(fileName);
+            }
+            catch (PrintException e) {
+                e.printStackTrace();
+            }
             panel.add(viewer);
             frame.add(panel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
