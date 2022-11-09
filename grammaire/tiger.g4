@@ -38,7 +38,7 @@ expr
        | 'let' declaration* 'in' expr_or (';' expr_or)* 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
-       | gen_id (lvalue|call|record|array)
+       | gen_id (call|lvalue|record|array)
        | '('(expr_or (';' expr_or)*)?')'
        | STR
        | INT
@@ -175,7 +175,7 @@ INT
        ;
  
 STR    
-       : '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'?'|'!'|'-'|'_'|'.'|':'|';'|',')* '"'
+       : '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'?'|'!'|'-'|'_'|'.'|':'|';'|','|' '|'\n'|'('|')')* '"'
 	;
  
 WS     
