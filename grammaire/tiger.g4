@@ -11,23 +11,23 @@ program : expr_or EOF ;
 
 // OPERATIONS
 expr_or 
-       : expr_and ('|' expr_or)?
+       : expr_and ('|' expr_or)*
        ;
 
 expr_and
-       : expr_test ('&' expr_and)?
+       : expr_test ('&' expr_and)*
        ;
 
 expr_test
-       : expr_plus (('='|'<>'|'<'|'>'|'<='|'>=') expr_plus)?
+       : expr_plus (('='|'<>'|'<'|'>'|'<='|'>=') expr_plus)*
        ;
 
 expr_plus
-       : expr_fois (('+'|'-') expr_plus)?
+       : expr_fois (('+'|'-') expr_plus)*
        ;
 
 expr_fois
-       : expr (('*'|'/') expr_fois)?
+       : expr (('*'|'/') expr_fois)*
        ;
 
 
