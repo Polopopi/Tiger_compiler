@@ -11,11 +11,11 @@ program : expr_or EOF ;
 
 // OPERATIONS
 expr_or 
-       : expr_and ('|' expr_or)?
+       : expr_and ('|' expr_and)*
        ;
 
 expr_and
-       : expr_test ('&' expr_and)?
+       : expr_test ('&' expr_test)*
        ;
 
 expr_test
@@ -23,18 +23,18 @@ expr_test
        ;
 
 expr_plus
-       : expr_fois (('+'|'-') expr_plus)?
+       : expr_fois (('+'|'-') expr_fois)*
        ;
 
 expr_fois
-       : expr (('*'|'/') expr_fois)?
+       : expr (('*'|'/') expr)*
        ;
 
 
 // "RACINE"
 expr   
        : '-' expr
-       | 'if' expr_or 'then' expr_or ('else' expr_or)? 'endif'
+       | 'if' expr_or 'then' expr_or ('else' expr_or )? 'endif'
        | 'let' declaration* 'in' (expr_or (';' expr_or)*)? 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
