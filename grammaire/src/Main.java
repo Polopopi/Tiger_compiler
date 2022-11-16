@@ -1,4 +1,6 @@
 import java.util.Arrays;
+
+import javax.print.PrintException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -39,7 +41,7 @@ public class Main {
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(
                     parser.getRuleNames()),program);
-            viewer.setScale(1.0); // Scale a little
+            viewer.setScale(1.2); // Scale a little
             panel.add(viewer);
             frame.add(panel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
