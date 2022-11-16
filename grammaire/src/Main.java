@@ -41,7 +41,7 @@ public class Main {
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(
                     parser.getRuleNames()),program);
-            viewer.setScale(5); // Scale a little
+            viewer.setScale(1); // Scale a little
             try{
                 String fileName = "test.png";
                 viewer.save(fileName);
