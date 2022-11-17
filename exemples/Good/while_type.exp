@@ -1,0 +1,5 @@
+while i>0 | x>0 & y=0 
+do 
+(i=i+1;
+x=x*6;
+let type var1={m : int , n : string} in m= nil end)
