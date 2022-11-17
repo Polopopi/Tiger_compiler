@@ -6,10 +6,15 @@ package parser;
 
 
  
-program : expr_or EOF ;
+program : expr_affect EOF ;
 
 
 // OPERATIONS
+
+expr_affect
+       : expr_or (':=' expr_or)?
+       ;
+
 expr_or 
        : expr_and ('|' expr_and)*
        ;
@@ -35,10 +40,10 @@ expr_fois
 expr   
        : '-' expr
        | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )? 
-       | 'let' declaration* 'in' (expr_or (';' expr_or)*)? 'end'
-       | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
-       | 'while' expr_or 'do' expr_or
-       | gen_id('['expr_or']')? (call|lvalue|record|array)
+       | 'let' declaration* 'in' (expr_affect (';' expr_affect)*)? 'end'
+       | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect
+       | 'while' expr_or 'do' expr_affect
+       | lvalue (call|record|array)?
        | '('seq_expr')'
        | STR
        | INT
@@ -47,8 +52,14 @@ expr
        | 'print' '(' expr_or ')'
        ;
 
+//liste
+
 seq_expr
-       : (expr_or (';' expr_or)*)?
+       : (expr_affect (';' expr_affect)*)?
+       ;
+
+list_expr
+       : (expr_or (',' expr_or)*)?
        ;
 // DECLARATIONS
 declaration 
@@ -95,8 +106,8 @@ fct_declaration
        ;
 
 fct2_declaration   
-       : '=' expr_or
-       | ':' type_id '=' expr_or
+       : '=' expr_affect
+       | ':' type_id '=' expr_affect
        ;
 
 
@@ -104,11 +115,7 @@ fct2_declaration
 
 // VARIABLES ET AFFECTATIONS
 lvalue 
-       : ('.' id ('[' expr_or ']')*)* affect?
-       ;
-
-affect 
-       : ':=' expr_or
+       : gen_id('['expr_or']')* ('.' id ('[' expr_or ']')*)*
        ;
 
 array
@@ -120,7 +127,7 @@ record
        ;
 
 call 
-       : '(' expr_or* ')'
+       : '(' list_expr ')'
        ;
 
 id 
