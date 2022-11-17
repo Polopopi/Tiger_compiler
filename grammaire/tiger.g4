@@ -34,12 +34,12 @@ expr_fois
 // "RACINE"
 expr   
        : '-' expr
-       | 'if' expr_or 'then' expr_or ('else' expr_or )? 'endif'
+       | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )? 
        | 'let' declaration* 'in' (expr_or (';' expr_or)*)? 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
        | gen_id('['expr_or']')? (call|lvalue|record|array)
-       | '('(expr_or (';' expr_or)*)?')'
+       | '('seq_expr')'
        | STR
        | INT
        | 'break'
@@ -47,7 +47,9 @@ expr
        | 'print' '(' expr_or ')'
        ;
 
-
+seq_expr
+       : (expr_or (';' expr_or)*)?
+       ;
 // DECLARATIONS
 declaration 
        : type_declaration
