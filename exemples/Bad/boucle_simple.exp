@@ -1,0 +1,5 @@
+let var i:=20+2-5-6*3
+in 
+while i=0 do i=i-1 
+
+/*il manque end */
