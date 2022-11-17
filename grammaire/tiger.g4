@@ -34,7 +34,7 @@ expr_fois
 // "RACINE"
 expr   
        : '-' expr
-       | 'if' expr_or 'then' expr_or ('else' expr_or )? 'endif'
+       | 'if' '('expr_or')' 'then' '('expr_or')' ('else' '('expr_or')')?
        | 'let' declaration* 'in' (expr_or (';' expr_or)*)? 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_or
        | 'while' expr_or 'do' expr_or
