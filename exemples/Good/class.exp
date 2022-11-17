@@ -7,7 +7,7 @@ let
     }
 
     class Camion extends Vehicule {
-        method move (int x ) = if x <= 80 then position := position + x
+        method move (int x ) = if x <= 80 then (position := position + x)
     }
 
     var c := new Camion
