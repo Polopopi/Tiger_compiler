@@ -1,1 +1,0 @@
-print(if col[i]=j then " O" else " .")
