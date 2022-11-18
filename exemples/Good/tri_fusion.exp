@@ -33,7 +33,17 @@ let
             L)
         end
     /*function separe(L : intArray,len : int) : listCouple =
-        let var couple = listCouple*/
+        let var couple = listCouple{L1 = intArray[len/2 + (len/2*2 <> len)] of 0,L2 = intArray[len/2] of 0} in
+            for i = 0 to len - 1 do
+                if i/2*2 = i 
+                then(
+                    couple.L1[i/2] = L[i]
+                )
+                else(
+                    couple.L2[i/2] = L[i]
+                )
+        
+        */
 
 in ()
 end
