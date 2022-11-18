@@ -142,36 +142,6 @@ gen_id
        ;
 
 
-/*
-operator
-       : plus
-       | expr op_egal         
-       ;
-*/
-
-/*
-op_egal 
-       : ('='|'<>') expr                  // pour faire = (==) et <> (!=)
-       | ('<'|'>'|'<='|'>=') expr         // pour faire <, >, >=, <=
-       ;
-
-plus    
-       : mult(('+'|'/') mult)*
-       ;
-
-mult   
-       : value (('*'|'/')value)*
-       ;
-
-
-value  
-       : INT
-       | id
-       | '(' expr ')'
-       ;
-*/
-
-
 
 // Les terminaux (def des exp régulières reconnaissant les tokens)
  
