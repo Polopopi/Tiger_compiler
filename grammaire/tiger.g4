@@ -42,13 +42,19 @@ expr
        | 'let' declaration* 'in' (expr_affect (';' expr_affect)*)? 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect
        | 'while' expr_or 'do' expr_affect
-       | lvalue (call|record|array)?
+       | lvalue adiruien?
        | '('seq_expr')'
        | STR
        | INT
        | 'break'
        | 'nil'
        | 'print' '(' expr_or ')'
+       ;
+
+adiruien
+       : call
+       | record
+       | array
        ;
 
 //liste
@@ -156,7 +162,7 @@ INT
 STR    
        : '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'?'|'!'|'-'|'_'|'.'|':'|';'|','|' '|'\\n'|'('|')')* '"'
 	;
- 
+
 WS     
        : [ \n\t\r]+ ->skip
        ;
