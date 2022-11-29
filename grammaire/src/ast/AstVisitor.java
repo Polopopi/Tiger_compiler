@@ -18,5 +18,15 @@ public interface AstVisitor<T>  {
 /////////////////////////////////////////////////////
     public T visit(VarDeclaration affect);
     public T visit(FctDeclaration affect);
+    public T visit(Fct2Declaration affect);
+    public T visit(Lvalue affect);
+    public T visit(Array affect);
+    public T visit(Record affect);
+    public T visit(RecordList affect);
+
+
+
+
+
 
 }
