@@ -75,9 +75,9 @@ list_expr
 ///////////////////////////////////////// 3 Khloai
 
 declaration 
-       : type_declaration
-       | var_declaration
-       | fct_declaration
+       : type_declaration                               #DeclarationType
+       | var_declaration                                #DeclarationVar
+       | fct_declaration                                #DeclarationFct
        ;
 
 
@@ -87,9 +87,9 @@ type_declaration
        ;
 
 type
-       :type_id
-       |'{' type_fields? '}'
-       | 'array' 'of' type_id
+       :type_id                                         #TypeID
+       |'{' type_fields? '}'                            #TypeField
+       | 'array' 'of' type_id                           #TypeArray
        ;
 
 type_fields
