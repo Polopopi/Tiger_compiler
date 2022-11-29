@@ -87,9 +87,9 @@ type_declaration
        ;
 
 type
-       :type_id
-       |'{' type_fields? '}'
-       | 'array' 'of' type_id
+       :type_id                                         #TypeID
+       |'{' type_fields? '}'                            #TypeField
+       | 'array' 'of' type_id                           #TypeArray
        ;
 
 type_fields
