@@ -76,8 +76,8 @@ list_expr
 
 declaration 
        : type_declaration
-       | var_declaration
-       | fct_declaration
+       | varDeclaration
+       | fctDeclaration
        ;
 
 
@@ -112,19 +112,19 @@ type_field
 
 
 // DECLARATION VARIABLES
-var_declaration
-       : 'var' id (':' type_id)? ':=' expr_or
+varDeclaration
+       : 'var' id (':' type_id)? ':=' expr_or   
        ;
 
 
 // DECLARATION FONCTIONS
-fct_declaration    
-       : 'function' id '(' type_fields? ')'  fct2_declaration
+fctDeclaration    
+       : 'function' id '(' type_fields? ')'  fct2Declaration
        ;
 
-fct2_declaration   
-       : '=' expr_affect
-       | ':' type_id '=' expr_affect
+fct2Declaration   
+       : '=' expr_affect                  #ExprAffection
+       | ':' type_id '=' expr_affect      #ExprTypeAffection
        ;
 
 

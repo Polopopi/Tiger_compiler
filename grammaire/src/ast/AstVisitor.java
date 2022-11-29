@@ -15,4 +15,8 @@ public interface AstVisitor<T>  {
     public T visit(Print affect);
     public T visit(Program affect);
 
+/////////////////////////////////////////////////////
+    public T visit(VarDeclaration affect);
+    public T visit(FctDeclaration affect);
+
 }
