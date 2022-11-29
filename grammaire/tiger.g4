@@ -75,9 +75,9 @@ list_expr
 ///////////////////////////////////////// 3 Khloai
 
 declaration 
-       : type_declaration                               #DeclarationType
-       | var_declaration                                #DeclarationVar
-       | fct_declaration                                #DeclarationFct
+       : type_declaration
+       | var_declaration
+       | fct_declaration
        ;
 
 
