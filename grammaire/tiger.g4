@@ -66,7 +66,7 @@ seq_expr
        ;
 
 list_expr
-       : (e+= expr_or (',' e+=expr_or)*)?
+       : (expr_or (',' expr_or)*)?
        ;
 
 ///////////////////////////////////////// 
