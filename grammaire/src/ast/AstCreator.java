@@ -6,7 +6,7 @@ import parser.tigerParser;
 public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	///////////////////////////////////////////////////////////////////////
-	
+
 	//Partie 3:
 	@Override 
 	public Ast visitDeclaration(tigerParser.DeclarationContext ctx) {
@@ -30,14 +30,12 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override 
-	public Ast visitType_Fields(tigerParser.Type_Fields_FullContext ctx) {
+	public Ast visitType_Fields(tigerParser.Type_FieldsContext ctx) {
 		Ast type_fields2 = ctx.getChild(1).accept(this);
 		Ast type_field = ctx.getChild(0).accept(this);
 		
-		return new Type_Fields_Full(type_field, type_fields2); 
+		return new Type_Fields(type_field, type_fields2); 
 	}
-
-	///////////////////////////////////////////////////////////////////////
 
 	@Override 
 	public Ast visitTypeArray(tigerParser.TypeArrayContext ctx) {
@@ -53,7 +51,9 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	public Ast visitTypeID(tigerParser.TypeIDContext ctx) {
 		return ctx.getChild(0).accept(this); 
 	}
-}
+	
+	///////////////////////////////////////////////////////////////////////
+
 	@Override public Ast visitVarDeclaration(tigerParser.VarDeclarationContext ctx) {
 
 		String idString=ctx.getChild(1).toString();

@@ -74,7 +74,7 @@ list_expr
 
 ///////////////////////////////////////// 3 Khloai
 
-declaration 
+declaration                        //DONE
        : type_declaration
        | varDeclaration
        | fctDeclaration
@@ -82,7 +82,7 @@ declaration
 
 
 // DECLARATION TYPES
-type_declaration 
+type_declaration                   //DONE
        : 'type' type_id '='type 
        ;
 
@@ -93,16 +93,16 @@ type
        ;
 
 type_fields
-       : type_field type_fields2                     
+       : type_field (',' type_field)*                     
        ;
-
+/*
 type_fields2
        :(','type_field type_fields2)?
-       |
        ;
        //changé la récursivité gauche
+*/
 
-type_field
+type_field                         //DONE
        :id ':'type_id
        ;
 
