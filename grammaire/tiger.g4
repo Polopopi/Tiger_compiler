@@ -11,8 +11,6 @@ program : expr_affect EOF ;
 
 // OPERATIONS
 
-//////////////////////////////////////////////////1 Stiti
-
 expr_affect
        : expr_or (':=' expr_or)?
        ;
@@ -38,12 +36,6 @@ expr_fois
        ;
 
 // "RACINE"
-
-/////////////////////////////////////////////
-
-
-//////////////////////////////////////////// 2 Adiren
-
 expr   
        : '-' expr
        | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )? 
@@ -74,12 +66,7 @@ seq_expr
 list_expr
        : (expr_or (',' expr_or)*)?
        ;
-
-///////////////////////////////////////// 
 // DECLARATIONS
-
-///////////////////////////////////////// 3 Khloai
-
 declaration 
        : type_declaration
        | var_declaration
@@ -110,11 +97,6 @@ type_fields2
 type_field
        :id ':'type_id
        ;
-
-////////////////////////////////////////////////
-
-
-///////////////////////////////////////////// 4 Wenjouille
 
 
 // DECLARATION VARIABLES
