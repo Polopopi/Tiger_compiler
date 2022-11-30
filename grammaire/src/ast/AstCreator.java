@@ -208,6 +208,16 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		return declaration_list;
 	}	
 
+
+	@Override
+	public Ast visitList_expr(tigerParser.List_exprContext ctx){
+		Declaration_list declaration_list = new Declaration_list();
+
+		for (int i = 0; i<ctx.getChildCount();i=i+2){
+			declaration_list.addDecla(ctx.getChild(i).accept(this));
+		}
+		return declaration_list;
+	}
 	///////////////////////////////////////////////////////////////////////
 
 	//Partie 3:
