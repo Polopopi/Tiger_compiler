@@ -5,6 +5,7 @@ import parser.tigerParser;
 
 public class AstCreator extends tigerBaseVisitor<Ast>{
 
+<<<<<<< HEAD
 	//Partie 2
 
 	@Override public Ast visitMinusExpr(tigerParser.MinusExprContext ctx){
@@ -30,13 +31,18 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	//Partie 3:
+=======
+	///////////////////////////////////////////////////////////////////////
+
+	//Partie 3: get child conut
+>>>>>>> 65ba27c321da20e3f12708d4064a7b907b81216a
 	@Override 
 	public Ast visitDeclaration(tigerParser.DeclarationContext ctx) {
 		return ctx.getChild(0).accept(this); 
 	}
 
 	@Override 
-	public Ast visitType_Declaration(tigerParser.Type_DeclarationContext ctx) {
+	public Ast visitType_declaration(tigerParser.Type_declarationContext ctx) {
 		Ast type_id = ctx.getChild(1).accept(this);
 		Ast type = ctx.getChild(3).accept(this);
 		
@@ -44,7 +50,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override 
-	public Ast visitType_Field(tigerParser.Type_FieldContext ctx) {
+	public Ast visitType_field(tigerParser.Type_fieldContext ctx) {
 		Ast type_id = ctx.getChild(2).accept(this);
 		Ast id = ctx.getChild(0).accept(this);
 		
@@ -52,11 +58,16 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override 
-	public Ast visitType_Fields_Full(tigerParser.Type_Fields_FullContext ctx) {
-		Ast type_fields2 = ctx.getChild(1).accept(this);
+	public Ast visitType_fields(tigerParser.Type_fieldsContext ctx) {
 		Ast type_field = ctx.getChild(0).accept(this);
-		
-		return new Type_Fields_Full(type_field, type_fields2); 
+		if (ctx.getChildCount()>2){
+			Ast type_field2 = ctx.getChild(1).accept(this);
+			return new Type_Fields(type_field, type_field2); 
+		}
+		else{
+			Ast type_field2 = ctx.getChild(1).accept(this);
+			return type_field; 
+		}
 	}
 
 	@Override 
@@ -73,7 +84,9 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	public Ast visitTypeID(tigerParser.TypeIDContext ctx) {
 		return ctx.getChild(0).accept(this); 
 	}
-}
+	
+	///////////////////////////////////////////////////////////////////////
+
 	@Override public Ast visitVarDeclaration(tigerParser.VarDeclarationContext ctx) {
 
 		String idString=ctx.getChild(1).toString();
