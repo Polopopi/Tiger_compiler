@@ -86,7 +86,7 @@ type_declaration                   //DONE
        : 'type' type_id '='type 
        ;
 
-type
+type                               //DONE
        : type_id                                         #TypeID
        |'{' type_fields? '}'                             #TypeField
        | 'array' 'of' type_id                           #TypeArray
