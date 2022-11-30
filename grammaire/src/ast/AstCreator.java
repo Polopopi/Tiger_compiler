@@ -5,6 +5,175 @@ import parser.tigerParser;
 
 public class AstCreator extends tigerBaseVisitor<Ast>{
 
+	//Partie 1
+
+	@Override 
+	public Ast visitProgram(tigerParser.ProgramContext ctx) { 
+		Ast child = ctx.getChild(0).accept(this);
+		return new Program(child);
+	}
+
+
+
+	@Override
+	/* expr_affect
+       : expr_or (':=' expr_or)?
+       ; */
+	public Ast visitExpr_affect(tigerParser.Expr_affectContext ctx) { 
+
+		Ast idf = ctx.getChild(0).accept(this);
+
+		if (ctx.getChildCount() == 1){
+			return idf;
+		}
+        else{
+			Ast expr = ctx.getChild(2).accept(this);
+			return new Affect(idf, expr);
+		}
+	}
+
+
+
+	@Override 
+	/* expr_or 
+       : expr_and ('|' expr_and)*
+       ; */
+	public Ast visitExpr_or(tigerParser.Expr_orContext ctx) { 
+
+		Ast tempNode = ctx.getChild(0).accept(this);
+
+		for (int i = 0; 2*(i+1) < ctx.getChildCount(); i++){
+			Ast right = ctx.getChild(2*(i+1)).accept(this);
+			tempNode = new Or(tempNode, right);
+		}
+		
+		return tempNode;
+	}
+
+
+
+	@Override 
+	/* expr_and
+       : expr_test ('&' expr_test)*
+       ; */
+	public Ast visitExpr_and(tigerParser.Expr_andContext ctx) { 
+
+		Ast tempNode = ctx.getChild(0).accept(this);
+
+		for (int i = 0; 2*(i+1) < ctx.getChildCount(); i++){
+			Ast right = ctx.getChild(2*(i+1)).accept(this);
+			tempNode = new And(tempNode, right);
+		}
+
+		return tempNode;
+	}
+
+
+
+	@Override 
+	/* expr_test
+       : expr_plus (('='|'<>'|'<'|'>'|'<='|'>=') expr_plus)?
+       ; */
+	public Ast visitExpr_test(tigerParser.Expr_testContext ctx) {
+
+		Ast left = ctx.getChild(0).accept(this);
+
+		if (ctx.getChildCount() == 1){
+			return left;
+		}
+        else{
+			String operation = ctx.getChild(1).toString();
+			Ast right = ctx.getChild(2).accept(this);
+
+			switch (operation) {
+				case "=":
+					return new Equal(left,right);
+					break;
+				case "<>":
+					return new Diff(left,right);
+					break;
+				case "<":
+					return new Inf(left,right);
+					break;
+				case ">":
+					return new Sup(left,right);
+					break;
+				case "<=":
+					return new InfEqual(left,right);
+					break;
+				case ">=":
+					return new SupEqual(left,right);
+					break;
+				default:
+					break;
+			}
+		}
+
+		return left;
+	}
+
+
+
+	@Override 
+	/* expr_plus
+       : expr_mult (('+'|'-') expr_mult)*
+       ; */
+	public Ast visitExpr_plus(tigerParser.Expr_plusContext ctx) { 
+
+		Ast tempNode = ctx.getChild(0).accept(this);
+
+		for (int i=0; 2*(i+1)<ctx.getChildCount(); i++){
+			
+			String operation = ctx.getChild(2*i+1).toString();
+			Ast right = ctx.getChild(2*(i+1)).accept(this);
+
+			switch (operation) {
+				case "+":
+					tempNode = new Plus(tempNode,right);
+					break;
+				case "-":
+					tempNode = new Minus(tempNode,right);
+					break;
+				default:
+					break;
+			}
+		}    
+
+        return tempNode;
+	}
+
+
+
+	@Override 
+	/* expr_mult
+       : expr (('*'|'/') expr)*
+       ; */
+	public Ast visitExpr_mult(tigerParser.Expr_multContext ctx) {
+
+		Ast tempNode = ctx.getChild(0).accept(this);
+
+        for (int i=0; 2*(i+1)<ctx.getChildCount()-1; i++){
+            
+            String operation = ctx.getChild(2*i+1).toString();
+            Ast right = ctx.getChild(2*(i+1)).accept(this);
+
+            switch (operation) {
+                case "*":
+                    tempNode = new Mult(tempNode,right);
+                    break;
+                case "/":
+                    tempNode = new Divide(tempNode,right);
+                    break;
+                default:
+                    break;
+            }
+        }    
+
+        return tempNode;
+	}
+
+	//////////////////////////////////////////////////////////////////////
+
 	//Partie 2
 
 	@Override public Ast visitMinusExpr(tigerParser.MinusExprContext ctx){
@@ -16,7 +185,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		Ast condition = ctx.getChild(1).accept(this);
 		Ast thenExpr = ctx.getChild(4).accept(this);
 		Ast elseExpr;
-		if (ctx.getChilsCount() ==10){
+		if (ctx.getChildCount() ==10){
 			elseExpr = ctx.getChild(9).accept(this);
 			return(new IfThenElse(condition,thenExpr,elseExpr));
 		}

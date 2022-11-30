@@ -7,6 +7,9 @@ public class Program implements Ast {
         return visitor.visit(this);
     }
 
-    public Ast instructions;
+    public Ast affect;
 
+    public Program(Ast affect) {
+        this.affect = affect;
+    }
 }

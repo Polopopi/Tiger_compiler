@@ -2,20 +2,30 @@ package ast;
 
 public interface AstVisitor<T>  {
 
-    public T visit(Affect affect);
-    public T visit(Divide affect);
     public T visit(Idf affect);
     public T visit(IfThen affect);
     public T visit(IfThenElse affect);
     public T visit(InstrList affect);
     public T visit(IntNode affect);
-    public T visit(Minus affect);
-    public T visit(Mult affect);
-    public T visit(Plus affect);
     public T visit(Print affect);
     public T visit(Program affect);
 
-    // Partie 2:
+    // Partie 1 :
+    public T visit(Affect affect);
+    public T visit(Or affect);
+    public T visit(And affect);
+    public T visit(Equal affect);
+    public T visit(Diff affect);
+    public T visit(Inf affect);
+    public T visit(Sup affect);
+    public T visit(InfEqual affect);
+    public T visit(SupEqual affect);
+    public T visit(Plus affect);
+    public T visit(Minus affect);
+    public T visit(Mult affect);
+    public T visit(Divide affect);
+
+    // Partie 2 :
     public T visit(MinusExpr affect);
     public T visit(Let affect);
     public T visit (Declaration_list affect);

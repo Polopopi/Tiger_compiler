@@ -30,10 +30,10 @@ expr_test
        ;
 
 expr_plus
-       : expr_fois (('+'|'-') expr_fois)*
+       : expr_mult (('+'|'-') expr_mult)*
        ;
 
-expr_fois
+expr_mult
        : expr (('*'|'/') expr)*
        ;
 

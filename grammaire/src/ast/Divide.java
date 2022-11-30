@@ -9,5 +9,10 @@ public class Divide implements Ast{
 
     public Ast left;
     public Ast right;
-    
+
+    /* expr / expr */
+    public Divide(Ast left, Ast right){
+        this.left = left;
+        this.right = right;
+    }    
 }
