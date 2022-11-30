@@ -5,7 +5,6 @@ import parser.tigerParser;
 
 public class AstCreator extends tigerBaseVisitor<Ast>{
 
-<<<<<<< HEAD
 	//Partie 2
 
 	@Override public Ast visitMinusExpr(tigerParser.MinusExprContext ctx){
@@ -29,13 +28,20 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override public Ast visitLetExpr(tigerParser.LetExprContext ctx){
 		Ast declaration_List = ctx.getChild(1)
 	}
+	
+	@Override 
+	public Ast visitDeclaration_list(tigerParser.Declaration_listContext ctx) {
+		Declaration_list declaration_list = new Declaration_list();
 
-	//Partie 3:
-=======
+		for (int i = 0; i<ctx.getChildCount();i++){
+			declaration_list.addDecla(ctx.getChild(i).accept(this));
+		}
+		return declaration_list;
+	}	
+
 	///////////////////////////////////////////////////////////////////////
 
-	//Partie 3: get child conut
->>>>>>> 65ba27c321da20e3f12708d4064a7b907b81216a
+	//Partie 3:
 	@Override 
 	public Ast visitDeclaration(tigerParser.DeclarationContext ctx) {
 		return ctx.getChild(0).accept(this); 
@@ -186,4 +192,8 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override public Ast visitType_id(tigerParser.Type_idContext ctx) { return new Idf(ctx.getChild(0).toString()); }
 
 	@Override public Ast visitGen_id(tigerParser.Gen_idContext ctx) { return new Idf(ctx.getChild(0).toString()); }
+
+	///////////////////////////////////////////////////////////////////////
+
 }
+

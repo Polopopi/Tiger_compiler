@@ -72,8 +72,6 @@ list_expr
 ///////////////////////////////////////// 
 // DECLARATIONS
 
-
-
 declaration_list
        : declaration*
        ;

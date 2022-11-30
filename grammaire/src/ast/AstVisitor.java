@@ -16,9 +16,9 @@ public interface AstVisitor<T>  {
     public T visit(Program affect);
 
     // Partie 2:
-
     public T visit(MinusExpr affect);
     public T visit(Let affect);
+    public T visit (Declaration_list affect);
     
     // Partie 3 :
     public T visit(Type_Declaration affect);
