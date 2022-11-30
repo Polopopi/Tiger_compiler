@@ -21,6 +21,7 @@ public interface AstVisitor<T>  {
     public T visit(Type_Fields_Full affect);
 
     public T visit(Type_Field affect);
+    
 /////////////////////////////////////////////////////
     public T visit(VarDeclaration affect);
     public T visit(FctDeclaration affect);

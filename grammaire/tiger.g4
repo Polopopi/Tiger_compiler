@@ -11,6 +11,8 @@ program : expr_affect EOF ;
 
 // OPERATIONS
 
+//////////////////////////////////////////////////1 Stiti
+
 expr_affect
        : expr_or (':=' expr_or)?
        ;
@@ -36,25 +38,25 @@ expr_fois
        ;
 
 // "RACINE"
+
+/////////////////////////////////////////////
+
+
+//////////////////////////////////////////// 2 Adiren
+
 expr   
        : '-' expr
        | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )? 
        | 'let' declaration* 'in' (expr_affect (';' expr_affect)*)? 'end'
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect
        | 'while' expr_or 'do' expr_affect
-       | lvalue adiruien?
+       | lvalue (call|record|array)?
        | '('seq_expr')'
        | STR
        | INT
        | 'break'
        | 'nil'
        | 'print' '(' expr_or ')'
-       ;
-
-adiruien
-       : call
-       | record
-       | array
        ;
 
 //liste
@@ -66,7 +68,12 @@ seq_expr
 list_expr
        : (expr_or (',' expr_or)*)?
        ;
+
+///////////////////////////////////////// 
 // DECLARATIONS
+
+///////////////////////////////////////// 3 Khloai
+
 declaration 
        : type_declaration
        | varDeclaration
@@ -86,7 +93,7 @@ type
        ;
 
 type_fields
-       : type_field type_fields2
+       : type_field type_fields2                     
        ;
 
 type_fields2
@@ -98,6 +105,11 @@ type_fields2
 type_field
        :id ':'type_id
        ;
+
+////////////////////////////////////////////////
+
+
+///////////////////////////////////////////// 4 Wenjouille
 
 
 // DECLARATION VARIABLES
@@ -163,7 +175,7 @@ INT
 STR    
        : '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'?'|'!'|'-'|'_'|'.'|':'|';'|','|' '|'\\n'|'('|')')* '"'
 	;
-
+ 
 WS     
        : [ \n\t\r]+ ->skip
        ;
