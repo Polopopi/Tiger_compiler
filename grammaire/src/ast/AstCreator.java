@@ -1,9 +1,32 @@
 package ast;
 
-import parser.exprBaseVisitor;
-import parser.exprParser;
+import parser.tigerBaseVisitor;
+import parser.tigerParser;
 
-public class AstCreator extends exprBaseVisitor<Ast>{
+public class AstCreator extends tigerBaseVisitor<Ast>{
+
+	@Override public Ast visitMinusExpr(tigerParser.MinusExprContext ctx){
+		Ast expr = ctx.getChild(1).accept(this);
+		return(new MinusExpr(expr));
+	}
+
+	@Override public Ast visitIfExpr(tigerParser.IfExprContext ctx){
+		Ast condition = ctx.getChild(1).accept(this);
+		Ast thenExpr = ctx.getChild(4).accept(this);
+		Ast elseExpr;
+		if (ctx.getChilsCount() ==10){
+			elseExpr = ctx.getChild(9).accept(this);
+			return(new IfThenElse(condition,thenExpr,elseExpr));
+		}
+		else{
+			return(new IfThen(condition,thenExpr));
+		}
+	}
+
+	@Override public Ast visitLetExpr(tigerParser.LetExprContext ctx){
+		
+	}
+
 
     	/**
 	 * {@inheritDoc}
@@ -11,49 +34,49 @@ public class AstCreator extends exprBaseVisitor<Ast>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitProgram(exprParser.ProgramContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitProgram(tigerParser.ProgramContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitInstr(exprParser.InstrContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitInstr(tigerParser.InstrContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitPrint_litteral(exprParser.Print_litteralContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitPrint_litteral(tigerParser.Print_litteralContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitIfThenElse(exprParser.IfThenElseContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitIfThenElse(tigerParser.IfThenElseContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitIfThen(exprParser.IfThenContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitIfThen(tigerParser.IfThenContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitInstr_list(exprParser.Instr_listContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitInstr_list(tigerParser.Instr_listContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitAffect(exprParser.AffectContext ctx) { 
+	@Override public Ast visitAffect(tigerParser.AffectContext ctx) { 
 		Ast expr = ctx.getChild(2).accept(this);
     	String idfString = ctx.getChild(0).toString();
 
@@ -67,40 +90,40 @@ public class AstCreator extends exprBaseVisitor<Ast>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitExpr(exprParser.ExprContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitExpr(tigerParser.ExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitPlus(exprParser.PlusContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitPlus(tigerParser.PlusContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitMult(exprParser.MultContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitMult(tigerParser.MultContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitInteger(exprParser.IntegerContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitInteger(tigerParser.IntegerContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitIdentifier(exprParser.IdentifierContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitIdentifier(tigerParser.IdentifierContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Ast visitParenthesis(exprParser.ParenthesisContext ctx) { return visitChildren(ctx); }
+	@Override public Ast visitParenthesis(tigerParser.ParenthesisContext ctx) { return visitChildren(ctx); }
 }

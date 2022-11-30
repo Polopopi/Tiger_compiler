@@ -45,28 +45,28 @@ expr_fois
 //////////////////////////////////////////// 2 Adiren
 
 expr   
-       : '-' expr
-       | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )? 
-       | 'let' declaration* 'in' (expr_affect (';' expr_affect)*)? 'end'
-       | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect
-       | 'while' expr_or 'do' expr_affect
-       | lvalue (call|record|array)?
-       | '('seq_expr')'
-       | STR
-       | INT
-       | 'break'
-       | 'nil'
-       | 'print' '(' expr_or ')'
+       : '-' expr                                                                   #MinusExpr
+       | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )?           #IfExpr
+       | 'let' declaration* 'in' (e+=expr_affect (';' e+=expr_affect)*)? 'end'      #LetExpr
+       | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect                        #ForExpr
+       | 'while' expr_or 'do' expr_affect                                           #WhileExpr
+       | lvalue (call|record|array)?                                                #LValueExpr
+       | '('seq_expr')'                                                             #SeqExpr
+       | STR                                                                        #StrExpr
+       | INT                                                                        #IntExpr
+       | 'break'                                                                    #BreakExpr
+       | 'nil'                                                                      #NilExpr
+       | 'print' '(' expr_or ')'                                                    #PrintExpr
        ;
 
 //liste
 
 seq_expr
-       : (expr_affect (';' expr_affect)*)?
+       : (e+=expr_affect (';' e+=expr_affect)*)?  
        ;
 
 list_expr
-       : (expr_or (',' expr_or)*)?
+       : (e+= expr_or (',' e+=expr_or)*)?
        ;
 
 ///////////////////////////////////////// 
