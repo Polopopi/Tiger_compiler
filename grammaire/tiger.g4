@@ -87,17 +87,19 @@ type_declaration
        ;
 
 type
-       :type_id                                         #TypeID
-       |'{' type_fields? '}'                            #TypeField
+       : type_id                                         #TypeID
+       |'{' type_fields '}'                             #TypeField
        | 'array' 'of' type_id                           #TypeArray
        ;
 
 type_fields
-       : type_field type_fields2
+       : type_field type_fields2                        #Type_Fields_Full
+       |                                                #Type_Fields_Empty
        ;
 
 type_fields2
-       :(','type_field type_fields2)?
+       :(','type_field type_fields2)
+       |
        ;
        //changé la récursivité gauche
 
@@ -119,7 +121,7 @@ var_declaration
 
 // DECLARATION FONCTIONS
 fct_declaration    
-       : 'function' id '(' type_fields? ')'  fct2_declaration
+       : 'function' id '(' type_fields ')'  fct2_declaration
        ;
 
 fct2_declaration   

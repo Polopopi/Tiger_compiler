@@ -14,5 +14,11 @@ public interface AstVisitor<T>  {
     public T visit(Plus affect);
     public T visit(Print affect);
     public T visit(Program affect);
+    
+    // Partie 3 :
+    public T visit(Type_Declaration affect);
 
+    public T visit(Type_Fields_Full affect);
+
+    public T visit(Type_Field affect);
 }

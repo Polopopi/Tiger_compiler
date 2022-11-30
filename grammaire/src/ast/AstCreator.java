@@ -1,106 +1,52 @@
 package ast;
 
-import parser.exprBaseVisitor;
-import parser.exprParser;
+import parser.tigerBaseVisitor;
+import parser.tigerParser;
 
-public class AstCreator extends exprBaseVisitor<Ast>{
+public class AstCreator extends tigerBaseVisitor<Ast>{
 
-    	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitProgram(exprParser.ProgramContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitInstr(exprParser.InstrContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitPrint_litteral(exprParser.Print_litteralContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitIfThenElse(exprParser.IfThenElseContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitIfThen(exprParser.IfThenContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitInstr_list(exprParser.Instr_listContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitAffect(exprParser.AffectContext ctx) { 
-		Ast expr = ctx.getChild(2).accept(this);
-    	String idfString = ctx.getChild(0).toString();
+	//Partie 3:
+	@Override 
+	public Ast visitDeclaration(tigerParser.DeclarationContext ctx) {
+		return ctx.getChild(0).accept(this); 
+	}
 
-    	//Création des sous AST
-    	Idf idf = new Idf(idfString);
+	@Override 
+	public Ast visitType_Declaration(tigerParser.Type_DeclarationContext ctx) {
+		Ast type_id = ctx.getChild(1).accept(this);
+		Ast type = ctx.getChild(3).accept(this);
+		
+		return new Type_Declaration(type_id, type); 
+	}
 
-    	return new Affect(idf,expr); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitExpr(exprParser.ExprContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitPlus(exprParser.PlusContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitMult(exprParser.MultContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitInteger(exprParser.IntegerContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitIdentifier(exprParser.IdentifierContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public Ast visitParenthesis(exprParser.ParenthesisContext ctx) { return visitChildren(ctx); }
+	@Override 
+	public Ast visitType_Field(tigerParser.Type_FieldContext ctx) {
+		Ast type_id = ctx.getChild(2).accept(this);
+		Ast id = ctx.getChild(0).accept(this);
+		
+		return new Type_Field(type_id, id); 
+	}
+
+	@Override 
+	public Ast visitType_Fields_Full(tigerParser.Type_Fields_FullContext ctx) {
+		Ast type_fields2 = ctx.getChild(1).accept(this);
+		Ast type_field = ctx.getChild(0).accept(this);
+		
+		return new Type_Fields_Full(type_field, type_fields2); 
+	}
+
+	@Override 
+	public Ast visitTypeArray(tigerParser.TypeArrayContext ctx) {
+		return ctx.getChild(2).accept(this); 
+	}
+
+	@Override 
+	public Ast visitTypeField(tigerParser.TypeFieldContext ctx) {
+		return ctx.getChild(1).accept(this); 
+	}
+
+	@Override 
+	public Ast visitTypeID(tigerParser.TypeIDContext ctx) {
+		return ctx.getChild(0).accept(this); 
+	}
 }
