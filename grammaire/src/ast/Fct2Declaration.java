@@ -6,9 +6,9 @@ public class Fct2Declaration implements Ast {
     }
 
     public Idf typeID;
-    public Ast expr_affect;
-    public Fct2Declaration(Idf typeId, Ast expr_affect){
+    public Ast exprAffect;
+    public Fct2Declaration(Idf typeId, Ast exprAffect){
         this.typeID=typeId;
-        this.expr_affect=expr_affect;
+        this.exprAffect=exprAffect;
     }
 }
