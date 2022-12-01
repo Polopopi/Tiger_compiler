@@ -177,11 +177,13 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	//Partie 2
 
 	@Override public Ast visitMinusExpr(tigerParser.MinusExprContext ctx){
+		/* '-' expr  */
 		Ast expr = ctx.getChild(1).accept(this);
 		return(new MinusExpr(expr));
 	}
 
 	@Override public Ast visitIfExpr(tigerParser.IfExprContext ctx){
+		/* 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )?   */
 		Ast condition = ctx.getChild(1).accept(this);
 		Ast thenExpr = ctx.getChild(4).accept(this);
 		Ast elseExpr;
@@ -195,22 +197,23 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitLetExpr(tigerParser.LetExprContext ctx){
-		Ast declarationList = ctx.getChild(1).visit(this);
-		Ast seqExpr = ctx.getChild(3).visit(this);
+		Ast declarationList = ctx.getChild(1).accept(this);
+		Ast seqExpr = ctx.getChild(3).accept(this);
 		return(new Let(declarationList,seqExpr));
 	}
 
 	@Override public Ast visitForExpr(tigerParser.ForExprContext ctx){
-		Ast id = ctx.getChild(1).visit(this);
-		Ast debut = ctx.getChild(3).visit(this);
-		Ast fin = ctx.getChild(5).visit(this);
-		Ast bloc = ctx.getChild(7).visit(this);
+		String idString = ctx.getChild(1).toString();
+		Idf id=new Idf(idString); 
+		Ast debut = ctx.getChild(3).accept(this);
+		Ast fin = ctx.getChild(5).accept(this);
+		Ast bloc = ctx.getChild(7).accept(this);
 		return(new For(id,debut,fin,bloc);)
 	}
 
 	@Override public Ast visitWhileExpr(tigerParser.WhileExprContext ctx){
-		Ast condition = ctx.getChild(1).visit(this);
-		Ast bloc = ctx.getChild(3).visit(this);
+		Ast condition = ctx.getChild(1).accept(this);
+		Ast bloc = ctx.getChild(3).accept(this);
 		return(new While(condition,bloc));
 	}
 
@@ -220,7 +223,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 			return(lvalue);
 		}
 		Ast suite = ctx.getChild(1).accept(this);
-		return(new LvalueExpr(lvalue, suite));
+		return(new LvalueExpr(lvalue, suite));//répétition ?
 	}
 
 	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
@@ -244,7 +247,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitPrintExpr(tigerParser.PrintExprContext ctx){
-		return(new Print(ctx.getchild(2).accept(this)));
+		return(new Print(ctx.getChild(2).accept(this)));
 	}
 	
 	@Override 
@@ -257,9 +260,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		return declaration_list;
 	}	
 
-
+// manque seq_liste
 	@Override
 	public Ast visitList_expr(tigerParser.List_exprContext ctx){
+		/* (expr_or (',' expr_or)*)? */
 		Declaration_list declaration_list = new Declaration_list();
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){

@@ -5,12 +5,12 @@ public class For implements Ast{
         return visitor.visit(this);
     }
     
-    public Ast id;
+    public Idf id;
     public Ast debut;
     public Ast fin;
     public Ast bloc;
 
-    public For(Ast id,Ast debut,Ast fin,Ast bloc){
+    public For(Idf id,Ast debut,Ast fin,Ast bloc){
         this.id = id;
         this.debut = debut;
         this.fin = fin;
