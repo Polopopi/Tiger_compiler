@@ -7,11 +7,11 @@ public class RecordList implements Ast {
         return visitor.visit(this);
     }
     
-    public ArrayList<Record> recordList;
+    public ArrayList<Ast> recordList;
     public RecordList(){
         this.recordList=new ArrayList<>();
     }
-    public void addRecord(Record record){
+    public void addRecord(Ast record){
         this.recordList.add(record);
     }
 }

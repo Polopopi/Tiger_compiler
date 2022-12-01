@@ -5,9 +5,9 @@ public class Fct2Declaration implements Ast {
         return visitor.visit(this);
     }
 
-    public String typeID;
+    public Idf typeID;
     public Ast expr_affect;
-    public Fct2Declaration(String typeId, Ast expr_affect){
+    public Fct2Declaration(Idf typeId, Ast expr_affect){
         this.typeID=typeId;
         this.expr_affect=expr_affect;
     }

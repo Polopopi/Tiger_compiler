@@ -88,22 +88,16 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 			switch (operation) {
 				case "=":
 					return new Equal(left,right);
-					break;
 				case "<>":
 					return new Diff(left,right);
-					break;
 				case "<":
 					return new Inf(left,right);
-					break;
 				case ">":
 					return new Sup(left,right);
-					break;
 				case "<=":
 					return new InfEqual(left,right);
-					break;
 				case ">=":
 					return new SupEqual(left,right);
-					break;
 				default:
 					break;
 			}
@@ -208,7 +202,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		Ast debut = ctx.getChild(3).accept(this);
 		Ast fin = ctx.getChild(5).accept(this);
 		Ast bloc = ctx.getChild(7).accept(this);
-		return(new For(id,debut,fin,bloc);)
+		return(new For(id,debut,fin,bloc));
 	}
 
 	@Override public Ast visitWhileExpr(tigerParser.WhileExprContext ctx){
@@ -290,9 +284,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override 
 	public Ast visitType_field(tigerParser.Type_fieldContext ctx) {
 		Ast type_id = ctx.getChild(2).accept(this);
-		Ast id = ctx.getChild(0).accept(this);
+		String id = ctx.getChild(0).toString();
+
 		
-		return new Type_Field(type_id, id); 
+		return new Type_Field(type_id, new Idf(id)); 
 	}
 
 	@Override 
@@ -303,7 +298,6 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 			return new Type_Fields(type_field, type_field2); 
 		}
 		else{
-			Ast type_field2 = ctx.getChild(1).accept(this);
 			return type_field; 
 		}
 	}
@@ -315,7 +309,12 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	@Override 
 	public Ast visitTypeField(tigerParser.TypeFieldContext ctx) {
-		return ctx.getChild(1).accept(this); 
+		String operation=ctx.getChild(1).toString();
+
+		if (operation!="}") {
+			return ctx.getChild(1).accept(this);
+		} 
+		return null;
 	}
 
 	@Override 
@@ -362,7 +361,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	}
 	
-	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {//c'est pas un noeud bizzare ici!!!!!!!!!!
+	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {//c'est un noeud bizzare ici!!!!!!!!!!
 		/*'=' expr_affect   */
 		return new Fct2Declaration(null,ctx.getChild(1).accept(this)); 
 	}
@@ -371,13 +370,13 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		/*':' type_id '=' expr_affect */
 		String typeIdString=ctx.getChild(1).toString();
 
-		return new Fct2Declaration(typeIdString, ctx.getChild(3).accept(this));
+		return new Fct2Declaration(new Idf(typeIdString), ctx.getChild(3).accept(this));
 	}
 	
 	@Override public Ast visitLvalue(tigerParser.LvalueContext ctx) {
 		/*   gen_id('['expr_or']')* ('.' id ('[' expr_or ']')*)* */
-		Idf idf=new Idf(ctx.getChild(0).toString());
-		Ast noeudCourant=ctx.getChild(0).accept(this);
+		//Idf idf=new Idf(ctx.getChild(0).toString());
+		Ast noeudCourant=new Idf(ctx.getChild(0).toString());
 		for(int i=0;i<ctx.getChildCount()-1;i++){
 			String operation=ctx.getChild(i).toString();
 			switch (operation) {
