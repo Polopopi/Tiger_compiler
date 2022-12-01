@@ -5,7 +5,6 @@ import parser.tigerParser;
 
 public class AstCreator extends tigerBaseVisitor<Ast>{
 
-<<<<<<< HEAD
 	//Partie 2
 
 	@Override public Ast visitMinusExpr(tigerParser.MinusExprContext ctx){
@@ -27,15 +26,61 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitLetExpr(tigerParser.LetExprContext ctx){
-		Ast declaration_List = ctx.getChild(1)
+		Ast declarationList = ctx.getChild(1).visit(this);
+		Ast seqExpr = ctx.getChild(3).visit(this);
+		return(new Let(declarationList,seqExpr));
 	}
 
-	//Partie 3:
-=======
+	@Override public Ast visitForExpr(tigerParser.ForExprContext ctx){
+		Ast id = ctx.getChild(1).visit(this);
+		Ast debut = ctx.getChild(3).visit(this);
+		Ast fin = ctx.getChild(5).visit(this);
+		Ast bloc = ctx.getChild(7).visit(this);
+		return(new For(id,debut,fin,bloc);)
+	}
+
+	@Override public Ast visitWhileExpr(tigerParser.WhileExprContext ctx){
+		Ast condition = ctx.getChild(1).visit(this);
+		Ast bloc = ctx.getChild(3).visit(this);
+		return(new While(condition,bloc));
+	}
+
+	@Override public Ast visitLValueExpr(tigerParser.LValueExprContext ctx){
+		Ast lvalue = ctx.getChild(0).accept(this);
+		if (ctx.getChildCount() == 1){
+			return(lvalue);
+		}
+		Ast suite = ctx.getChild(1).accept(this);
+		return(new LvalueExpr(lvalue, suite));
+	}
+
+	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
+		return(ctx.getChild(1).accept(this));
+	}
+
+	@Override public Ast visitIntExpr(tigerParser.IntExprContext ctx){
+		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString())));
+	}
+
+	@Override public Ast visitStrExpr(tigerParser.StrExprContext ctx){
+		return(new StrExpr(ctx.getChild(0).toString()));
+	}
+
+	@Override public Ast visitNilExpr(tigerParser.NilExprContext ctx){
+		return(new NilExpr());
+	}
+
+	@Override public Ast visitBreakExpr(tigerParser.BreakExprContext ctx){
+		return(new BreakExpr());
+	}
+
+	@Override public Ast visitPrintExpr(tigerParser.PrintExprContext ctx){
+		return(new Print(ctx.getchild(2).accept(this)));
+	}
+
 	///////////////////////////////////////////////////////////////////////
 
 	//Partie 3: get child conut
->>>>>>> 65ba27c321da20e3f12708d4064a7b907b81216a
 	@Override 
 	public Ast visitDeclaration(tigerParser.DeclarationContext ctx) {
 		return ctx.getChild(0).accept(this); 

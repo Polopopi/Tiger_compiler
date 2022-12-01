@@ -1,17 +1,13 @@
 package ast;
 
-public class Print implements Ast {
-
-    // Utile pour la dernière partie
+public class StrExpr implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
 
-    public Ast value;
+    public String value;
 
-    public Print(Ast value){
+    public StrExpr(String value){
         this.value = value;
     }
-
-    
 }
