@@ -10,4 +10,10 @@ public class Minus implements Ast {
     public Ast left;
     public Ast right;
 
+
+    /* expr_mult - expr_mult */
+    public Minus(Ast left, Ast right){
+        this.left = left;
+        this.right = right;
+    }
 }

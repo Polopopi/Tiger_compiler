@@ -10,4 +10,9 @@ public class Plus implements Ast {
     public Ast left;
     public Ast right;
 
+    /* expr_mult + expr_mult */
+    public Plus(Ast left, Ast right){
+        this.left = left;
+        this.right = right;
+    }
 }

@@ -15,6 +15,10 @@ import org.antlr.v4.runtime.RecognitionException;
 import parser.*;
 import parser.tigerParser.ProgramContext;
 
+import ast.*;
+import graphViz.GraphVizVisitor;
+
+
 public class Main {
 
     public static void main(String[] args){
@@ -43,7 +47,7 @@ public class Main {
                     parser.getRuleNames()),program);
             viewer.setScale(1); // Scale a little
             try{
-                String fileName = "test.png";
+                String fileName = "./out/syntaxical_tree.png";
                 viewer.save(fileName);
             }
             catch (PrintException e) {
@@ -55,6 +59,15 @@ public class Main {
             frame.pack();
             frame.setVisible(true);
 
+            // Visiteur de création de l'AST + création de l'AST
+            AstCreator creator = new AstCreator();
+            Ast ast = program.accept(creator);
+
+            // Visiteur de représentation graphique + appel
+            GraphVizVisitor graphViz = new GraphVizVisitor();
+            ast.accept(graphViz);
+        
+            graphViz.dumpGraph("./out/AST.dot");
 
         } 
         catch (IOException e) {
@@ -64,6 +77,8 @@ public class Main {
             e.printStackTrace();
         }
         
+
+
 
     }
     

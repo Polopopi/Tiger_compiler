@@ -30,10 +30,10 @@ expr_test
        ;
 
 expr_plus
-       : expr_fois (('+'|'-') expr_fois)*
+       : expr_mult (('+'|'-') expr_mult)*
        ;
 
-expr_fois
+expr_mult
        : expr (('*'|'/') expr)*
        ;
 
@@ -66,13 +66,11 @@ seq_expr
        ;
 
 list_expr
-       : (e+= expr_or (',' e+=expr_or)*)?
+       : (expr_or (',' expr_or)*)?
        ;
 
 ///////////////////////////////////////// 
 // DECLARATIONS
-
-
 
 declaration_list
        : declaration*

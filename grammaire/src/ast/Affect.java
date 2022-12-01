@@ -8,11 +8,11 @@ public class Affect implements Ast{
     }
 
     public Ast idf;
-    public Ast expression;
+    public Ast expr;
 
     public Affect(Ast idf, Ast expr){
         this.idf = idf;
-        this.expression = expr;
+        this.expr = expr;
     }
 
 }
