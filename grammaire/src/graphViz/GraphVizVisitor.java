@@ -3,6 +3,43 @@ package graphViz;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+<<<<<<< HEAD
+=======
+import ast.AstVisitor;
+
+import ast.Program;
+import ast.Affect;
+import ast.Or;
+import ast.And;
+import ast.Array;
+import ast.Equal;
+import ast.Diff;
+import ast.Inf;
+import ast.Sup;
+import ast.InfEqual;
+import ast.SupEqual;
+import ast.VarDeclaration;
+import ast.Plus;
+import ast.Minus;
+import ast.Mult;
+import ast.Divide;
+import ast.FctDeclaration;
+import ast.Fct2Declaration;
+import ast.LvalueIndex;
+import ast.Record;
+import ast.RecordList;
+import ast.Type_Declaration;
+import ast.Type_Field;
+import ast.Type_Fields;
+
+
+import ast.Ast;
+import ast.Idf;
+import ast.IfThen;
+import ast.IfThenElse;
+import ast.InstrList;
+import ast.Print;
+>>>>>>> 85b2100bae0d30f2f9f221fb44205cdae4e2745a
 
 import ast.*;
 
@@ -259,7 +296,9 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
+    // PARTIE 3 :
 
+<<<<<<< HEAD
     //////partie 2
 
     @Override
@@ -482,7 +521,46 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
 
     }
+=======
+    public String visit(Type_Declaration Type_Dec){
+        String nodeIdentifier=this.nextState();
+        
+        String type_id=Type_Dec.type_id.accept(this);
+        String type=Type_Dec.type.accept(this);
 
+        this.addNode(nodeIdentifier, "Déclaration");
+        
+        this.addTransition(nodeIdentifier, type_id);
+        this.addTransition(nodeIdentifier, type);
+        return nodeIdentifier;
+    }
+
+    public String visit(Type_Field Type_Field){
+        String nodeIdentifier=this.nextState();
+        
+        String type_id=Type_Field.type_id.accept(this);
+        String id=Type_Field.id.accept(this);
+
+        this.addNode(nodeIdentifier, "Type champs");
+        
+        this.addTransition(nodeIdentifier, type_id);
+        this.addTransition(nodeIdentifier, id);
+        return nodeIdentifier;
+    }
+        
+        public String visit(Type_Fields Type_Flds){
+        String nodeIdentifier=this.nextState();
+>>>>>>> 85b2100bae0d30f2f9f221fb44205cdae4e2745a
+
+        this.addNode(nodeIdentifier, "Liste de Type champs");
+        
+        for (Ast ast:Type_Flds.listAst){
+            String astState = ast.accept(this);
+            this.addTransition(nodeIdentifier, astState);
+    
+        }
+        return nodeIdentifier;
+    }
     //////partie 4
     public String visit(VarDeclaration varDeclaration){
         String nodeIdentifier=this.nextState();
@@ -490,7 +568,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String expr=varDeclaration.expr.accept(this);
         String id=varDeclaration.idf.accept(this);
         String type=varDeclaration.type.accept(this);
-        this.addNode(nodeIdentifier, "Variable Déclaration");
+        this.addNode(nodeIdentifier, "Déclaration");
         
         this.addTransition(nodeIdentifier, id);
         this.addTransition(nodeIdentifier, type);
