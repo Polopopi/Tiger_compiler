@@ -3,43 +3,6 @@ package graphViz;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-<<<<<<< HEAD
-=======
-import ast.AstVisitor;
-
-import ast.Program;
-import ast.Affect;
-import ast.Or;
-import ast.And;
-import ast.Array;
-import ast.Equal;
-import ast.Diff;
-import ast.Inf;
-import ast.Sup;
-import ast.InfEqual;
-import ast.SupEqual;
-import ast.VarDeclaration;
-import ast.Plus;
-import ast.Minus;
-import ast.Mult;
-import ast.Divide;
-import ast.FctDeclaration;
-import ast.Fct2Declaration;
-import ast.LvalueIndex;
-import ast.Record;
-import ast.RecordList;
-import ast.Type_Declaration;
-import ast.Type_Field;
-import ast.Type_Fields;
-
-
-import ast.Ast;
-import ast.Idf;
-import ast.IfThen;
-import ast.IfThenElse;
-import ast.InstrList;
-import ast.Print;
->>>>>>> 85b2100bae0d30f2f9f221fb44205cdae4e2745a
 
 import ast.*;
 
@@ -296,9 +259,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
-    // PARTIE 3 :
 
-<<<<<<< HEAD
     //////partie 2
 
     @Override
@@ -311,21 +272,6 @@ public class GraphVizVisitor implements AstVisitor<String> {
         this.addTransition(nodeIdentifier, next);
         return(nodeIdentifier);
     }
-/*
-    @Override
-    public String visit(IfThen ifThen){
-        String nodeIdentifier = this.nextState();
-
-        String condition = ifThen.condition.accept(this);
-        String thenBlock = ifThen.thenBlock.accept(this);
-
-        this.addNode(nodeIdentifier, "IfThen");
-        this.addTransition(nodeIdentifier, condition);
-        this.addTransition(nodeIdentifier, thenBlock);
-
-        return(nodeIdentifier);
-    }
-*/
 
 @Override
     public String visit(IfThen ifThen) {
@@ -521,7 +467,9 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
 
     }
-=======
+
+    // PARTIE 3 :
+
     public String visit(Type_Declaration Type_Dec){
         String nodeIdentifier=this.nextState();
         
@@ -550,7 +498,6 @@ public class GraphVizVisitor implements AstVisitor<String> {
         
         public String visit(Type_Fields Type_Flds){
         String nodeIdentifier=this.nextState();
->>>>>>> 85b2100bae0d30f2f9f221fb44205cdae4e2745a
 
         this.addNode(nodeIdentifier, "Liste de Type champs");
         
@@ -633,7 +580,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
-    public String visit(Record record){
+    public String visit(LvalueRecord record){
         String nodeIdentifier=this.nextState();
 
         String id=record.id.accept(this);

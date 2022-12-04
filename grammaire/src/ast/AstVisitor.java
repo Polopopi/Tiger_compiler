@@ -51,7 +51,7 @@ public interface AstVisitor<T>  {
     public T visit(LvalueField affect);
     public T visit(LvalueIndex affect);
     public T visit(Array affect);
-    public T visit(Record affect);
+    public T visit(LvalueRecord affect);
     public T visit(RecordList affect);
 
 
