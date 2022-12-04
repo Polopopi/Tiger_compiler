@@ -62,7 +62,7 @@ expr
 //liste
 
 seq_expr
-       : (e+=expr_affect (';' e+=expr_affect)*)?  
+       : (expr_affect (';' expr_affect)*)?  
        ;
 
 list_expr

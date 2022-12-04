@@ -35,8 +35,9 @@ public interface AstVisitor<T>  {
     public T visit(IntExpr affect);
     public T visit(StrExpr affect);
 
-    public T visit (Declaration_list affect);
-    public T visit (List_expr affect);
+    public T visit(SeqExpr affect);
+    public T visit (DeclarationList affect);
+    public T visit (ListExpr affect);
     
     // Partie 3 :
     public T visit(Type_Declaration affect);
@@ -47,7 +48,8 @@ public interface AstVisitor<T>  {
     public T visit(VarDeclaration affect);
     public T visit(FctDeclaration affect);
     public T visit(Fct2Declaration affect);
-    public T visit(Lvalue affect);
+    public T visit(LvalueField affect);
+    public T visit(LvalueIndex affect);
     public T visit(Array affect);
     public T visit(Record affect);
     public T visit(RecordList affect);

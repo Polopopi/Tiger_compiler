@@ -23,7 +23,7 @@ import ast.Mult;
 import ast.Divide;
 import ast.FctDeclaration;
 import ast.Fct2Declaration;
-import ast.Lvalue;
+import ast.LvalueIndex;
 import ast.Record;
 import ast.RecordList;
 
@@ -332,7 +332,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         this.addTransition(nodeIdentifier, exprAffect);
         return nodeIdentifier;
     }
-    public String visit(Lvalue lvalue){
+    public String visit(LvalueIndex lvalue){
         String nodeIdentifier=this.nextState();
         String genId=lvalue.genId.accept(this);
         String exprOr=lvalue.exprOr.accept(this);

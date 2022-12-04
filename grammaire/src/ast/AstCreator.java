@@ -246,7 +246,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override 
 	public Ast visitDeclaration_list(tigerParser.Declaration_listContext ctx) {
-		Declaration_list declaration_list = new Declaration_list();
+		DeclarationList declaration_list = new DeclarationList();
 
 		for (int i = 0; i<ctx.getChildCount();i++){
 			declaration_list.addDecla(ctx.getChild(i).accept(this));
@@ -254,16 +254,26 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		return declaration_list;
 	}	
 
-// manque seq_liste
+	@Override
+	public Ast visitSeq_expr(tigerParser.Seq_exprContext ctx){
+		SeqExpr expr_list = new SeqExpr();
+
+		for (int i = 0; i<ctx.getChildCount();i=i+2){
+			expr_list.addExpre(ctx.getChild(i).accept(this));
+		}
+		return expr_list;
+	}
+
+
 	@Override
 	public Ast visitList_expr(tigerParser.List_exprContext ctx){
 		/* (expr_or (',' expr_or)*)? */
-		Declaration_list declaration_list = new Declaration_list();
+		ListExpr expr_list = new ListExpr();
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){
-			declaration_list.addDecla(ctx.getChild(i).accept(this));
+			expr_list.addExpre(ctx.getChild(i).accept(this));
 		}
-		return declaration_list;
+		return expr_list;
 	}
 	///////////////////////////////////////////////////////////////////////
 
@@ -325,19 +335,17 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	///////////////////////////////////////////////////////////////////////
 
 	@Override public Ast visitVarDeclaration(tigerParser.VarDeclarationContext ctx) {
-
-		String idString=ctx.getChild(1).toString();
-		Idf idf=new Idf(idString);
+		Ast idf=ctx.getChild(1).accept(this);
 
 		/*varDeclaration
        : 'var' id (':' type_id)? ':=' expr_or   
        ; */
 	   String operation=ctx.getChild(2).toString();
-	   if (operation==":") {
-			String typeString=ctx.getChild(3).toString();
+	   if (operation.equals(":")) {
+			Ast type= getChild(3).accept(this);
 			Ast exprOr=ctx.getChild(5).accept(this);
 
-			Idf type=new Idf(typeString);
+			
 			return new VarDeclaration(idf,type,exprOr);
 	   }
 		Ast exprOr=ctx.getChild(3).accept(this);
@@ -348,9 +356,9 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		/*fctDeclaration    
        : 'function' id '(' type_fields? ')'  fct2Declaration
        ; */
-		Idf idf=new Idf(ctx.getChild(1).toString());
+		Ast idf= ctx.getChild(1).accept(this);
 		String operation=ctx.getChild(3).toString();
-		if (operation==")") {//pas de type-fields
+		if (operation.equals(")")) {//pas de type-fields
 			Ast fct2Declaraction=ctx.getChild(4).accept(this);
 			return new FctDeclaration(idf,null,fct2Declaraction);
 
@@ -376,17 +384,20 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override public Ast visitLvalue(tigerParser.LvalueContext ctx) {
 		/*   gen_id('['expr_or']')* ('.' id ('[' expr_or ']')*)* */
 		//Idf idf=new Idf(ctx.getChild(0).toString());
-		Ast noeudCourant=new Idf(ctx.getChild(0).toString());
-		for(int i=0;i<ctx.getChildCount()-1;i++){
+		Ast noeudCourant=ctx.getChild(0).accept(this);
+		for(int i=1;i<ctx.getChildCount()-1;i++){
 			String operation=ctx.getChild(i).toString();
 			switch (operation) {
 				case "[":
-					Ast exprOr=ctx.getChild(i+1).accept(this);
-					noeudCourant=new Lvalue(noeudCourant,exprOr);
+					i++;
+					Ast exprOr=ctx.getChild(i).accept(this);
+					noeudCourant=new LvalueIndex(noeudCourant,exprOr);
+					i++;
 					break;
 				case ".":
-					Idf idf2=new Idf(ctx.getChild(i+1).toString());
-					noeudCourant=new Lvalue(noeudCourant, idf2);
+					i++;
+					Idf idf2=ctx.getChild(i).accept(this);
+					noeudCourant=new LvalueField(noeudCourant, idf2);
 					break;
 				default:
 					break;
@@ -404,14 +415,14 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override public Ast visitRecord(tigerParser.RecordContext ctx) { 
 		///   '{' id '=' expr_or (',' id '=' expr_or)*  '}'//4+4i+2-1=5+4i  4+4i+4-1=7+4i
-		Idf id=new Idf(ctx.getChild(1).toString());
+		Ast id = ctx.getChild(1).accept(this);
 		Ast exprOr=ctx.getChild(3).accept(this);
 		Record record=new Record(id, exprOr);
 		RecordList recordList=new RecordList();
 		recordList.addRecord(record);
 		
 		for (int i = 0; 4*i < ctx.getChildCount()-6; i++) {
-			recordList.addRecord(new Record(new Idf(ctx.getChild(4*i+5).toString()), ctx.getChild(4*i+7).accept(this)));
+			recordList.addRecord(new Record(ctx.getChild(4*i+5).accept(this), ctx.getChild(4*i+7).accept(this)));
 		}
 		return recordList; }
 	
