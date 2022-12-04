@@ -6,13 +6,13 @@ public class ListExpr implements Ast {
         return visitor.visit(this);
     }
 
-    public ArrayList<Ast> listAst;
+    public ArrayList<Ast> listExpr;
 
     public ListExpr(){
-        this.listAst = new ArrayList<>();
+        this.listExpr = new ArrayList<>();
     }
 
     public void addExpre(Ast Expr){
-        this.listAst.add(Expr);
+        this.listExpr.add(Expr);
     }
 }
