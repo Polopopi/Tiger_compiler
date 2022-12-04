@@ -26,6 +26,9 @@ import ast.Fct2Declaration;
 import ast.LvalueIndex;
 import ast.Record;
 import ast.RecordList;
+import ast.Type_Declaration;
+import ast.Type_Field;
+import ast.Type_Fields;
 
 
 import ast.Ast;
@@ -289,8 +292,46 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
+    // PARTIE 3 :
 
+    public String visit(Type_Declaration Type_Dec){
+        String nodeIdentifier=this.nextState();
+        
+        String type_id=Type_Dec.type_id.accept(this);
+        String type=Type_Dec.type.accept(this);
 
+        this.addNode(nodeIdentifier, "Déclaration");
+        
+        this.addTransition(nodeIdentifier, type_id);
+        this.addTransition(nodeIdentifier, type);
+        return nodeIdentifier;
+    }
+
+    public String visit(Type_Field Type_Field){
+        String nodeIdentifier=this.nextState();
+        
+        String type_id=Type_Field.type_id.accept(this);
+        String id=Type_Field.id.accept(this);
+
+        this.addNode(nodeIdentifier, "Type champs");
+        
+        this.addTransition(nodeIdentifier, type_id);
+        this.addTransition(nodeIdentifier, id);
+        return nodeIdentifier;
+    }
+        
+        public String visit(Type_Fields Type_Flds){
+        String nodeIdentifier=this.nextState();
+
+        this.addNode(nodeIdentifier, "Liste de Type champs");
+        
+        for (Ast ast:Type_Flds.listAst){
+            String astState = ast.accept(this);
+            this.addTransition(nodeIdentifier, astState);
+    
+        }
+        return nodeIdentifier;
+    }
     //////partie 4
     public String visit(VarDeclaration varDeclaration){
         String nodeIdentifier=this.nextState();
@@ -298,7 +339,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String expr=varDeclaration.expr.accept(this);
         String id=varDeclaration.idf.accept(this);
         String type=varDeclaration.type.accept(this);
-        this.addNode(nodeIdentifier, "Variable Déclaration");
+        this.addNode(nodeIdentifier, "Déclaration");
         
         this.addTransition(nodeIdentifier, id);
         this.addTransition(nodeIdentifier, type);

@@ -302,14 +302,12 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	@Override 
 	public Ast visitType_fields(tigerParser.Type_fieldsContext ctx) {
-		Ast type_field = ctx.getChild(0).accept(this);
-		if (ctx.getChildCount()>2){
-			Ast type_field2 = ctx.getChild(1).accept(this);
-			return new Type_Fields(type_field, type_field2); 
+		Type_Fields TypeF_list = new Type_Fields();
+
+		for (int i = 0; i<ctx.getChildCount();i=i+2){
+			TypeF_list.addField(ctx.getChild(i).accept(this));
 		}
-		else{
-			return type_field; 
-		}
+		return TypeF_list;
 	}
 
 	@Override 
