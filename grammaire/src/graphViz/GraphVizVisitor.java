@@ -512,10 +512,23 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(VarDeclaration varDeclaration){
         String nodeIdentifier=this.nextState();
         
+        String id=varDeclaration.idf.accept(this);
         String expr=varDeclaration.expr.accept(this);
+        this.addNode(nodeIdentifier, "var");
+        
+        this.addTransition(nodeIdentifier, id);
+        this.addTransition(nodeIdentifier, expr);
+        return nodeIdentifier;
+
+    }
+
+    public String visit(VarDeclarationType varDeclaration){
+        String nodeIdentifier=this.nextState();
+        
         String id=varDeclaration.idf.accept(this);
         String type=varDeclaration.type.accept(this);
-        this.addNode(nodeIdentifier, "Déclaration");
+        String expr=varDeclaration.expr.accept(this);
+        this.addNode(nodeIdentifier, "var");
         
         this.addTransition(nodeIdentifier, id);
         this.addTransition(nodeIdentifier, type);
@@ -530,20 +543,42 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String typeField=fctDeclaration.typeField.accept(this);
         String fct2declaration=fctDeclaration.fct2Declaration.accept(this);
 
-        this.addNode(nodeIdentifier,"Fonction Déclaration");
+        this.addNode(nodeIdentifier,"Function");
 
         this.addTransition(nodeIdentifier, id);
         this.addTransition(nodeIdentifier, typeField);
         this.addTransition(nodeIdentifier, fct2declaration);
         return nodeIdentifier;
     }
+    public String visit(ProcDeclaration procDeclaration){
+        String nodeIdentifier=this.nextState();
+        
+        String id=procDeclaration.fonctionID.accept(this);
+        String fct2declaration=procDeclaration.fct2Declaration.accept(this);
+
+        this.addNode(nodeIdentifier,"Function");
+
+        this.addTransition(nodeIdentifier, id);
+        this.addTransition(nodeIdentifier, fct2declaration);
+        return nodeIdentifier;
+    }
     public String visit(Fct2Declaration fct2Declaration){
+        String nodeIdentifier=this.nextState();
+        
+        String exprAffect=fct2Declaration.exprAffect.accept(this);
+
+        this.addNode(nodeIdentifier, "bloc");
+
+        this.addTransition(nodeIdentifier, exprAffect);
+        return nodeIdentifier;
+    }
+    public String visit(Fct2DeclarationType fct2Declaration){
         String nodeIdentifier=this.nextState();
         
         String type=fct2Declaration.typeID.accept(this);
         String exprAffect=fct2Declaration.exprAffect.accept(this);
 
-        this.addNode(nodeIdentifier, "Fonction déclaration Contenue");
+        this.addNode(nodeIdentifier, "bloc");
 
         this.addTransition(nodeIdentifier, type);
         this.addTransition(nodeIdentifier, exprAffect);

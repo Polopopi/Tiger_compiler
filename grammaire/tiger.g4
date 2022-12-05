@@ -93,11 +93,11 @@ type_declaration                   //DONE
 type                               //DONE
        : type_id                                         #TypeID
        |'{' type_fields? '}'                             #TypeField
-       | 'array' 'of' type_id                           #TypeArray
+       | 'array' 'of' type_id                            #TypeArray
        ;
 
 type_fields
-       : type_field (',' type_field)*                     
+       : type_field (',' type_field)*               
        ;
 /*
 type_fields2
@@ -177,7 +177,7 @@ INT
        ;
  
 STR    
-       : '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'?'|'!'|'-'|'_'|'.'|':'|';'|','|' '|'\\n'|'('|')')* '"'
+       : '"'('a'..'z'|'A'..'Z'|'0'..'9'|'?'|'!'|'-'|'_'|'.'|':'|';'|','|' '|'\\n'|'('|')')* '"'
 	;
  
 WS     

@@ -47,16 +47,13 @@ public interface AstVisitor<T>  {
     // Partie 4 :
     public T visit(VarDeclaration affect);
     public T visit(FctDeclaration affect);
+    public T visit(ProcDeclaration affect);
     public T visit(Fct2Declaration affect);
+    public T visit(Fct2DeclarationType affect);
     public T visit(LvalueField affect);
     public T visit(LvalueIndex affect);
     public T visit(Array affect);
     public T visit(LvalueRecord affect);
     public T visit(RecordList affect);
-
-
-
-
-
-
+    public T visit(VarDeclarationType affect);
 }

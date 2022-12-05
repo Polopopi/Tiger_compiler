@@ -6,9 +6,9 @@ public class Type_Field implements Ast {
     }
     
     public Ast type_id;
-    public Idf id;
+    public Ast id;
 
-    public Type_Field(Ast type_id, Idf id){
+    public Type_Field(Ast type_id, Ast id){
         this.type_id = type_id;
         this.id = id;
     }

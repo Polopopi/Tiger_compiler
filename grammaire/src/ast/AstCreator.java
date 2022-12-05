@@ -182,7 +182,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		Ast thenExpr = ctx.getChild(4).accept(this);
 		Ast elseExpr;
 		if (ctx.getChildCount() ==10){
-			elseExpr = ctx.getChild(9).accept(this);
+			elseExpr = ctx.getChild(8).accept(this);
 			return(new IfThenElse(condition,thenExpr,elseExpr));
 		}
 		else{
@@ -197,8 +197,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitForExpr(tigerParser.ForExprContext ctx){
-		String idString = ctx.getChild(1).toString();
-		Idf id=new Idf(idString); 
+		Ast id = ctx.getChild(1).accept(this); 
 		Ast debut = ctx.getChild(3).accept(this);
 		Ast fin = ctx.getChild(5).accept(this);
 		Ast bloc = ctx.getChild(7).accept(this);
@@ -217,7 +216,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 			return(lvalue);
 		}
 		Ast suite = ctx.getChild(1).accept(this);
-		return(new LvalueExpr(lvalue, suite));//répétition ?
+		return(new LvalueExpr(lvalue, suite));
 	}
 
 	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
@@ -340,14 +339,14 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
        ; */
 	   String operation=ctx.getChild(2).toString();
 	   if (operation.equals(":")) {
-			Ast type= getChild(3).accept(this);
+			Ast type= ctx.getChild(3).accept(this);
 			Ast exprOr=ctx.getChild(5).accept(this);
 
 			
-			return new VarDeclaration(idf,type,exprOr);
+			return new VarDeclarationType(idf,type,exprOr);
 	   }
 		Ast exprOr=ctx.getChild(3).accept(this);
-		 return new VarDeclaration(idf,null,exprOr);
+		return new VarDeclaration(idf,exprOr);
 	}
 	
 	@Override public Ast visitFctDeclaration(tigerParser.FctDeclarationContext ctx) { 
@@ -358,7 +357,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		String operation=ctx.getChild(3).toString();
 		if (operation.equals(")")) {//pas de type-fields
 			Ast fct2Declaraction=ctx.getChild(4).accept(this);
-			return new FctDeclaration(idf,null,fct2Declaraction);
+			return new ProcDeclaration(idf,fct2Declaraction);
 
 	   	}
 	  	Ast typeFields=ctx.getChild(3).accept(this);
@@ -369,14 +368,14 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {//c'est un noeud bizzare ici!!!!!!!!!!
 		/*'=' expr_affect   */
-		return new Fct2Declaration(null,ctx.getChild(1).accept(this)); 
+		return new Fct2Declaration(ctx.getChild(1).accept(this)); 
 	}
 	
 	@Override public Ast visitExprTypeAffection(tigerParser.ExprTypeAffectionContext ctx) { 
 		/*':' type_id '=' expr_affect */
-		String typeIdString=ctx.getChild(1).toString();
+		Ast typeIdString=ctx.getChild(1).accept(this);
 
-		return new Fct2Declaration(new Idf(typeIdString), ctx.getChild(3).accept(this));
+		return new Fct2DeclarationType(typeIdString, ctx.getChild(3).accept(this));
 	}
 	
 	@Override public Ast visitLvalue(tigerParser.LvalueContext ctx) {
@@ -394,7 +393,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 					break;
 				case ".":
 					i++;
-					Idf idf2=ctx.getChild(i).accept(this);
+					Ast idf2=ctx.getChild(i).accept(this);
 					noeudCourant=new LvalueField(noeudCourant, idf2);
 					break;
 				default:
@@ -415,12 +414,12 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		///   '{' id '=' expr_or (',' id '=' expr_or)*  '}'//4+4i+2-1=5+4i  4+4i+4-1=7+4i
 		Ast id = ctx.getChild(1).accept(this);
 		Ast exprOr=ctx.getChild(3).accept(this);
-		Record record=new Record(id, exprOr);
+		LvalueRecord record=new LvalueRecord(id, exprOr);
 		RecordList recordList=new RecordList();
 		recordList.addRecord(record);
 		
 		for (int i = 0; 4*i < ctx.getChildCount()-6; i++) {
-			recordList.addRecord(new Record(ctx.getChild(4*i+5).accept(this), ctx.getChild(4*i+7).accept(this)));
+			recordList.addRecord(new LvalueRecord(ctx.getChild(4*i+5).accept(this), ctx.getChild(4*i+7).accept(this)));
 		}
 		return recordList; }
 	
