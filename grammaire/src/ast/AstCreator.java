@@ -424,8 +424,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 	
 	@Override public Ast visitRecord(tigerParser.RecordContext ctx) { 
-		if (ctx.getChildCount() == 1){
-			return ctx.getChild(0).accept(this);
+		if (ctx.getChildCount() == 4){
+			Ast id = ctx.getChild(1).accept(this);
+			Ast exprOr=ctx.getChild(3).accept(this);
+			return new LvalueRecord(id, exprOr);
 		}
 
 		///   '{' id '=' expr_or (',' id '=' expr_or)*  '}'//4+4i+2-1=5+4i  4+4i+4-1=7+4i
