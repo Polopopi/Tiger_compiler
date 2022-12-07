@@ -311,22 +311,22 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	@Override 
 	public Ast visitTypeArray(tigerParser.TypeArrayContext ctx) {
-		return ctx.getChild(2).accept(this); 
+		Ast typeArray = ctx.getChild(2).accept(this); 
+		return(new TypeArray(typeArray));
 	}
 
 	@Override 
 	public Ast visitTypeField(tigerParser.TypeFieldContext ctx) {
-		String operation=ctx.getChild(1).toString();
-
-		if (operation!="}") {
-			return ctx.getChild(1).accept(this);
-		} 
-		return null;
+		if (ctx.getChildCount() == 2){
+			return(new TypeRecordVoid());
+		}
+		Ast field = ctx.getChild(1).accept(this);
+		return(new TypeRecord(field));
 	}
 
 	@Override 
 	public Ast visitTypeID(tigerParser.TypeIDContext ctx) {
-		return ctx.getChild(0).accept(this); 
+		return new TypeType(ctx.getChild(0).accept(this)); 
 	}
 	
 	///////////////////////////////////////////////////////////////////////

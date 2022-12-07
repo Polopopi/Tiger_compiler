@@ -496,7 +496,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         return nodeIdentifier;
     }
         
-        public String visit(Type_Fields Type_Flds){
+    public String visit(Type_Fields Type_Flds){
         String nodeIdentifier=this.nextState();
 
         this.addNode(nodeIdentifier, "Liste de Type champs");
@@ -508,6 +508,51 @@ public class GraphVizVisitor implements AstVisitor<String> {
         }
         return nodeIdentifier;
     }
+
+    public String visit(TypeType typeType){
+        String nodeIdentifier=this.nextState();
+
+        String id = typeType.typeCopie.accept(this);
+
+        this.addNode(nodeIdentifier, "typeID");
+        this.addTransition(nodeIdentifier, id);
+        
+
+        return nodeIdentifier;
+    }
+
+    public String visit(TypeArray typeArray){
+        String nodeIdentifier=this.nextState();
+
+        String array = typeArray.typeArray.accept(this);
+
+        this.addNode(nodeIdentifier, "array of");
+        this.addTransition(nodeIdentifier, array);
+        
+
+        return nodeIdentifier;
+    }
+
+    public String visit(TypeRecord typeRecord){
+        String nodeIdentifier=this.nextState();
+
+        String record = typeRecord.typeRecord.accept(this);
+
+        this.addNode(nodeIdentifier, "{ }");
+        this.addTransition(nodeIdentifier, record);
+        
+
+        return nodeIdentifier;
+    }
+
+    public String visit(TypeRecordVoid typeRecord){
+        String nodeIdentifier=this.nextState();
+
+        this.addNode(nodeIdentifier, "{ }");
+        
+        return nodeIdentifier;
+    }
+
     //////partie 4
     public String visit(VarDeclaration varDeclaration){
         String nodeIdentifier=this.nextState();
