@@ -371,6 +371,20 @@ public class GraphVizVisitor implements AstVisitor<String> {
     }
 
     @Override
+    public String visit(LvalueExprTypeID lvalueExpr){
+        String nodeIdentifier = this.nextState();
+
+        String lvalue = lvalueExpr.lvalue.accept(this);
+        String suite = lvalueExpr.suite.accept(this);
+        
+        this.addNode(nodeIdentifier,"lvalueExprTypeID");
+        this.addTransition(nodeIdentifier, lvalue);
+        this.addTransition(nodeIdentifier, suite);
+
+        return nodeIdentifier;
+    }
+
+    @Override
     public String visit(BreakExpr breakExpr){
         String nodeIdentifier = this.nextState();
 

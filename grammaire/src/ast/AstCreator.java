@@ -215,6 +215,13 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		if (ctx.getChildCount() == 1){
 			return(lvalue);
 		}
+		String opearation = ctx.getChild(1).toString();
+		if (opearation.equals("(") ||opearation.equals("[") ){ 
+
+			Ast suite = ctx.getChild(1).accept(this);
+			return(new LvalueExprTypeID(lvalue, suite));
+
+		}
 		Ast suite = ctx.getChild(1).accept(this);
 		return(new LvalueExpr(lvalue, suite));
 	}
@@ -224,7 +231,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitIntExpr(tigerParser.IntExprContext ctx){
-		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString()))); // !!!
+		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString()))); 
 	}
 
 	@Override public Ast visitStrExpr(tigerParser.StrExprContext ctx){
