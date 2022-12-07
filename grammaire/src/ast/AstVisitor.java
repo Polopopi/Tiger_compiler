@@ -3,6 +3,7 @@ package ast;
 public interface AstVisitor<T>  {
 
     public T visit(Idf affect);
+    public T visit(IdfType affect);
     public T visit(InstrList affect);
     public T visit(Print affect);
     public T visit(Program affect);
