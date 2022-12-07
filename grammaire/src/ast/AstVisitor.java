@@ -42,7 +42,7 @@ public interface AstVisitor<T>  {
     public T visit(Type_Declaration affect);
     public T visit(Type_Fields affect);
     public T visit(Type_Field affect);
-
+    
     // Partie 4 :
     public T visit(VarDeclaration affect);
     public T visit(FctDeclaration affect);
