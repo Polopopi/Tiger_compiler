@@ -55,9 +55,9 @@ public class Main {
             }
             panel.add(viewer);
             frame.add(panel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setVisible(true);
+            //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            //frame.pack();
+            //frame.setVisible(true);
 
             // Visiteur de création de l'AST + création de l'AST
             AstCreator creator = new AstCreator();

@@ -146,7 +146,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 		Ast tempNode = ctx.getChild(0).accept(this);
 
-        for (int i=0; 2*(i+1)<ctx.getChildCount()-1; i++){
+        for (int i=0; 2*(i+1)<ctx.getChildCount(); i++){
             
             String operation = ctx.getChild(2*i+1).toString();
             Ast right = ctx.getChild(2*(i+1)).accept(this);
@@ -259,6 +259,12 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		}
 		return declaration_list;
 	}	
+
+
+	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
+		return(ctx.getChild(1).accept(this));
+	}
+
 
 	@Override
 	public Ast visitSeq_expr(tigerParser.Seq_exprContext ctx){
