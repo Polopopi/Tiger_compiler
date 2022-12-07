@@ -717,6 +717,17 @@ public class GraphVizVisitor implements AstVisitor<String> {
         return nodeIdentifier;
 
     }
+/*
+    @Override
+    public String visit(IdfType idf) {
+
+        String nodeIdentifier = this.nextState();
+
+        this.addNode(nodeIdentifier, idf.name);
+
+        return nodeIdentifier;
+
+    }*/
     @Override
     public String visit(InstrList instrList) {
         

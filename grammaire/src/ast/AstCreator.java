@@ -260,6 +260,11 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		return declaration_list;
 	}	
 
+	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
+		return(ctx.getChild(1).accept(this));
+	}
+
+
 	@Override
 	public Ast visitSeq_expr(tigerParser.Seq_exprContext ctx){
 		if (ctx.getChildCount() == 1){
@@ -386,7 +391,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	}
 	
-	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {//c'est un noeud bizzare ici!!!!!!!!!!
+	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {
 		/*'=' expr_affect   */
 		return new Fct2Declaration(ctx.getChild(1).accept(this)); 
 	}
