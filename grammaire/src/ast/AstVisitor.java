@@ -31,6 +31,7 @@ public interface AstVisitor<T>  {
     public T visit(For affect);
     public T visit(While affect);
     public T visit(LvalueExpr affect);
+    public T visit(LvalueExprTypeID affect);
     public T visit(BreakExpr affect);
     public T visit(NilExpr affect);
     public T visit(IntExpr affect);
