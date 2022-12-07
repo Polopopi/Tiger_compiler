@@ -219,10 +219,6 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		return(new LvalueExpr(lvalue, suite));
 	}
 
-	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
-		return(ctx.getChild(1).accept(this));
-	}
-
 	@Override public Ast visitIntExpr(tigerParser.IntExprContext ctx){
 		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString()))); // !!!
 	}
@@ -245,6 +241,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override 
 	public Ast visitDeclaration_list(tigerParser.Declaration_listContext ctx) {
+		if (ctx.getChildCount() == 1){
+			return ctx.getChild(0).accept(this);
+		}
+
 		DeclarationList declaration_list = new DeclarationList();
 
 		for (int i = 0; i<ctx.getChildCount();i++){
@@ -255,6 +255,11 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	@Override
 	public Ast visitSeq_expr(tigerParser.Seq_exprContext ctx){
+		if (ctx.getChildCount() == 1){
+			return ctx.getChild(0).accept(this);
+		}
+
+
 		SeqExpr expr_list = new SeqExpr();
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){
@@ -267,6 +272,11 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override
 	public Ast visitList_expr(tigerParser.List_exprContext ctx){
 		/* (expr_or (',' expr_or)*)? */
+		if (ctx.getChildCount() == 1){
+			return ctx.getChild(0).accept(this);
+		}
+
+
 		ListExpr expr_list = new ListExpr();
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){
@@ -301,6 +311,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 
 	@Override 
 	public Ast visitType_fields(tigerParser.Type_fieldsContext ctx) {
+		if (ctx.getChildCount() == 1){
+			return ctx.getChild(0).accept(this);
+		}
+
 		Type_Fields TypeF_list = new Type_Fields();
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){
@@ -411,6 +425,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 	
 	@Override public Ast visitRecord(tigerParser.RecordContext ctx) { 
+		if (ctx.getChildCount() == 1){
+			return ctx.getChild(0).accept(this);
+		}
+
 		///   '{' id '=' expr_or (',' id '=' expr_or)*  '}'//4+4i+2-1=5+4i  4+4i+4-1=7+4i
 		Ast id = ctx.getChild(1).accept(this);
 		Ast exprOr=ctx.getChild(3).accept(this);
