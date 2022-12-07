@@ -182,7 +182,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		Ast thenExpr = ctx.getChild(4).accept(this);
 		Ast elseExpr;
 		if (ctx.getChildCount() ==10){
-			elseExpr = ctx.getChild(9).accept(this);
+			elseExpr = ctx.getChild(8).accept(this);
 			return(new IfThenElse(condition,thenExpr,elseExpr));
 		}
 		else{
@@ -197,8 +197,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitForExpr(tigerParser.ForExprContext ctx){
-		String idString = ctx.getChild(1).toString();
-		Idf id=new Idf(idString); 
+		Ast id = ctx.getChild(1).accept(this); 
 		Ast debut = ctx.getChild(3).accept(this);
 		Ast fin = ctx.getChild(5).accept(this);
 		Ast bloc = ctx.getChild(7).accept(this);
@@ -217,7 +216,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 			return(lvalue);
 		}
 		Ast suite = ctx.getChild(1).accept(this);
-		return(new LvalueExpr(lvalue, suite));//répétition ?
+		return(new LvalueExpr(lvalue, suite));
 	}
 
 	@Override public Ast visitSeqExpr(tigerParser.SeqExprContext ctx){
@@ -225,7 +224,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitIntExpr(tigerParser.IntExprContext ctx){
-		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString())));
+		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString()))); // !!!
 	}
 
 	@Override public Ast visitStrExpr(tigerParser.StrExprContext ctx){
@@ -246,7 +245,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override 
 	public Ast visitDeclaration_list(tigerParser.Declaration_listContext ctx) {
-		Declaration_list declaration_list = new Declaration_list();
+		DeclarationList declaration_list = new DeclarationList();
 
 		for (int i = 0; i<ctx.getChildCount();i++){
 			declaration_list.addDecla(ctx.getChild(i).accept(this));
@@ -254,16 +253,26 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		return declaration_list;
 	}	
 
-// manque seq_liste
+	@Override
+	public Ast visitSeq_expr(tigerParser.Seq_exprContext ctx){
+		SeqExpr expr_list = new SeqExpr();
+
+		for (int i = 0; i<ctx.getChildCount();i=i+2){
+			expr_list.addExpre(ctx.getChild(i).accept(this));
+		}
+		return expr_list;
+	}
+
+
 	@Override
 	public Ast visitList_expr(tigerParser.List_exprContext ctx){
 		/* (expr_or (',' expr_or)*)? */
-		Declaration_list declaration_list = new Declaration_list();
+		ListExpr expr_list = new ListExpr();
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){
-			declaration_list.addDecla(ctx.getChild(i).accept(this));
+			expr_list.addExpre(ctx.getChild(i).accept(this));
 		}
-		return declaration_list;
+		return expr_list;
 	}
 	///////////////////////////////////////////////////////////////////////
 
@@ -284,75 +293,71 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override 
 	public Ast visitType_field(tigerParser.Type_fieldContext ctx) {
 		Ast type_id = ctx.getChild(2).accept(this);
-		String id = ctx.getChild(0).toString();
+		Ast id = ctx.getChild(0).accept(this);
 
 		
-		return new Type_Field(type_id, new Idf(id)); 
+		return new Type_Field(type_id, id); 
 	}
 
 	@Override 
 	public Ast visitType_fields(tigerParser.Type_fieldsContext ctx) {
-		Ast type_field = ctx.getChild(0).accept(this);
-		if (ctx.getChildCount()>2){
-			Ast type_field2 = ctx.getChild(1).accept(this);
-			return new Type_Fields(type_field, type_field2); 
+		Type_Fields TypeF_list = new Type_Fields();
+
+		for (int i = 0; i<ctx.getChildCount();i=i+2){
+			TypeF_list.addField(ctx.getChild(i).accept(this));
 		}
-		else{
-			return type_field; 
-		}
+		return TypeF_list;
 	}
 
 	@Override 
 	public Ast visitTypeArray(tigerParser.TypeArrayContext ctx) {
-		return ctx.getChild(2).accept(this); 
+		Ast typeArray = ctx.getChild(2).accept(this); 
+		return(new TypeArray(typeArray));
 	}
 
 	@Override 
 	public Ast visitTypeField(tigerParser.TypeFieldContext ctx) {
-		String operation=ctx.getChild(1).toString();
-
-		if (operation!="}") {
-			return ctx.getChild(1).accept(this);
-		} 
-		return null;
+		if (ctx.getChildCount() == 2){
+			return(new TypeRecordVoid());
+		}
+		Ast field = ctx.getChild(1).accept(this);
+		return(new TypeRecord(field));
 	}
 
 	@Override 
 	public Ast visitTypeID(tigerParser.TypeIDContext ctx) {
-		return ctx.getChild(0).accept(this); 
+		return new TypeType(ctx.getChild(0).accept(this)); 
 	}
 	
 	///////////////////////////////////////////////////////////////////////
 
 	@Override public Ast visitVarDeclaration(tigerParser.VarDeclarationContext ctx) {
-
-		String idString=ctx.getChild(1).toString();
-		Idf idf=new Idf(idString);
+		Ast idf=ctx.getChild(1).accept(this);
 
 		/*varDeclaration
        : 'var' id (':' type_id)? ':=' expr_or   
        ; */
 	   String operation=ctx.getChild(2).toString();
-	   if (operation==":") {
-			String typeString=ctx.getChild(3).toString();
+	   if (operation.equals(":")) {
+			Ast type= ctx.getChild(3).accept(this);
 			Ast exprOr=ctx.getChild(5).accept(this);
 
-			Idf type=new Idf(typeString);
-			return new VarDeclaration(idf,type,exprOr);
+			
+			return new VarDeclarationType(idf,type,exprOr);
 	   }
 		Ast exprOr=ctx.getChild(3).accept(this);
-		 return new VarDeclaration(idf,null,exprOr);
+		return new VarDeclaration(idf,exprOr);
 	}
 	
 	@Override public Ast visitFctDeclaration(tigerParser.FctDeclarationContext ctx) { 
 		/*fctDeclaration    
        : 'function' id '(' type_fields? ')'  fct2Declaration
        ; */
-		Idf idf=new Idf(ctx.getChild(1).toString());
+		Ast idf= ctx.getChild(1).accept(this);
 		String operation=ctx.getChild(3).toString();
-		if (operation==")") {//pas de type-fields
+		if (operation.equals(")")) {//pas de type-fields
 			Ast fct2Declaraction=ctx.getChild(4).accept(this);
-			return new FctDeclaration(idf,null,fct2Declaraction);
+			return new ProcDeclaration(idf,fct2Declaraction);
 
 	   	}
 	  	Ast typeFields=ctx.getChild(3).accept(this);
@@ -363,30 +368,33 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {//c'est un noeud bizzare ici!!!!!!!!!!
 		/*'=' expr_affect   */
-		return new Fct2Declaration(null,ctx.getChild(1).accept(this)); 
+		return new Fct2Declaration(ctx.getChild(1).accept(this)); 
 	}
 	
 	@Override public Ast visitExprTypeAffection(tigerParser.ExprTypeAffectionContext ctx) { 
 		/*':' type_id '=' expr_affect */
-		String typeIdString=ctx.getChild(1).toString();
+		Ast typeIdString=ctx.getChild(1).accept(this);
 
-		return new Fct2Declaration(new Idf(typeIdString), ctx.getChild(3).accept(this));
+		return new Fct2DeclarationType(typeIdString, ctx.getChild(3).accept(this));
 	}
 	
 	@Override public Ast visitLvalue(tigerParser.LvalueContext ctx) {
 		/*   gen_id('['expr_or']')* ('.' id ('[' expr_or ']')*)* */
 		//Idf idf=new Idf(ctx.getChild(0).toString());
-		Ast noeudCourant=new Idf(ctx.getChild(0).toString());
-		for(int i=0;i<ctx.getChildCount()-1;i++){
+		Ast noeudCourant=ctx.getChild(0).accept(this);
+		for(int i=1;i<ctx.getChildCount()-1;i++){
 			String operation=ctx.getChild(i).toString();
 			switch (operation) {
 				case "[":
-					Ast exprOr=ctx.getChild(i+1).accept(this);
-					noeudCourant=new Lvalue(noeudCourant,exprOr);
+					i++;
+					Ast exprOr=ctx.getChild(i).accept(this);
+					noeudCourant=new LvalueIndex(noeudCourant,exprOr);
+					i++;
 					break;
 				case ".":
-					Idf idf2=new Idf(ctx.getChild(i+1).toString());
-					noeudCourant=new Lvalue(noeudCourant, idf2);
+					i++;
+					Ast idf2=ctx.getChild(i).accept(this);
+					noeudCourant=new LvalueField(noeudCourant, idf2);
 					break;
 				default:
 					break;
@@ -404,14 +412,14 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override public Ast visitRecord(tigerParser.RecordContext ctx) { 
 		///   '{' id '=' expr_or (',' id '=' expr_or)*  '}'//4+4i+2-1=5+4i  4+4i+4-1=7+4i
-		Idf id=new Idf(ctx.getChild(1).toString());
+		Ast id = ctx.getChild(1).accept(this);
 		Ast exprOr=ctx.getChild(3).accept(this);
-		Record record=new Record(id, exprOr);
+		LvalueRecord record=new LvalueRecord(id, exprOr);
 		RecordList recordList=new RecordList();
 		recordList.addRecord(record);
 		
 		for (int i = 0; 4*i < ctx.getChildCount()-6; i++) {
-			recordList.addRecord(new Record(new Idf(ctx.getChild(4*i+5).toString()), ctx.getChild(4*i+7).accept(this)));
+			recordList.addRecord(new LvalueRecord(ctx.getChild(4*i+5).accept(this), ctx.getChild(4*i+7).accept(this)));
 		}
 		return recordList; }
 	

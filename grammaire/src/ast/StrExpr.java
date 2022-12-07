@@ -8,6 +8,6 @@ public class StrExpr implements Ast {
     public String value;
 
     public StrExpr(String value){
-        this.value = value;
+        this.value = value.replace("\"","");
     }
 }
