@@ -631,12 +631,13 @@ public class GraphVizVisitor implements AstVisitor<String> {
     }
     public String visit(LvalueIndex lvalue){
         String nodeIdentifier=this.nextState();
-        String exprOr=lvalue.exprOr.accept(this);
         String left=lvalue.left.accept(this);
+        String exprOr=lvalue.exprOr.accept(this);
 
         this.addNode(nodeIdentifier, "[]");
-        this.addTransition(nodeIdentifier, left);
+        
         this.addTransition(nodeIdentifier, exprOr);
+        this.addTransition(nodeIdentifier, left);
         return nodeIdentifier;
     }
     public String visit(LvalueField lvalue){

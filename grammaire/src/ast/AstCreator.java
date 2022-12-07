@@ -342,7 +342,6 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 			Ast type= ctx.getChild(3).accept(this);
 			Ast exprOr=ctx.getChild(5).accept(this);
 
-			
 			return new VarDeclarationType(idf,type,exprOr);
 	   }
 		Ast exprOr=ctx.getChild(3).accept(this);
