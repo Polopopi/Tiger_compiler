@@ -224,7 +224,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	}
 
 	@Override public Ast visitIntExpr(tigerParser.IntExprContext ctx){
-		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString())));
+		return(new IntExpr(Integer.parseInt(ctx.getChild(0).toString()))); // !!!
 	}
 
 	@Override public Ast visitStrExpr(tigerParser.StrExprContext ctx){
@@ -293,10 +293,10 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override 
 	public Ast visitType_field(tigerParser.Type_fieldContext ctx) {
 		Ast type_id = ctx.getChild(2).accept(this);
-		String id = ctx.getChild(0).toString();
+		Ast id = ctx.getChild(0).accept(this);
 
 		
-		return new Type_Field(type_id, new Idf(id)); 
+		return new Type_Field(type_id, id); 
 	}
 
 	@Override 
