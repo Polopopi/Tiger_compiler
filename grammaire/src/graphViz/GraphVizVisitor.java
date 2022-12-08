@@ -355,7 +355,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
-
+/* 
     @Override
     public String visit(LvalueExpr lvalueExpr){
         String nodeIdentifier = this.nextState();
@@ -369,7 +369,8 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
-
+*/
+/*
     @Override
     public String visit(LvalueExprTypeID lvalueExpr){
         String nodeIdentifier = this.nextState();
@@ -383,7 +384,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
     }
-
+*/
     @Override
     public String visit(BreakExpr breakExpr){
         String nodeIdentifier = this.nextState();
@@ -664,12 +665,27 @@ public class GraphVizVisitor implements AstVisitor<String> {
         this.addTransition(nodeIdentifier, id);
         return nodeIdentifier;
     }
+
+    public String visit(Call call){
+        String nodeIdentifier=this.nextState();
+        String id = call.id.accept(this);
+        String listExpr=call.listExpr.accept(this);
+
+        this.addNode(nodeIdentifier, "Call");
+        this.addTransition(nodeIdentifier, id);
+        this.addTransition(nodeIdentifier, listExpr);
+
+        return(nodeIdentifier);
+    }
+
     public String visit(Array array){
         String nodeIdentifier=this.nextState();
+        String id = array.id.accept(this);
         String exprOr1=array.exprOr1.accept(this);
         String exprOr2=array.exprOr2.accept(this);
         
         this.addNode(nodeIdentifier, "Array");
+        this.addTransition(nodeIdentifier, id);
         this.addTransition(nodeIdentifier, exprOr1);
         this.addTransition(nodeIdentifier, exprOr2);
 
@@ -679,16 +695,44 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String nodeIdentifier=this.nextState();
 
         String id=record.id.accept(this);
-        String exprOr=record.exprOr.accept(this);
+        String fieldList=record.fieldList.accept(this);
 
         this.addNode(nodeIdentifier, "Record");
 
         this.addTransition(nodeIdentifier, id);
-        this.addTransition(nodeIdentifier, exprOr);
+        this.addTransition(nodeIdentifier, fieldList);
 
         return nodeIdentifier;
     }
-    public String visit(RecordList recordList){
+
+    public String visit(Field field){
+        String nodeIdentifier=this.nextState();
+
+        String id=field.id.accept(this);
+        String expr=field.expr.accept(this);
+
+        this.addNode(nodeIdentifier, "=");
+
+        this.addTransition(nodeIdentifier, id);
+        this.addTransition(nodeIdentifier, expr);
+
+        return nodeIdentifier;
+    }
+
+    public String visit(FieldList fieldList){
+        String nodeIdentifier=this.nextState();
+
+        this.addNode(nodeIdentifier, "FieldList");
+
+        for (Ast ast : fieldList.listAst){
+            String field = ast.accept(this);
+            this.addTransition(nodeIdentifier, field);
+
+        }
+
+        return nodeIdentifier;
+    }
+    /*public String visit(RecordList recordList){
         String nodeIdentifier=this.nextState();
 
         this.addNode(nodeIdentifier, "RecordList");
@@ -700,7 +744,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         }
         return nodeIdentifier;
 
-    }
+    }*/
 
 
     ////////////////////////////////////////////////////////////
