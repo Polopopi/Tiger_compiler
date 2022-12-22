@@ -12,7 +12,7 @@ public class Tds {
     private ArrayList<Entry> typeEntries;
 
     public Tds(int numeroImbrication, int idPrec){
-        this.numeroImbrication=numeroImbrication;
+        this.numeroImbrication = numeroImbrication;
         this.identifiantTablePrecedente = idPrec;
         this.identifiant = idGen;
         idGen ++;
