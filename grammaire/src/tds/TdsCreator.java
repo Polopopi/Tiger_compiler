@@ -131,21 +131,42 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     // Partie 2 :
-    public String visit(MinusExpr affect){
+    public String visit(MinusExpr minusExpr){
+        String type = minusExpr.expr.accept(this);
 
+        if (!type.equals("int")){
+            //ERREUR TYPE
+        }
 
+        return "int";
     };
 
 
-    public String visit(IfThen affect){
+    public String visit(IfThen ifThen){
+        String condType = ifThen.condition.accept(this);
+        //String blocType = ifThen.thenBlock.accept(this);
 
+        if (!condType.equals("int")){
+            //ERREUR TYPE
+        }
 
+        return "";
     };
 
 
-    public String visit(IfThenElse affect){
+    public String visit(IfThenElse ifThenElse){
+        String condType = ifThenElse.condition.accept(this);
+        String thenBlocType = ifThenElse.thenBlock.accept(this);
+        String elseBlocType = ifThenElse.elseBlock.accept(this);
 
+        if (!condType.equals("int")){
+            //ERREUR TYPE
+        }
+        if (!thenBlocType.equals(elseBlocType)){
+            //ERREUR TYPE
+        }
 
+        return "";
     };
 
 
@@ -161,9 +182,18 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(While affect){
+    public String visit(While whileNode){
+        String condType = whileNode.condition.accept(this);
+        String blocType = whileNode.bloc.accept(this);
 
+        if (!condType.equals("int")){
+            //ERREUR TYPE
+        }
+        if (!blocType.equals("")){
+            //ERREUR TYPE
+        }
 
+        return "";
     };
 
 
