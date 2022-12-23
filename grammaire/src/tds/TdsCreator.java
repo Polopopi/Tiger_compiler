@@ -39,7 +39,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = or.left.accept(this);
         String rightType = or.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -51,7 +51,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = and.left.accept(this);
         String rightType = and.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -63,7 +63,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = equal.left.accept(this);
         String rightType = equal.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -75,7 +75,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = diff.left.accept(this);
         String rightType = diff.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -87,7 +87,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = inf.left.accept(this);
         String rightType = inf.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -99,7 +99,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = sup.left.accept(this);
         String rightType = sup.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -111,7 +111,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = infEqual.left.accept(this);
         String rightType = infEqual.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -123,7 +123,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = supEqual.left.accept(this);
         String rightType = supEqual.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -135,7 +135,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = plus.left.accept(this);
         String rightType = plus.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -147,7 +147,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = minus.left.accept(this);
         String rightType = minus.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -159,7 +159,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = mult.left.accept(this);
         String rightType = mult.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
@@ -171,7 +171,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = divide.left.accept(this);
         String rightType = divide.right.accept(this);
 
-        if (!leftType.equals(rightType)){
+        if (!(leftType.equals("int") && rightType.equals("int"))){
             //ERREUR TYPE
         }
 
