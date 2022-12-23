@@ -51,4 +51,6 @@ public class Tds {
         }
         return("");
     }
+
+    //public String typeOfFuncParam(String symbol)
 }

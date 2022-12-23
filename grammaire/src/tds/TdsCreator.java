@@ -3,6 +3,8 @@ package tds;
 import ast.*;
 
 public class TdsCreator implements AstVisitor<String> {
+
+    private int idCurrentTds;
     
     public String visit(Idf affect){
 
