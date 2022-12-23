@@ -34,96 +34,144 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Or or){
-        or.left.accept(this);
-        or.right.accept(this);
+        String leftType = or.left.accept(this);
+        String rightType = or.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(And and){
-        and.left.accept(this);
-        and.right.accept(this);
+        String leftType = and.left.accept(this);
+        String rightType = and.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Equal equal){
-        equal.left.accept(this);
-        equal.right.accept(this);
+        String leftType = equal.left.accept(this);
+        String rightType = equal.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Diff diff){
-        diff.left.accept(this);
-        diff.right.accept(this);
+        String leftType = diff.left.accept(this);
+        String rightType = diff.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Inf inf){
-        inf.left.accept(this);
-        inf.right.accept(this);
+        String leftType = inf.left.accept(this);
+        String rightType = inf.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Sup sup){
-        sup.left.accept(this);
-        sup.right.accept(this);
+        String leftType = sup.left.accept(this);
+        String rightType = sup.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(InfEqual infEqual){
-        infEqual.left.accept(this);
-        infEqual.right.accept(this);
+        String leftType = infEqual.left.accept(this);
+        String rightType = infEqual.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(SupEqual supEqual){
-        supEqual.left.accept(this);
-        supEqual.right.accept(this);
+        String leftType = supEqual.left.accept(this);
+        String rightType = supEqual.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Plus plus){
-        plus.left.accept(this);
-        plus.right.accept(this);
+        String leftType = plus.left.accept(this);
+        String rightType = plus.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Minus minus){
-        minus.left.accept(this);
-        minus.right.accept(this);
+        String leftType = minus.left.accept(this);
+        String rightType = minus.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Mult mult){
-        mult.left.accept(this);
-        mult.right.accept(this);
+        String leftType = mult.left.accept(this);
+        String rightType = mult.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
 
 
     public String visit(Divide divide){
-        divide.left.accept(this);
-        divide.right.accept(this);
+        String leftType = divide.left.accept(this);
+        String rightType = divide.right.accept(this);
+
+        if (!leftType.equals(rightType)){
+            //ERREUR TYPE
+        }
 
         return "int";
     };
