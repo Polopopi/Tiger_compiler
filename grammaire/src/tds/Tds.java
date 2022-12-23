@@ -8,8 +8,8 @@ public class Tds {
     private int identifiantTablePrecedente;
     private static int idGen = 0;
 
-    private ArrayList<Entry> varFuncEntries;
-    private ArrayList<Entry> typeEntries;
+    private ArrayList<VarFuncEntry> varFuncEntries;
+    private ArrayList<TypeEntry> typeEntries;
 
     public Tds(int numeroImbrication, int idPrec){
         this.numeroImbrication=numeroImbrication;
@@ -18,10 +18,37 @@ public class Tds {
         idGen ++;
     }
 
-    public void addVarFunc(Entry entry){
+    public void addVarFunc(VarFuncEntry entry){
         varFuncEntries.add(entry);
     }
-    public void addType(Entry entry){
+    public void addType(TypeEntry entry){
         typeEntries.add(entry);
+    }
+
+    public boolean existVarFunc(String symbol){
+        for (VarFuncEntry entry : varFuncEntries){
+            if (entry.getSymbol().equals(symbol)){
+                return(true);
+            }
+        }
+        return(false);
+    }
+
+    public boolean existType(String symbol){
+        for(TypeEntry entry : typeEntries){
+            if (entry.getSymbol().equals(symbol)){
+                return(true);
+            }
+        }
+        return(false);
+    }
+
+    public String typeOfVarFunc(String symbol){
+        for (VarFuncEntry entry : varFuncEntries){
+            if (entry.getSymbol().equals(symbol)){
+                return(entry.getSymbol());
+            }
+        }
+        return("");
     }
 }

@@ -1,5 +1,17 @@
 package tds;
 
-public class TypeEntry extends Entry{
-    
+import java.util.ArrayList;
+
+public class RecordEntry extends TypeEntry{
+    private ArrayList<Field> fields;
+
+
+    public RecordEntry(String symbol, int size){
+        super(symbol, size);
+    }
+
+    public void addField(Field field){
+        this.fields.add(field);
+    }
+
 }
