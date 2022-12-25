@@ -26,15 +26,15 @@ public interface AstVisitor<T>  {
     public T visit(MinusExpr affect); // FAIT
     public T visit(IfThen affect); // FAIT
     public T visit(IfThenElse affect); // FAIT
-    public T visit(Let affect); // SEVEN7
+    public T visit(Let affect); // FAIT SEVEN7
     public T visit(For affect); // ADIRuiEN
     public T visit(While affect); // FAIT
     //public T visit(LvalueExpr affect);
     //public T visit(LvalueExprTypeID affect);
     public T visit(BreakExpr affect); // S7EVEN
     public T visit(NilExpr affect); // ADIRuiEN
-    public T visit(IntExpr affect); // S7EVEN
-    public T visit(StrExpr affect);
+    public T visit(IntExpr affect); // FAIT S7EVEN
+    public T visit(StrExpr affect); // FAIT S7EVEN
 
     public T visit(SeqExpr affect); // FAIT
     public T visit (DeclarationList affect); // ADIrUIeNH

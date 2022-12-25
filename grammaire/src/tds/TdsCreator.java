@@ -220,9 +220,12 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Let affect){
+    public String visit(Let let){
+        let.declarationList.accept(this);
 
+        String seqExprType = let.seqExpr.accept(this);
 
+        return seqExprType;
     };
 
 
@@ -253,7 +256,7 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(BreakExpr affect){
 
-
+        return "";
     };
 
 
@@ -264,19 +267,24 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(IntExpr affect){
-
-
+        return "int";
     };
 
 
     public String visit(StrExpr affect){
-
-
+        return "string";
     };
 
 
     public String visit(SeqExpr seqExpr){
-        String lastType = seqExpr.listExpr.get(seqExpr.listExpr.size() - 1).accept(this);
+        String lastType;
+
+        if (!seqExpr.listExpr.isEmpty()){
+            lastType = seqExpr.listExpr.get(seqExpr.listExpr.size() - 1).accept(this);
+        }
+        else{
+            lastType = "";
+        }
 
         return lastType;
     };
