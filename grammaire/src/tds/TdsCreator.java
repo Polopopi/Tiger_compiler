@@ -1,10 +1,13 @@
 package tds;
 
+import java.util.ArrayList;
+
 import ast.*;
 
 public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
+    private ArrayList<String> path;
     
     public String visit(Idf affect){
 
@@ -254,7 +257,10 @@ public class TdsCreator implements AstVisitor<String> {
     //public String visit(LvalueExprTypeID affect);
 
 
-    public String visit(BreakExpr affect){
+    public String visit(BreakExpr breakExpr){
+        if (!(path.contains("while") && path.contains("for"))){
+            //ERREUR
+        }
 
         return "";
     };
