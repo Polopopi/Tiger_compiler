@@ -7,7 +7,6 @@ import ast.*;
 public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
-    private ArrayList<String> path;
     
     public String visit(Idf affect){
 
@@ -258,10 +257,14 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(BreakExpr breakExpr){
-        if (!(path.contains("while") && path.contains("for"))){
-            //ERREUR
+        Ast current = breakExpr;
+        while (current.parent != null){
+            if (current instanceof While | current instanceof For){
+                return "";
+            }
+            current = current.parent;
         }
-
+        //ERREUR
         return "";
     };
 

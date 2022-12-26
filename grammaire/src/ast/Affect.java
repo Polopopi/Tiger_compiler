@@ -1,6 +1,6 @@
 package ast;
 
-public class Affect implements Ast{
+public class Affect extends Ast{
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -9,7 +9,7 @@ public class Affect implements Ast{
 
     public Ast idf;
     public Ast expr;
-
+    
     public Affect(Ast idf, Ast expr){
         this.idf = idf;
         this.expr = expr;

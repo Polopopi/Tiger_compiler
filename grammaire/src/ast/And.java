@@ -1,6 +1,6 @@
 package ast;
 
-public class And implements Ast {
+public class And extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -9,7 +9,7 @@ public class And implements Ast {
 
     public Ast left;
     public Ast right;
-
+    
     /* expr_test & expr_test */
     public And(Ast left, Ast right){
         this.left = left;

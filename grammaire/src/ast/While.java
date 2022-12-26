@@ -1,6 +1,6 @@
 package ast;
 
-public class While implements Ast {
+public class While extends Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

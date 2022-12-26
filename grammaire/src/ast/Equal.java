@@ -1,6 +1,6 @@
 package ast;
 
-public class Equal implements Ast {
+public class Equal extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

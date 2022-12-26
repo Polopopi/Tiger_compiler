@@ -1,9 +1,10 @@
 package ast;
 
-public class LvalueIndex implements Ast {
+public class LvalueIndex extends Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
+
     public Ast exprOr;
     public Ast left;
 

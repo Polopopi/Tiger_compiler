@@ -1,6 +1,6 @@
 package ast;
 
-public class Type_Field implements Ast {
+public class Type_Field extends Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

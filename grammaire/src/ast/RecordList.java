@@ -8,6 +8,7 @@ public class RecordList /*implements Ast*/ {
     }*/
     
     public ArrayList<Ast> recordList;
+    
     public RecordList(){
         this.recordList=new ArrayList<>();
     }

@@ -1,6 +1,6 @@
 package ast;
 
-public class IfThen implements Ast {
+public class IfThen extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
