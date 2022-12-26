@@ -1,5 +1,6 @@
 package tds;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import ast.*;
@@ -7,6 +8,13 @@ import ast.*;
 public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
+    private ArrayList<Tds> listeTds;
+
+    TdsCreator(){
+        this.listeTds=new ArrayList<Tds>(5);
+        this.idCurrentTds=0;
+
+    }
     
     public String visit(Idf affect){
 
@@ -370,31 +378,53 @@ public class TdsCreator implements AstVisitor<String> {
 
     // Partie 4 :
     public String visit(VarDeclaration affect){
-
+        String id=affect.idf.accept(this);
+        String exprType=affect.expr.accept(this);
+        
+        VarFuncEntry varFuncEntryr=new VarFuncEntry(exprType,id,4);
+        this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
+        return "";
 
     };
 
 
     public String visit(FctDeclaration affect){
-
+        String id=affect.fonctionID.accept(this);
+        String typeRetor=affect.fct2Declaration.accept(this);
+        String typeParametre=affect.typeField.accept(this);
+        Parameter parameter=new Parameter(typeParametre, 4);
+        FunctionEntry functionEntry=new FunctionEntry(typeRetor, id, 4);
+        functionEntry.addParameter(parameter);
+        this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
+        return "";
 
     };
 
 
     public String visit(ProcDeclaration affect){
-
-
+        String id=affect.fonctionID.accept(this);
+        String typeRetor=affect.fct2Declaration.accept(this);
+        FunctionEntry procEntry=new FunctionEntry(typeRetor, id, 4);
+        this.listeTds.get(idCurrentTds).addVarFunc(procEntry);
+        return "";
     };
 
 
     public String visit(Fct2Declaration affect){
-
+        
+        return "";
 
     };
 
 
     public String visit(Fct2DeclarationType affect){
-
+        String typeRetour=affect.typeID.accept(this);
+        String lastType=affect.exprAffect.accept(this);
+        if (!typeRetour.equals(lastType)){
+            //ERREUR
+        }
+        
+        return typeRetour;
 
     };
 
