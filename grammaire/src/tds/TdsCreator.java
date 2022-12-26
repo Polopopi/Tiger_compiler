@@ -430,14 +430,33 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueField affect){
+        
+        String type=affect.left.accept(this);
+        if ( !this.listeTds.get(idCurrentTds).existType(type) ){
+            System.out.println("Erreur type dans LvalueField");
+        }
+        return "";
 
 
     };
+    public boolean estUnEntier(String chaine) {
+		try {
+			Integer.parseInt(chaine);
+		} catch (NumberFormatException e){
+			return false;
+		}
+ 
+		return true;
+	}
 
 
     public String visit(LvalueIndex affect){
+        String index=affect.exprOr.accept(this);
 
-
+        if (estUnEntier(index)==false) {
+            System.out.println("Erreur type dans LvalueIndex");
+        }
+        return "";
     };
 
 
