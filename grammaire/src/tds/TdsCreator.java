@@ -1,5 +1,6 @@
 package tds;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import ast.*;
@@ -8,6 +9,13 @@ public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
     private boolean whileForNode;
+    private ArrayList<Tds> listeTds;
+
+    TdsCreator(){
+        this.listeTds=new ArrayList<Tds>(5);
+        this.idCurrentTds=0;
+
+    }
     
     public String visit(Idf affect){
 
@@ -370,44 +378,85 @@ public class TdsCreator implements AstVisitor<String> {
 
     // Partie 4 :
     public String visit(VarDeclaration affect){
-
+        String id=affect.idf.accept(this);
+        String exprType=affect.expr.accept(this);
+        
+        VarFuncEntry varFuncEntryr=new VarFuncEntry(exprType,id,4);
+        this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
+        return "";
 
     };
 
 
     public String visit(FctDeclaration affect){
-
+        String id=affect.fonctionID.accept(this);
+        String typeRetor=affect.fct2Declaration.accept(this);
+        String typeParametre=affect.typeField.accept(this);
+        Parameter parameter=new Parameter(typeParametre, 4);
+        FunctionEntry functionEntry=new FunctionEntry(typeRetor, id, 4);
+        functionEntry.addParameter(parameter);
+        this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
+        return "";
 
     };
 
 
     public String visit(ProcDeclaration affect){
-
-
+        String id=affect.fonctionID.accept(this);
+        String typeRetor=affect.fct2Declaration.accept(this);
+        FunctionEntry procEntry=new FunctionEntry(typeRetor, id, 4);
+        this.listeTds.get(idCurrentTds).addVarFunc(procEntry);
+        return "";
     };
 
 
     public String visit(Fct2Declaration affect){
-
+        
+        return "";
 
     };
 
 
     public String visit(Fct2DeclarationType affect){
-
+        String typeRetour=affect.typeID.accept(this);
+        String lastType=affect.exprAffect.accept(this);
+        if (!typeRetour.equals(lastType)){
+            //ERREUR
+        }
+        
+        return typeRetour;
 
     };
 
 
     public String visit(LvalueField affect){
+        
+        String type=affect.left.accept(this);
+        if ( !this.listeTds.get(idCurrentTds).existType(type) ){
+            System.out.println("Erreur type dans LvalueField");
+        }
+        return "";
 
 
     };
+    public boolean estUnEntier(String chaine) {
+		try {
+			Integer.parseInt(chaine);
+		} catch (NumberFormatException e){
+			return false;
+		}
+ 
+		return true;
+	}
 
 
     public String visit(LvalueIndex affect){
+        String index=affect.exprOr.accept(this);
 
-
+        if (estUnEntier(index)==false) {
+            System.out.println("Erreur type dans LvalueIndex");
+        }
+        return "";
     };
 
 
