@@ -3,6 +3,8 @@ package tds;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import javax.swing.CellEditor;
+
 import ast.*;
 
 public class TdsCreator implements AstVisitor<String> {
@@ -232,9 +234,16 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Let let){
+        int imbrication = listeTds.get(idCurrentTds).getImbrication();
+        Tds tds = new Tds(imbrication + 1, idCurrentTds);
+        listeTds.add(tds);
+        idCurrentTds = tds.getId();
+        
         let.declarationList.accept(this);
-
+        
         String seqExprType = let.seqExpr.accept(this);
+
+        idCurrentTds = tds.getIdParent();
 
         return seqExprType;
     };
@@ -307,9 +316,26 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit (DeclarationList affect){
+    public String visit (DeclarationList declarationList){
+        Tds tds = listeTds.get(listeTds.size() - 1);
 
+        for (Ast dec : declarationList.listAst){
+            if (dec instanceof VarDeclaration){
+                VarDeclaration varDec = (VarDeclaration)dec;
+                String idf = ((Idf)varDec.idf).name;
+                String type = dec.accept(this);
+                tds.addVarFunc(new VariableEntry(type, idf, 4));
+            }
 
+            else if (dec instanceof VarDeclarationType){
+                VarDeclarationType varTypeDec = (VarDeclarationType)dec;
+                String idf = ((Idf)varTypeDec.idf).name;
+                String type = ((Idf)varTypeDec.idf).name;
+                tds.addVarFunc(new VariableEntry(type, idf, 4));
+            }
+        }
+
+        return "";
     };
 
 
