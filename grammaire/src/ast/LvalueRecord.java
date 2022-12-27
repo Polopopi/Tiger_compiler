@@ -1,6 +1,6 @@
 package ast;
 
-public class LvalueRecord extends Ast {
+public class LvalueRecord implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

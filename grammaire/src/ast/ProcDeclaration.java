@@ -1,6 +1,6 @@
 package ast;
 
-public class ProcDeclaration extends Ast {
+public class ProcDeclaration implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

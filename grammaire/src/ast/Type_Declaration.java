@@ -1,6 +1,6 @@
 package ast;
 
-public class Type_Declaration extends Ast {
+public class Type_Declaration implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

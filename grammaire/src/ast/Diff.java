@@ -1,6 +1,6 @@
 package ast;
 
-public class Diff extends Ast {
+public class Diff implements Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

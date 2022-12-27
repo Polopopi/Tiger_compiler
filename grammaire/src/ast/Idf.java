@@ -1,6 +1,6 @@
 package ast;
 
-public class Idf extends Ast{
+public class Idf implements Ast{
 
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);

@@ -1,6 +1,6 @@
 package ast;
 
-public class VarDeclaration extends Ast {
+public class VarDeclaration implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

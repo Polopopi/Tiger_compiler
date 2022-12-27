@@ -7,6 +7,7 @@ import ast.*;
 public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
+    private boolean whileForNode;
     
     public String visit(Idf affect){
 
@@ -65,7 +66,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = equal.left.accept(this);
         String rightType = equal.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -77,7 +78,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = diff.left.accept(this);
         String rightType = diff.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -89,7 +90,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = inf.left.accept(this);
         String rightType = inf.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -101,7 +102,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = sup.left.accept(this);
         String rightType = sup.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -113,7 +114,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = infEqual.left.accept(this);
         String rightType = infEqual.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -125,7 +126,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = supEqual.left.accept(this);
         String rightType = supEqual.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -232,14 +233,18 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(For affect){
-
+        whileForNode = true;
+        //ACCEPT
+        whileForNode = false;
 
     };
 
 
     public String visit(While whileNode){
+        whileForNode = true;
         String condType = whileNode.condition.accept(this);
         String blocType = whileNode.bloc.accept(this);
+        whileForNode = false;
 
         if (!condType.equals("int")){
             //ERREUR TYPE
@@ -257,14 +262,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(BreakExpr breakExpr){
-        Ast current = breakExpr;
-        while (current.parent != null){
-            if (current instanceof While | current instanceof For){
-                return "";
-            }
-            current = current.parent;
+        if (!whileForNode){
+            //ERREUR
         }
-        //ERREUR
         return "";
     };
 
