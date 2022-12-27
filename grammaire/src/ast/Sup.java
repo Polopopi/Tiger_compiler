@@ -1,6 +1,6 @@
 package ast;
 
-public class Sup implements Ast {
+public class Sup extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

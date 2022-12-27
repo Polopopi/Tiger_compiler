@@ -1,7 +1,8 @@
 package ast;
 
-public interface Ast {
+public abstract class Ast {
 
-    public <T> T accept(AstVisitor<T> visitor);
+    public Ast parent;
+    public abstract <T> T accept(AstVisitor<T> visitor);
     
 }

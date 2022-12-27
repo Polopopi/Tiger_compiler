@@ -1,6 +1,6 @@
 package ast;
 
-public class Mult implements Ast {
+public class Mult extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

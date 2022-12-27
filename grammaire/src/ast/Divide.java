@@ -1,6 +1,6 @@
 package ast;
 
-public class Divide implements Ast{
+public class Divide extends Ast{
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

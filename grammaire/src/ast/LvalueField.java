@@ -1,9 +1,10 @@
 package ast;
 
-public class LvalueField implements Ast {
+public class LvalueField extends Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
+
     public Ast id;
     public Ast left;
 

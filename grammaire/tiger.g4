@@ -107,7 +107,7 @@ type_fields2
 */
 
 type_field                         //DONE
-       :id ':'type_id
+       : id ':' type_id
        ;
 
 ////////////////////////////////////////////////

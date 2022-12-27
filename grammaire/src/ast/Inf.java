@@ -1,6 +1,6 @@
 package ast;
 
-public class Inf implements Ast {
+public class Inf extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

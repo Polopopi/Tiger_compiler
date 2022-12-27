@@ -1,6 +1,6 @@
 package ast;
 
-public class SupEqual implements Ast {
+public class SupEqual extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
