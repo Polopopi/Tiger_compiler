@@ -9,7 +9,7 @@ public class LvalueRecord implements Ast {
     public Ast fieldList;
     
     public LvalueRecord(Ast id,Ast fieldList){
-        this.id=id;
-        this.fieldList=fieldList;
+        this.id = id;
+        this.fieldList = fieldList;
     }
 }

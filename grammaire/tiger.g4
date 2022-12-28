@@ -50,7 +50,7 @@ expr
        | 'let' declaration_list 'in' seq_expr 'end'                                 #LetExpr
        | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect                        #ForExpr
        | 'while' expr_or 'do' expr_affect                                           #WhileExpr
-       | lvalue (call|record|array)?                                                #LValueExpr
+       | lvalue ('('list_expr')'|'{'field_list'}'|'['expr_or']' 'of'  expr_or)?     #LValueExpr
        | '('seq_expr')'                                                             #SeqExpr
        | STR                                                                        #StrExpr
        | INT                                                                        #IntExpr
@@ -112,7 +112,13 @@ type_field                         //DONE
 
 ////////////////////////////////////////////////
 
+field_list
+       : (field (',' field)*)?
+       ;
 
+field
+       : id '=' expr_or
+       ;
 ///////////////////////////////////////////// 4 Wenjouille
 
 
@@ -139,19 +145,19 @@ fct2Declaration
 lvalue 
        : gen_id('['expr_or']')* ('.' id ('[' expr_or ']')*)*
        ;
-
+/*
 array
        : '[' expr_or ']' 'of'  expr_or
        ;
 
 record
-       : '{' id '=' expr_or (',' id '=' expr_or)*  '}'
+       : '{' field_list '}'
        ;
 
 call 
        : '(' list_expr ')'
        ;
-
+*/
 id 
        : ID
        ;

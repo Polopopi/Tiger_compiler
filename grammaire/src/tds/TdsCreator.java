@@ -24,12 +24,6 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(InstrList affect){
-
-
-    };
-
-
     public String visit(Print affect){
 
 
@@ -249,10 +243,26 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(For affect){
+    public String visit(For forNode){
         whileForNode = true;
-        //ACCEPT
+        String id = forNode.id.accept(this);
+        String debutType = forNode.debut.accept(this);
+        String finType = forNode.fin.accept(this);
+        int imbrication = listeTds.get(idCurrentTds).getImbrication();
+        Tds tds = new Tds(imbrication + 1, idCurrentTds);
+        listeTds.add(tds);
+        tds.addVarFunc(new VariableEntry("int",id,4));
+        String blocType = forNode.bloc.accept(this);
+        idCurrentTds = tds.getIdParent();
+
+        if (!(debutType.equals("int")) && finType.equals("int")){
+            //ERREUR TYPE
+        }
+        if(! blocType.equals("")){
+            //ERREUR TYPE
+        }
         whileForNode = false;
+        return "";
 
     };
 
@@ -287,7 +297,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(NilExpr affect){
-
+        return "nil";
 
     };
 
@@ -315,9 +325,18 @@ public class TdsCreator implements AstVisitor<String> {
         return lastType;
     };
 
+    /*
+    public String visit(DeclarationList declarationList){
+        for (Ast dec : declarationList.listAst){
+            dec.accept(this);
+        }
+        return("");
+    }
+    */
 
     public String visit (DeclarationList declarationList){
-        Tds tds = listeTds.get(listeTds.size() - 1);
+        /*
+        Tds tds = listeTds.get(idCurrentTds);
 
         for (Ast dec : declarationList.listAst){
             if (dec instanceof VarDeclaration){
@@ -333,15 +352,46 @@ public class TdsCreator implements AstVisitor<String> {
                 String type = ((Idf)varTypeDec.idf).name;
                 tds.addVarFunc(new VariableEntry(type, idf, 4));
             }
+
+            else if (dec instanceof FctDeclaration){
+                FctDeclaration funcDec = (FctDeclaration)dec;
+                String idf = ((Idf)funcDec.fonctionID).name;
+
+                FunctionEntry funcEntry;
+                String type;
+                if (funcDec.fct2Declaration instanceof Fct2Declaration){
+                    type = "";
+                } 
+                else{
+                    type = ((Idf)((Fct2DeclarationType)funcDec.fct2Declaration).typeID).name;
+                    String exprType = funcDec.fct2Declaration.accept(this);
+                }
+                funcEntry = new FunctionEntry(type, idf, 4);
+
+
+
+                tds.addVarFunc(funcEntry);
+            }
+        }
+        */
+
+        for (Ast dec : declarationList.listAst){
+            dec.accept(this);
         }
 
         return "";
     };
 
 
-    public String visit (ListExpr affect){
-
-
+    public String visit (ListExpr listExpr){
+        String res = "";
+        for (Ast expr : listExpr.listExpr){
+            if (!res.equals("")){
+                res += ",";
+            }
+            res += expr.accept(this);
+        }
+        return(res);
     };
 
 
@@ -407,7 +457,7 @@ public class TdsCreator implements AstVisitor<String> {
         String id=affect.idf.accept(this);
         String exprType=affect.expr.accept(this);
         
-        VarFuncEntry varFuncEntryr=new VarFuncEntry(exprType,id,4);
+        VarFuncEntry varFuncEntryr=new VariableEntry(exprType,id,4);
         this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
         return "";
 
@@ -471,7 +521,6 @@ public class TdsCreator implements AstVisitor<String> {
 		} catch (NumberFormatException e){
 			return false;
 		}
- 
 		return true;
 	}
 

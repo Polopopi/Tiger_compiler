@@ -8,7 +8,7 @@ public class RecordEntry extends TypeEntry{
 
     public RecordEntry(String symbol, int size){
         super(symbol, size);
-    }é
+    }
 
     public void addField(Field field){
         this.fields.add(field);
