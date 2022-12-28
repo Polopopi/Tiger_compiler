@@ -24,12 +24,6 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(InstrList affect){
-
-
-    };
-
-
     public String visit(Print affect){
 
 
