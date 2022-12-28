@@ -486,13 +486,20 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Array affect){
-
+    public String visit(Array affect){//array of type à vérifier le type 
+        String typeArray=affect.exprOr2.accept(this);
+        String lengthArray=affect.exprOr1.accept(this);
+        if (!estUnEntier(lengthArray)) {
+            System.out.println("longueur d\'une liste erreur Array [longueur] of type");
+        }
+        
+        return typeArray;
 
     };
 
 
     public String visit(LvalueRecord affect){
+
 
 
     };
