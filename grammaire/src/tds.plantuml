@@ -1,0 +1,34 @@
+@startuml
+
+class Tds{
+    int numeroImbrication
+    int identifiant
+    int identifiantTablePrecedente
+    void add()
+    void toString()
+}
+
+abstract Entry{
+    String symbol
+    int size
+
+    void toString()
+}
+
+class VariableEntry{
+    int decalage
+}
+class FunctionEntry
+class TypeEntry
+
+
+Tds - "*"Entry
+
+Entry <|-- VariableEntry
+Entry <|-- FunctionEntry
+Entry <|-- TypeEntry
+
+
+
+
+@enduml

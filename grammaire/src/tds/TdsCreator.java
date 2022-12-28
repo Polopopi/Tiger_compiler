@@ -231,6 +231,8 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Let let){
+
+
         let.declarationList.accept(this);
 
         String seqExprType = let.seqExpr.accept(this);
@@ -239,8 +241,19 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(For affect){
-
+    public String visit(For forNode){
+        String id = forNode.id.accept(this);
+        String debutType = forNode.debut.accept(this);
+        String finType = forNode.fin.accept(this);
+        Tds tds = new Tds(idCurrentTds, idCurrentTds);
+        String blocType = forNode.bloc.accept(this);
+        if (!(debutType.equals("int")) && finType.equals("int")){
+            //ERREUR TYPE
+        }
+        if(! blocType.equals("")){
+            //ERREUR TYPE
+        }
+        return "";
 
     };
 
@@ -278,7 +291,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(NilExpr affect){
-
+        return "nil";
 
     };
 
