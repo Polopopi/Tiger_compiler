@@ -1,6 +1,6 @@
 package ast;
 
-public class Call extends Ast{
+public class Call implements Ast{
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

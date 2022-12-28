@@ -1,6 +1,6 @@
 package ast;
 
-public class TypeType extends Ast{
+public class TypeType implements Ast{
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

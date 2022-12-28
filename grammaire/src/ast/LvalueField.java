@@ -1,6 +1,6 @@
 package ast;
 
-public class LvalueField extends Ast {
+public class LvalueField implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

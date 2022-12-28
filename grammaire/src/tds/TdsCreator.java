@@ -3,11 +3,14 @@ package tds;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import javax.swing.CellEditor;
+
 import ast.*;
 
 public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
+    private boolean whileForNode;
     private ArrayList<Tds> listeTds;
 
     TdsCreator(){
@@ -73,7 +76,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = equal.left.accept(this);
         String rightType = equal.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -85,7 +88,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = diff.left.accept(this);
         String rightType = diff.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -97,7 +100,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = inf.left.accept(this);
         String rightType = inf.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -109,7 +112,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = sup.left.accept(this);
         String rightType = sup.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -121,7 +124,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = infEqual.left.accept(this);
         String rightType = infEqual.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -133,7 +136,7 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = supEqual.left.accept(this);
         String rightType = supEqual.right.accept(this);
 
-        if (!(leftType.equals("int") && rightType.equals("int"))){
+        if (!leftType.equals(rightType)){
             //ERREUR TYPE
         }
 
@@ -231,36 +234,50 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Let let){
-
-
+        int imbrication = listeTds.get(idCurrentTds).getImbrication();
+        Tds tds = new Tds(imbrication + 1, idCurrentTds);
+        listeTds.add(tds);
+        idCurrentTds = tds.getId();
+        
         let.declarationList.accept(this);
-
+        
         String seqExprType = let.seqExpr.accept(this);
+
+        idCurrentTds = tds.getIdParent();
 
         return seqExprType;
     };
 
 
     public String visit(For forNode){
+        whileForNode = true;
         String id = forNode.id.accept(this);
         String debutType = forNode.debut.accept(this);
         String finType = forNode.fin.accept(this);
-        Tds tds = new Tds(idCurrentTds, idCurrentTds);
+        int imbrication = listeTds.get(idCurrentTds).getImbrication();
+        Tds tds = new Tds(imbrication + 1, idCurrentTds);
+        listeTds.add(tds);
+        tds.addVarFunc(new VariableEntry("int",id,4));
         String blocType = forNode.bloc.accept(this);
+        idCurrentTds = tds.getIdParent();
+
         if (!(debutType.equals("int")) && finType.equals("int")){
             //ERREUR TYPE
         }
         if(! blocType.equals("")){
             //ERREUR TYPE
         }
+        whileForNode = false;
         return "";
 
     };
 
 
     public String visit(While whileNode){
+        whileForNode = true;
         String condType = whileNode.condition.accept(this);
         String blocType = whileNode.bloc.accept(this);
+        whileForNode = false;
 
         if (!condType.equals("int")){
             //ERREUR TYPE
@@ -278,14 +295,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(BreakExpr breakExpr){
-        Ast current = breakExpr;
-        while (current.parent != null){
-            if (current instanceof While | current instanceof For){
-                return "";
-            }
-            current = current.parent;
+        if (!whileForNode){
+            //ERREUR
         }
-        //ERREUR
         return "";
     };
 
@@ -319,16 +331,47 @@ public class TdsCreator implements AstVisitor<String> {
         return lastType;
     };
 
+    /*
+    public String visit(DeclarationList declarationList){
+        for (Ast dec : declarationList.listAst){
+            dec.accept(this);
+        }
+        return("");
+    }
+    */
 
-    public String visit (DeclarationList affect){
+    public String visit (DeclarationList declarationList){
+        Tds tds = listeTds.get(listeTds.size() - 1);
 
+        for (Ast dec : declarationList.listAst){
+            if (dec instanceof VarDeclaration){
+                VarDeclaration varDec = (VarDeclaration)dec;
+                String idf = ((Idf)varDec.idf).name;
+                String type = dec.accept(this);
+                tds.addVarFunc(new VariableEntry(type, idf, 4));
+            }
 
+            else if (dec instanceof VarDeclarationType){
+                VarDeclarationType varTypeDec = (VarDeclarationType)dec;
+                String idf = ((Idf)varTypeDec.idf).name;
+                String type = ((Idf)varTypeDec.idf).name;
+                tds.addVarFunc(new VariableEntry(type, idf, 4));
+            }
+        }
+
+        return "";
     };
 
 
-    public String visit (ListExpr affect){
-
-
+    public String visit (ListExpr listExpr){
+        String res = "";
+        for (Ast expr : listExpr.listExpr){
+            if (!res.equals("")){
+                res += ",";
+            }
+            res += expr.accept(this);
+        }
+        return(res);
     };
 
 
@@ -394,7 +437,7 @@ public class TdsCreator implements AstVisitor<String> {
         String id=affect.idf.accept(this);
         String exprType=affect.expr.accept(this);
         
-        VarFuncEntry varFuncEntryr=new VarFuncEntry(exprType,id,4);
+        VarFuncEntry varFuncEntryr=new VariableEntry(exprType,id,4);
         this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
         return "";
 
@@ -458,7 +501,6 @@ public class TdsCreator implements AstVisitor<String> {
 		} catch (NumberFormatException e){
 			return false;
 		}
- 
 		return true;
 	}
 
@@ -473,13 +515,20 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Array affect){
-
+    public String visit(Array affect){//array of type à vérifier le type 
+        String typeArray=affect.exprOr2.accept(this);
+        String lengthArray=affect.exprOr1.accept(this);
+        if (!estUnEntier(lengthArray)) {
+            System.out.println("longueur d\'une liste erreur Array [longueur] of type");
+        }
+        
+        return typeArray;
 
     };
 
 
     public String visit(LvalueRecord affect){
+
 
 
     };

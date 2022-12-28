@@ -1,6 +1,6 @@
 package ast;
 
-public class Fct2DeclarationType extends Ast {
+public class Fct2DeclarationType implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

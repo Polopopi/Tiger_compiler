@@ -1,6 +1,6 @@
 package ast;
 
-public class StrExpr extends Ast {
+public class StrExpr implements Ast {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

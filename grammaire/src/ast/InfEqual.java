@@ -1,6 +1,6 @@
 package ast;
 
-public class InfEqual extends Ast {
+public class InfEqual implements Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){

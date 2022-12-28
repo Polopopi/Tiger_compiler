@@ -52,5 +52,17 @@ public class Tds {
         return("");
     }
 
+    public int getImbrication(){
+        return numeroImbrication;
+    }
+
+    public int getId(){
+        return identifiant;
+    }
+
+    public int getIdParent(){
+        return identifiantTablePrecedente;
+    }
+
     //public String typeOfFuncParam(String symbol)
 }
