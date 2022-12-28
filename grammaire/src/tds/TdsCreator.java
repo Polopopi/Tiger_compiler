@@ -341,7 +341,8 @@ public class TdsCreator implements AstVisitor<String> {
     */
 
     public String visit (DeclarationList declarationList){
-        Tds tds = listeTds.get(listeTds.size() - 1);
+        /*
+        Tds tds = listeTds.get(idCurrentTds);
 
         for (Ast dec : declarationList.listAst){
             if (dec instanceof VarDeclaration){
@@ -357,6 +358,31 @@ public class TdsCreator implements AstVisitor<String> {
                 String type = ((Idf)varTypeDec.idf).name;
                 tds.addVarFunc(new VariableEntry(type, idf, 4));
             }
+
+            else if (dec instanceof FctDeclaration){
+                FctDeclaration funcDec = (FctDeclaration)dec;
+                String idf = ((Idf)funcDec.fonctionID).name;
+
+                FunctionEntry funcEntry;
+                String type;
+                if (funcDec.fct2Declaration instanceof Fct2Declaration){
+                    type = "";
+                } 
+                else{
+                    type = ((Idf)((Fct2DeclarationType)funcDec.fct2Declaration).typeID).name;
+                    String exprType = funcDec.fct2Declaration.accept(this);
+                }
+                funcEntry = new FunctionEntry(type, idf, 4);
+
+
+
+                tds.addVarFunc(funcEntry);
+            }
+        }
+        */
+
+        for (Ast dec : declarationList.listAst){
+            dec.accept(this);
         }
 
         return "";
