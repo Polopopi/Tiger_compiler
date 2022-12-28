@@ -473,7 +473,6 @@ public class TdsCreator implements AstVisitor<String> {
         functionEntry.addParameter(parameter);
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
-
     };
 
 
