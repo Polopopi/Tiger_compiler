@@ -556,7 +556,11 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Call affect){
-
+        String id=affect.id.accept(this);
+        String type=affect.listExpr.accept(this);
+        RecordEntry newCall=new RecordEntry(id, 4);
+        this.listeTds.get(idCurrentTds).addType(newCall);
+        return "";
 
     };
 
