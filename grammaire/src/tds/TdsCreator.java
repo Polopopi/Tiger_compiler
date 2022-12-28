@@ -499,9 +499,11 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueRecord affect){
-
-
-
+        String id=affect.id.accept(this);
+        String type=affect.fieldList.accept(this);
+        RecordEntry newRecord=new RecordEntry(id,4);
+        this.listeTds.get(idCurrentTds).addType(newRecord);
+        return "";
     };
 
 
