@@ -401,9 +401,26 @@ public class TdsCreator implements AstVisitor<String> {
         String type_id = type_Declaration.type_id.accept(this);
         String type = type_Declaration.type.accept(this);
 
-        TypeEntry typeEntry = new TypeEntry(type_id,4);
-        this.listeTds.get(idCurrentTds).addType(typeEntry);
+        if (type.startsWith("ArrayOf")){
+            String composite = type.substring(7);
+            TypeEntry typeEntry = new ArrayEntry(type_id,4,composite);
+            this.listeTds.get(idCurrentTds).addType(typeEntry);         
+        }
+        if (type.startsWith("Record")){
+            String composites = type.substring(7);
+            String[] list =composites.split(",");
 
+            RecordEntry typeEntry = new RecordEntry(type_id,4);
+            for (String typeName: list){
+                // Je sais pas comment retrouver tous les fields deja créer ... ou si je dois créer de nouveaux ...
+                //typeEntry.addField(typeName);
+            }
+            this.listeTds.get(idCurrentTds).addType(typeEntry);         
+        }
+        else {
+            TypeEntry typeEntry = new TypeEntry(type_id,4);
+            this.listeTds.get(idCurrentTds).addType(typeEntry);
+        }
         return "";
     };
 
@@ -436,9 +453,12 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(TypeType typeType){                        
-        String type = typeType.typeCopie.accept(this);
+        String typeID = typeType.typeCopie.accept(this);
 
-        return type;
+        if ( !this.listeTds.get(idCurrentTds).existType(typeID) ){
+            System.out.println("Type pas trouvé");
+        }
+        return typeID;
     };
 
 
@@ -465,9 +485,9 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Field field){              
-        String id_f = field.id.accept(this);
-        String expr_f = field.expr.accept(this);
+    public String visit(ast.Field fieldd){              
+        String id_f = fieldd.id.accept(this);
+        String expr_f = fieldd.expr.accept(this);
 
         String type_id = this.listeTds.get(idCurrentTds).typeOfVarFunc(id_f);
 
