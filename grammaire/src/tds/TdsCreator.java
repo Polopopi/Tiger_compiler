@@ -12,11 +12,11 @@ public class TdsCreator implements AstVisitor<String> {
     private int idCurrentTds;
     private boolean whileForNode;
     private ArrayList<Tds> listeTds;
+    private Entry entry;
 
     TdsCreator(){
         this.listeTds=new ArrayList<Tds>(5);
         this.idCurrentTds=0;
-
     }
     
     public String visit(Idf affect){
@@ -31,7 +31,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Program affect){
-
+        //AJOUTER int et string à la TDS DU PROG
 
     };
 
@@ -201,9 +201,12 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(IfThen ifThen){
         String condType = ifThen.condition.accept(this);
-        //String blocType = ifThen.thenBlock.accept(this);
+        String blocType = ifThen.thenBlock.accept(this);
 
         if (!condType.equals("int")){
+            //ERREUR TYPE
+        }
+        if (!blocType.equals("")){
             //ERREUR TYPE
         }
 
@@ -248,11 +251,15 @@ public class TdsCreator implements AstVisitor<String> {
         String id = forNode.id.accept(this);
         String debutType = forNode.debut.accept(this);
         String finType = forNode.fin.accept(this);
+
         int imbrication = listeTds.get(idCurrentTds).getImbrication();
         Tds tds = new Tds(imbrication + 1, idCurrentTds);
         listeTds.add(tds);
+        idCurrentTds = tds.getId();
         tds.addVarFunc(new VariableEntry("int",id,4));
+
         String blocType = forNode.bloc.accept(this);
+
         idCurrentTds = tds.getIdParent();
 
         if (!(debutType.equals("int")) && finType.equals("int")){
@@ -312,15 +319,12 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(SeqExpr seqExpr){
-        String lastType;
+        String lastType = "";
 
-        if (!seqExpr.listExpr.isEmpty()){
-            lastType = seqExpr.listExpr.get(seqExpr.listExpr.size() - 1).accept(this);
+        for (Ast expr:seqExpr.listExpr){
+            lastType = expr.accept(this);
         }
-        else{
-            lastType = "";
-        }
-
+    
         return lastType;
     };
 
@@ -329,6 +333,8 @@ public class TdsCreator implements AstVisitor<String> {
         for (Ast dec : declarationList.listAst){
             dec.accept(this);
         }
+
+        //VERIF RECURSIF
 
         return "";
     };
@@ -358,17 +364,22 @@ public class TdsCreator implements AstVisitor<String> {
             this.listeTds.get(idCurrentTds).addType(typeEntry);         
         }
         if (type.startsWith("Record")){
+            // VERIF ID FIELD UNIQUE
+
             String composites = type.substring(7);
             String[] list =composites.split(",");
 
             RecordEntry typeEntry = new RecordEntry(type_id,4);
             for (String typeName: list){
+                String[] fieldArray = typeName.split(":");
+                Field field = new Field(fieldArray[0], fieldArray[1], 4);
                 // Je sais pas comment retrouver tous les fields deja créer ... ou si je dois créer de nouveaux ...
-                //typeEntry.addField(typeName);
+                typeEntry.addField(field);
             }
             this.listeTds.get(idCurrentTds).addType(typeEntry);         
         }
         else {
+            //Verif le type de type copie et le copier
             TypeEntry typeEntry = new TypeEntry(type_id,4);
             this.listeTds.get(idCurrentTds).addType(typeEntry);
         }
@@ -399,7 +410,7 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Id pas trouvé");
         }
         */
-        return type_id;
+        return id + ":" + type_id;
     };
 
 
@@ -415,14 +426,14 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(TypeRecord typeRecord){
         String types = typeRecord.typeRecord.accept(this);
-        String res="Record{"+types+"}";
+        String res="Record:"+types;
 
         return res;
     };
 
 
     public String visit(TypeRecordVoid typeRecordVoid){            
-        return "Record{}";
+        return "Record:";
     };
 
 
@@ -437,12 +448,19 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(ast.Field fieldd){              
-        String id_f = fieldd.id.accept(this);
-        String expr_f = fieldd.expr.accept(this);
+        String id_f = fieldd.id.accept(this); //verres
+        String expr_f = fieldd.expr.accept(this); //2 (int)
 
         String type_id = this.listeTds.get(idCurrentTds).typeOfVarFunc(id_f);
 
-        if ( type_id!=expr_f ){
+        /*
+        type steven := lunette{adiruin : int};
+        type cloée := vélo{adiruin : string};
+
+        var wenjia := steven{adiruin := 2};
+        */
+
+        if ( !type_id.equals(expr_f) ){
             System.out.println("Id et expr pas du meme type");
         }
         return "";
@@ -470,6 +488,10 @@ public class TdsCreator implements AstVisitor<String> {
         VarFuncEntry varFuncEntryr=new VariableEntry(exprType,id,4);
         this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
         return "";
+    };
+
+    public String visit(VarDeclarationType affect){
+
 
     };
 
@@ -478,9 +500,13 @@ public class TdsCreator implements AstVisitor<String> {
         String id=affect.fonctionID.accept(this);
         String typeRetor=affect.fct2Declaration.accept(this);
         String typeParametre=affect.typeField.accept(this);
+
+        // typeParametre = "id:type,id:type....""
+        // itérer
         Parameter parameter=new Parameter(typeParametre, 4);
         FunctionEntry functionEntry=new FunctionEntry(typeRetor, id, 4);
         functionEntry.addParameter(parameter);
+        
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
     };
@@ -496,9 +522,11 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Fct2Declaration affect){
-        
+        String type = affect.exprAffect.accept(this);
+        if (!type.equals("")){
+            //ERREUR
+        }
         return "";
-
     };
 
 
@@ -510,19 +538,23 @@ public class TdsCreator implements AstVisitor<String> {
         }
         
         return typeRetour;
-
     };
 
 
     public String visit(LvalueField affect){
-        
-        String type=affect.left.accept(this);
+        String id = affect.id.accept(this);
+        String type = affect.left.accept(this);
+        //VERIF ID DANS RECORD
+
+        /*
         if ( !this.listeTds.get(idCurrentTds).existType(type) ){
             System.out.println("Erreur type dans LvalueField");
-        }
-        return "";
+        } lunettes.verres.marque --> lunettes.verres existe car verres a été vérif avec getrecordfieldTDS(id)
+        */
 
+        String typeId = getrecordfieldTDS(id)
 
+        return typeId;
     };
     public boolean estUnEntier(String chaine) {
 		try {
@@ -537,7 +569,7 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(LvalueIndex affect){
         String index=affect.exprOr.accept(this);
 
-        if (estUnEntier(index)==false) {
+        if (!index.equals("int")) {
             System.out.println("Erreur type dans LvalueIndex");
         }
         return "";
@@ -577,9 +609,6 @@ public class TdsCreator implements AstVisitor<String> {
     //public String visit(RecordList affect);
 
 
-    public String visit(VarDeclarationType affect){
 
-
-    };
 
 }

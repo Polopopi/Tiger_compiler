@@ -28,6 +28,7 @@ public class Tds {
     }
 
     public boolean existVarFunc(String symbol){
+        //V2RIF TABLES PR2C2DANTES
         for (VarFuncEntry entry : varFuncEntries){
             if (entry.getSymbol().equals(symbol)){
                 return(true);
@@ -66,5 +67,6 @@ public class Tds {
         return identifiantTablePrecedente;
     }
 
+    //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
 }
