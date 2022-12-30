@@ -345,63 +345,122 @@ public class TdsCreator implements AstVisitor<String> {
         return(res);
     };
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Attention danger : Code WTF
     
     // Partie 3 :
-    public String visit(Type_Declaration affect){
+    public String visit(Type_Declaration type_Declaration){
+        String type_id = type_Declaration.type_id.accept(this);
+        String type = type_Declaration.type.accept(this);
 
+        if (type.startsWith("ArrayOf")){
+            String composite = type.substring(7);
+            TypeEntry typeEntry = new ArrayEntry(type_id,4,composite);
+            this.listeTds.get(idCurrentTds).addType(typeEntry);         
+        }
+        if (type.startsWith("Record")){
+            String composites = type.substring(7);
+            String[] list =composites.split(",");
 
+            RecordEntry typeEntry = new RecordEntry(type_id,4);
+            for (String typeName: list){
+                // Je sais pas comment retrouver tous les fields deja créer ... ou si je dois créer de nouveaux ...
+                //typeEntry.addField(typeName);
+            }
+            this.listeTds.get(idCurrentTds).addType(typeEntry);         
+        }
+        else {
+            TypeEntry typeEntry = new TypeEntry(type_id,4);
+            this.listeTds.get(idCurrentTds).addType(typeEntry);
+        }
+        return "";
     };
 
 
-    public String visit(Type_Fields affect){
-
-
+    public String visit(Type_Fields type_Fields){
+        String res = "";
+        for (Ast expr : type_Fields.listAst){
+            if (!res.equals("")){
+                res += ",";
+            }
+            res += expr.accept(this);
+        }
+        return(res);
     };
 
 
-    public String visit(Type_Field affect){
-
-
+    public String visit(Type_Field type_Field){
+        String type_id = type_Field.type_id.accept(this);
+        String id = type_Field.id.accept(this);
+        if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){
+            System.out.println("Type pas trouvé");
+        }
+        /* je sais pas si on doit verifier si id existe deja ...  
+        if ( !this.listeTds.get(idCurrentTds).existVarFunc(id) ){ 
+            System.out.println("Id pas trouvé");
+        }
+        */
+        return type_id;
     };
 
 
-    public String visit(TypeType affect){
+    public String visit(TypeType typeType){                        
+        String typeID = typeType.typeCopie.accept(this);
 
-
+        if ( !this.listeTds.get(idCurrentTds).existType(typeID) ){
+            System.out.println("Type pas trouvé");
+        }
+        return typeID;
     };
 
 
-    public String visit(TypeRecord affect){
+    public String visit(TypeRecord typeRecord){
+        String types = typeRecord.typeRecord.accept(this);
+        String res="Record{"+types+"}";
 
-
+        return res;
     };
 
 
-    public String visit(TypeRecordVoid affect){
-
-
+    public String visit(TypeRecordVoid typeRecordVoid){            
+        return "Record{}";
     };
 
 
-    public String visit(TypeArray affect){
-
-
+    public String visit(TypeArray typeArrayy){
+    // verifier les types dans Array : soit string, int ou autre déjà existants
+    String type = typeArrayy.typeArray.accept(this);
+    if ( !this.listeTds.get(idCurrentTds).existType(type) ){
+        System.out.println("Type pas trouvé");
+    }
+    return "ArrayOf"+type;
     };
 
 
-    public String visit(Field affect){
+    public String visit(ast.Field fieldd){              
+        String id_f = fieldd.id.accept(this);
+        String expr_f = fieldd.expr.accept(this);
 
+        String type_id = this.listeTds.get(idCurrentTds).typeOfVarFunc(id_f);
 
+        if ( type_id!=expr_f ){
+            System.out.println("Id et expr pas du meme type");
+        }
+        return "";
     };
 
 
-    public String visit(FieldList affect){
-
-
+    public String visit(FieldList fieldList){
+        String res = "";
+        for (Ast expr : fieldList.listAst){
+            if (!res.equals("")){
+                res += ",";
+            }
+            res += expr.accept(this);
+        }
+        return(res);
     };
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Fin du danger le code est mieux
 
     // Partie 4 :
     public String visit(VarDeclaration affect){

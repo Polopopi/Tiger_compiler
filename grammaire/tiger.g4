@@ -110,7 +110,6 @@ type_field                         //DONE
        : id ':' type_id
        ;
 
-////////////////////////////////////////////////
 
 field_list
        : (field (',' field)*)?
