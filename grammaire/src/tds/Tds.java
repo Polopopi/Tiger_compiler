@@ -12,6 +12,8 @@ public class Tds {
     private ArrayList<TypeEntry> typeEntries;
 
     public Tds(int numeroImbrication, int idPrec){
+        this.varFuncEntries = new ArrayList<VarFuncEntry>();
+        this.typeEntries = new ArrayList<TypeEntry>();
         this.numeroImbrication = numeroImbrication;
         this.identifiantTablePrecedente = idPrec;
         this.identifiant = idGen;

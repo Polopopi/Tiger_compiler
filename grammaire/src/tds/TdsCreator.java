@@ -290,7 +290,7 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(BreakExpr breakExpr){
         if (!whileForNode){
-            //ERREUR
+            //ERREUR ADRIRUIEN;
         }
         return "";
     };
@@ -298,7 +298,6 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(NilExpr affect){
         return "nil";
-
     };
 
 
@@ -325,56 +324,8 @@ public class TdsCreator implements AstVisitor<String> {
         return lastType;
     };
 
-    /*
-    public String visit(DeclarationList declarationList){
-        for (Ast dec : declarationList.listAst){
-            dec.accept(this);
-        }
-        return("");
-    }
-    */
 
     public String visit (DeclarationList declarationList){
-        /*
-        Tds tds = listeTds.get(idCurrentTds);
-
-        for (Ast dec : declarationList.listAst){
-            if (dec instanceof VarDeclaration){
-                VarDeclaration varDec = (VarDeclaration)dec;
-                String idf = ((Idf)varDec.idf).name;
-                String type = dec.accept(this);
-                tds.addVarFunc(new VariableEntry(type, idf, 4));
-            }
-
-            else if (dec instanceof VarDeclarationType){
-                VarDeclarationType varTypeDec = (VarDeclarationType)dec;
-                String idf = ((Idf)varTypeDec.idf).name;
-                String type = ((Idf)varTypeDec.idf).name;
-                tds.addVarFunc(new VariableEntry(type, idf, 4));
-            }
-
-            else if (dec instanceof FctDeclaration){
-                FctDeclaration funcDec = (FctDeclaration)dec;
-                String idf = ((Idf)funcDec.fonctionID).name;
-
-                FunctionEntry funcEntry;
-                String type;
-                if (funcDec.fct2Declaration instanceof Fct2Declaration){
-                    type = "";
-                } 
-                else{
-                    type = ((Idf)((Fct2DeclarationType)funcDec.fct2Declaration).typeID).name;
-                    String exprType = funcDec.fct2Declaration.accept(this);
-                }
-                funcEntry = new FunctionEntry(type, idf, 4);
-
-
-
-                tds.addVarFunc(funcEntry);
-            }
-        }
-        */
-
         for (Ast dec : declarationList.listAst){
             dec.accept(this);
         }
@@ -537,12 +488,11 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(Array affect){//array of type à vérifier le type 
         String typeArray=affect.exprOr2.accept(this);
         String lengthArray=affect.exprOr1.accept(this);
-        if (!estUnEntier(lengthArray)) {
+        if (!lengthArray.equals("int")) {
             System.out.println("longueur d\'une liste erreur Array [longueur] of type");
         }
         
         return typeArray;
-
     };
 
 
