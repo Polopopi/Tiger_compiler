@@ -67,6 +67,27 @@ public class Tds {
         return identifiantTablePrecedente;
     }
 
+    //On ne peut pas remonter dans les TDS seulement avec idParent
+    //Il faudrait un pointeur
+    //Sinon le visiteur remonte tout seul
+    public TypeEntry getTypeEntry(String type_id){
+        for (TypeEntry entry : typeEntries){
+            if (entry.getSymbol().equals(type_id)){
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    public VarFuncEntry getVarFuncEntry(String varFunc_id){
+        for (VarFuncEntry entry : varFuncEntries){
+            if (entry.getSymbol().equals(varFunc_id)){
+                return entry;
+            }
+        }
+        return null;
+    }
+
     //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
 }
