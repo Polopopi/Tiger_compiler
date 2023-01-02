@@ -2,6 +2,8 @@ package tds;
 
 import java.util.ArrayList;
 
+import ast.Print;
+
 public class Tds {
     private int numeroImbrication;
     private int identifiant;
@@ -62,6 +64,15 @@ public class Tds {
 
     public int getIdParent(){
         return identifiantTablePrecedente;
+    }
+
+    public TypeEntry getTypeEntry(String id) throws SemanticError{
+        for (TypeEntry typeEntry : typeEntries){
+            if (typeEntry.getSymbol().equals(id)){
+                return(typeEntry);
+            }
+        }
+        throw new SemanticError("Type inexistant");
     }
 
     //public String typeOfFuncParam(String symbol)

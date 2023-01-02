@@ -11,11 +11,17 @@ public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
     private boolean whileForNode;
+    private boolean inFunctionDecBloc;
+    private boolean inTypeDecBloc;
     private ArrayList<Tds> listeTds;
+    private ArrayList<Ast> verifListList;
+    
 
     TdsCreator(){
         this.listeTds=new ArrayList<Tds>(5);
         this.idCurrentTds=0;
+        this.inFunctionDecBloc = false;
+        this.inTypeDecBloc = false;
 
     }
     
@@ -536,29 +542,41 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Array affect){//array of type à vérifier le type 
+        String idType = affect.id.accept(this);
         String typeArray=affect.exprOr2.accept(this);
         String lengthArray=affect.exprOr1.accept(this);
-        if (!estUnEntier(lengthArray)) {
+        if (!lengthArray.equals("int")) {
             System.out.println("longueur d\'une liste erreur Array [longueur] of type");
         }
-        
-        return typeArray;
 
+        try {
+            ArrayEntry typeEntry = (ArrayEntry) listeTds.get(idCurrentTds).getTypeEntry(idType);
+            if (typeArray.equals(typeEntry.getTypeComposite())){
+                System.out.println("Le type attendu est " + typeEntry.getTypeComposite());
+            }
+
+        }
+        catch (Exception e){
+            System.out.println("Le type " + idType +"n'est pas un array");
+        }
+        return idType;
     };
 
 
     public String visit(LvalueRecord affect){
-        String id=affect.id.accept(this);
-        String type=affect.fieldList.accept(this);
-        RecordEntry newRecord=new RecordEntry(id,4);
-        this.listeTds.get(idCurrentTds).addType(newRecord);
-        return "";
+        
     };
 
 
-    public String visit(Call affect){
-        String id=affect.id.accept(this);
-        String type=affect.listExpr.accept(this);
+    public String visit(Call call){
+        String id=call.id.accept(this);
+
+        if (inFunctionDecBloc){
+            callList.add(call);
+
+        }
+
+        String type=call.listExpr.accept(this);
         RecordEntry newCall=new RecordEntry(id, 4);
         this.listeTds.get(idCurrentTds).addType(newCall);
         return "";
