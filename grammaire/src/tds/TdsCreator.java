@@ -605,28 +605,58 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(VarDeclaration affect){
         String id=affect.idf.accept(this);
         String exprType=affect.expr.accept(this);
+
+        if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
+            //ERREUR
+            System.out.println(id+"existe déjà");
+        }
         
-        VarFuncEntry varFuncEntryr=new VariableEntry(exprType,id,4);
+        VariableEntry varFuncEntryr=new VariableEntry(exprType,id,4);
         this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
         return "";
     };
 
     public String visit(VarDeclarationType affect){
+        String id=affect.idf.accept(this);
+        String type=affect.type.accept(this);
+        String exprType=affect.expr.accept(this);
 
+        if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
+            //ERREUR
+            System.out.println(id+"existe déjà");
+        }
+
+        if (!this.listeTds.get(idCurrentTds).existType(type)) {
+            //ERREUR
+            System.out.println(type+"n'a pas été déclaré");
+        }
+        VariableEntry variableEntry=new VariableEntry(type, id, 4);
+        this.listeTds.get(idCurrentTds).addVarFunc(variableEntry);
+        return "";
 
     };
 
 
     public String visit(FctDeclaration affect){
         String id=affect.fonctionID.accept(this);
-        String typeRetor=affect.fct2Declaration.accept(this);
-        String typeParametre=affect.typeField.accept(this);
+        String typeRetour=affect.fct2Declaration.accept(this);
+        FunctionEntry functionEntry=new FunctionEntry(typeRetour, id, 4);
 
-        // typeParametre = "id:type,id:type....""
-        // itérer
-        Parameter parameter=new Parameter(typeParametre, 4);
-        FunctionEntry functionEntry=new FunctionEntry(typeRetor, id, 4);
-        functionEntry.addParameter(parameter);
+        if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
+            //ERREUR
+            System.out.println(id+" existe déjà ");
+        }
+
+        String typeParametres=affect.typeFields.accept(this);
+        String[] parametres=typeParametres.split(",");
+
+        for(String unParametre : parametres ){
+            String[] item=unParametre.split(":");
+            String idUnParam=item[0];
+            String typeUnParam=item[1];
+            Parameter parameter=new Parameter(typeUnParam, 4);
+            functionEntry.addParameter(parameter);
+        }
         
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
@@ -662,20 +692,21 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(LvalueField affect){
+    public String visit(LvalueField affect){//à modifier enattandant la fonction dans tds
         String id = affect.id.accept(this);
         String type = affect.left.accept(this);
         //VERIF ID DANS RECORD
 
-        /*
+        
         if ( !this.listeTds.get(idCurrentTds).existType(type) ){
             System.out.println("Erreur type dans LvalueField");
-        } lunettes.verres.marque --> lunettes.verres existe car verres a été vérif avec getrecordfieldTDS(id)
+        } 
+        /*lunettes.verres.marque --> lunettes.verres existe car verres a été vérif avec getrecordfieldTDS(id)
         */
 
-        String typeId = getrecordfieldTDS(id)
+       // String typeId = getrecordfieldTDS(id);
 
-        return typeId;
+        return "typeId";
     };
     public boolean estUnEntier(String chaine) {
 		try {
