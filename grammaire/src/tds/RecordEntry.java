@@ -10,8 +10,8 @@ public class RecordEntry extends TypeEntry{
         super(symbol, size);
     }
 
-    public RecordEntry(String symbol, int size, ArrayList<String> previousAlias, String alias){
-        super(symbol, size, previousAlias, alias);
+    public RecordEntry(String symbol, int size, RecordEntry parentAlias){
+        super(symbol, size, parentAlias);
     }
 
     public void addField(Field field){

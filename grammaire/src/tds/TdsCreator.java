@@ -33,7 +33,7 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(Program program){
         //AJOUTER int et string à la TDS DU PROG
         //idPrec de la 1ere tds est null
-        Tds tds = new Tds(0, -1);
+        Tds tds = new Tds(0, null);
         // Ajouter string et int mais sous quelle classe ? On en crée une nouvelle ?
         // On sait que le type existe donc bon...
         //tds.addType(new );
@@ -48,8 +48,9 @@ public class TdsCreator implements AstVisitor<String> {
 
         Tds tds = listeTds.get(idCurrentTds);
 
-        if (!tds.existVarFunc(idf))
+        if (!tds.existVarFunc(idf)){
             //ERREUR
+        }
 
         VarFuncEntry entry = tds.getVarFuncEntry(idf);
         if (entry instanceof FunctionEntry){
@@ -256,7 +257,7 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(Let let){
         int imbrication = listeTds.get(idCurrentTds).getImbrication();
-        Tds tds = new Tds(imbrication + 1, idCurrentTds);
+        Tds tds = new Tds(imbrication + 1, listeTds.get(idCurrentTds));
         listeTds.add(tds);
         idCurrentTds = tds.getId();
         
@@ -264,7 +265,7 @@ public class TdsCreator implements AstVisitor<String> {
         
         String seqExprType = let.seqExpr.accept(this);
 
-        idCurrentTds = tds.getIdParent();
+        idCurrentTds = tds.getParent().getId();
 
         return seqExprType;
     };
@@ -277,14 +278,14 @@ public class TdsCreator implements AstVisitor<String> {
         String finType = forNode.fin.accept(this);
 
         int imbrication = listeTds.get(idCurrentTds).getImbrication();
-        Tds tds = new Tds(imbrication + 1, idCurrentTds);
+        Tds tds = new Tds(imbrication + 1, listeTds.get(idCurrentTds));
         listeTds.add(tds);
         idCurrentTds = tds.getId();
         tds.addVarFunc(new VariableEntry("int",id,4));
 
         String blocType = forNode.bloc.accept(this);
 
-        idCurrentTds = tds.getIdParent();
+        idCurrentTds = tds.getParent().getId();
 
         if (!(debutType.equals("int")) && finType.equals("int")){
             //ERREUR TYPE
@@ -407,9 +408,16 @@ public class TdsCreator implements AstVisitor<String> {
              *      type steven = {adiruin : int}
              *      type cloée = {adiruin : int}
              *      type stevenAlias = steven
+             *      type stevenAlias2 = stevenAlias
+             * 
+             *      steven 1
+             *      stevenAlias : listType = (steven) 2
+             *      stevenAlias2 : listType = (stevenAlias) 3
+             * 
+             *      
              * 
              *      var moi : steven := cloée{adiruien = 1} // ERREUR
-             *      var moi : steven := stevenAlias{adiruien = 1} // OUI
+             *      var moi : steven := stevenAlias2{adiruien = 1} // OUI
              * 
              *      function encoreMoi(oui : cloée) = expr
              * in
@@ -455,6 +463,10 @@ public class TdsCreator implements AstVisitor<String> {
              *              //ERREUR
              *      }
              * 
+             * JE SUIS LE MEILLEUR
+             * Je suis C(HUSKI)1 enfaite
+             * 
+             * ...
              * 
              * Solution pour la vérif des types si alias est une liste d'alias :
              *      "var moi : steven := stevenAlias{adiruien = 1}"
@@ -489,20 +501,40 @@ public class TdsCreator implements AstVisitor<String> {
             }
             
             // MODIFF GET POUR IT2RER SUR LES PARENTS
-            TypeEntry type_alias = listeTds.get(idCurrentTds).getTypeEntry(type_id);
+            TypeEntry type_alias = listeTds.get(idCurrentTds).getTypeEntry(type);
             
             if (type_alias instanceof ArrayEntry){
-                ArrayEntry typeEntry = new ArrayEntry(type_id, 4, ((ArrayEntry)type_alias).getTypeComposite(), type_alias.getAlias(), type_alias.getSymbol());
+                ArrayEntry typeEntry = new ArrayEntry(type_id, 4, ((ArrayEntry)type_alias).getTypeComposite(), (ArrayEntry)type_alias);
                 this.listeTds.get(idCurrentTds).addType(typeEntry);
             }
             else{ //RecordEntry
-                RecordEntry typeEntry = new RecordEntry(type_id, 4, type_alias.getAlias(), type_alias.getSymbol());
+                RecordEntry typeEntry = new RecordEntry(type_id, 4, (RecordEntry)type_alias);
                 this.listeTds.get(idCurrentTds).addType(typeEntry);
             }
             
         }
         return "";
     };
+
+    public boolean sameTypes(String type1, String type2){
+        TypeEntry parentAlias1 = listeTds.get(idCurrentTds).getTypeEntry(type1);
+        while (parentAlias1 != null){
+            if (type1.equals(type2)){
+                return true;
+            }
+            parentAlias1 = parentAlias1.getParentAlias();
+        }
+
+        TypeEntry parentAlias2 = listeTds.get(idCurrentTds).getTypeEntry(type2);
+        while (parentAlias2 != null){
+            if (type1.equals(type2)){
+                return true;
+            }
+            parentAlias2 = parentAlias2.getParentAlias();
+        }
+
+        return false;
+    }
 
 
     public String visit(Type_Fields type_Fields){
@@ -575,8 +607,8 @@ public class TdsCreator implements AstVisitor<String> {
         Il faut avoir l'idf du record actuel pcq quand on est dans le field "adiruien := 2" 
         on sait pas si on doit regarder dans cloée (erreur type) ou dans steven (tout va bien)
 
-        type steven = {adiruin : int};
-        type cloée = {adiruin : string};
+        type steven = {adiruin : int}; oui
+        type cloée = {adiruin : string}; non
 
         var wenjia := steven{adiruin := 2};
         */
