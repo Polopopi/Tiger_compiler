@@ -6,12 +6,12 @@ public class FctDeclaration implements Ast {
     }
 
     public Ast fonctionID;
-    public Ast typeField;
+    public Ast typeFields;
     public Ast fct2Declaration;
 
-    public FctDeclaration(Ast fonctionID, Ast typeField, Ast fct2Declaration){
+    public FctDeclaration(Ast fonctionID, Ast typeFields, Ast fct2Declaration){
         this.fonctionID=fonctionID;
-        this.typeField=typeField;
+        this.typeFields=typeFields;
         this.fct2Declaration=fct2Declaration;   
     }
 }
