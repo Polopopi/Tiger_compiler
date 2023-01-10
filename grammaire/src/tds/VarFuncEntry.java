@@ -9,7 +9,6 @@ public abstract class VarFuncEntry extends Entry {
         this.type = type;
     }
     
-
     public String getType(){
         return(this.type);
     }

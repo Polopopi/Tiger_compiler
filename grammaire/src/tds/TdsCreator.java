@@ -14,6 +14,7 @@ public class TdsCreator implements AstVisitor<String> {
     private boolean inFunctionDecBloc;
     private boolean inTypeDecBloc;
     private ArrayList<Tds> listeTds;
+<<<<<<< HEAD
     private ArrayList<Ast> verifListList;
     
 
@@ -23,10 +24,17 @@ public class TdsCreator implements AstVisitor<String> {
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
 
+=======
+    private Entry entry;
+
+    TdsCreator(){
+        this.listeTds=new ArrayList<Tds>(5);
+        this.idCurrentTds = 0;
+>>>>>>> 419f6380d98ca009354d67f791d0cd1a7a940bb8
     }
     
-    public String visit(Idf affect){
-
+    public String visit(Idf idf){
+        return idf.name;
     };
 
 
@@ -36,15 +44,39 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Program affect){
-
-
+    public String visit(Program program){
+        //AJOUTER int et string à la TDS DU PROG
+        //idPrec de la 1ere tds est null
+        Tds tds = new Tds(0, -1);
+        // Ajouter string et int mais sous quelle classe ? On en crée une nouvelle ?
+        // On sait que le type existe donc bon...
+        //tds.addType(new );
+        idCurrentTds = tds.getId();
+        return program.affect.accept(this);
     };
 
     // Partie 1 :
     public String visit(Affect affect){
+        String idf = affect.idf.accept(this);
+        String exprType = affect.expr.accept(this);
 
+        Tds tds = listeTds.get(idCurrentTds);
 
+        if (!tds.existVarFunc(idf))
+            //ERREUR
+
+        VarFuncEntry entry = tds.getVarFuncEntry(idf);
+        if (entry instanceof FunctionEntry){
+            //ERREUR
+        }
+        else{
+            String type = entry.getType();
+            if (!type.equals(exprType)){
+                //ERREUR TYPE
+            }
+        }
+
+        return "";
     };
 
 
@@ -207,9 +239,12 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(IfThen ifThen){
         String condType = ifThen.condition.accept(this);
-        //String blocType = ifThen.thenBlock.accept(this);
+        String blocType = ifThen.thenBlock.accept(this);
 
         if (!condType.equals("int")){
+            //ERREUR TYPE
+        }
+        if (!blocType.equals("")){
             //ERREUR TYPE
         }
 
@@ -254,11 +289,15 @@ public class TdsCreator implements AstVisitor<String> {
         String id = forNode.id.accept(this);
         String debutType = forNode.debut.accept(this);
         String finType = forNode.fin.accept(this);
+
         int imbrication = listeTds.get(idCurrentTds).getImbrication();
         Tds tds = new Tds(imbrication + 1, idCurrentTds);
         listeTds.add(tds);
+        idCurrentTds = tds.getId();
         tds.addVarFunc(new VariableEntry("int",id,4));
+
         String blocType = forNode.bloc.accept(this);
+
         idCurrentTds = tds.getIdParent();
 
         if (!(debutType.equals("int")) && finType.equals("int")){
@@ -296,7 +335,7 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(BreakExpr breakExpr){
         if (!whileForNode){
-            //ERREUR
+            //ERREUR ADRIRUIEN;
         }
         return "";
     };
@@ -304,7 +343,6 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(NilExpr affect){
         return "nil";
-
     };
 
 
@@ -319,71 +357,22 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(SeqExpr seqExpr){
-        String lastType;
+        String lastType = "";
 
-        if (!seqExpr.listExpr.isEmpty()){
-            lastType = seqExpr.listExpr.get(seqExpr.listExpr.size() - 1).accept(this);
+        for (Ast expr:seqExpr.listExpr){
+            lastType = expr.accept(this);
         }
-        else{
-            lastType = "";
-        }
-
+    
         return lastType;
     };
 
-    /*
-    public String visit(DeclarationList declarationList){
-        for (Ast dec : declarationList.listAst){
-            dec.accept(this);
-        }
-        return("");
-    }
-    */
 
     public String visit (DeclarationList declarationList){
-        /*
-        Tds tds = listeTds.get(idCurrentTds);
-
-        for (Ast dec : declarationList.listAst){
-            if (dec instanceof VarDeclaration){
-                VarDeclaration varDec = (VarDeclaration)dec;
-                String idf = ((Idf)varDec.idf).name;
-                String type = dec.accept(this);
-                tds.addVarFunc(new VariableEntry(type, idf, 4));
-            }
-
-            else if (dec instanceof VarDeclarationType){
-                VarDeclarationType varTypeDec = (VarDeclarationType)dec;
-                String idf = ((Idf)varTypeDec.idf).name;
-                String type = ((Idf)varTypeDec.idf).name;
-                tds.addVarFunc(new VariableEntry(type, idf, 4));
-            }
-
-            else if (dec instanceof FctDeclaration){
-                FctDeclaration funcDec = (FctDeclaration)dec;
-                String idf = ((Idf)funcDec.fonctionID).name;
-
-                FunctionEntry funcEntry;
-                String type;
-                if (funcDec.fct2Declaration instanceof Fct2Declaration){
-                    type = "";
-                } 
-                else{
-                    type = ((Idf)((Fct2DeclarationType)funcDec.fct2Declaration).typeID).name;
-                    String exprType = funcDec.fct2Declaration.accept(this);
-                }
-                funcEntry = new FunctionEntry(type, idf, 4);
-
-
-
-                tds.addVarFunc(funcEntry);
-            }
-        }
-        */
-
         for (Ast dec : declarationList.listAst){
             dec.accept(this);
         }
+
+        //VERIF RECURSIF
 
         return "";
     };
@@ -400,63 +389,231 @@ public class TdsCreator implements AstVisitor<String> {
         return(res);
     };
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Attention danger : Code WTF
     
     // Partie 3 :
-    public String visit(Type_Declaration affect){
+    public String visit(Type_Declaration type_Declaration){
+        String type_id = type_Declaration.type_id.accept(this);
+        String type = type_Declaration.type.accept(this);
 
+        if (type.startsWith("ArrayOf")){
+            String composite = type.substring(7);
+            TypeEntry typeEntry = new ArrayEntry(type_id,4,composite);
+            this.listeTds.get(idCurrentTds).addType(typeEntry);         
+        }
+        else if (type.startsWith("Record")){
+            // VERIF ID FIELD UNIQUE
 
+            String composites = type.substring(7);
+            String[] list =composites.split(",");
+
+            RecordEntry typeEntry = new RecordEntry(type_id,4);
+            for (String typeName: list){
+                String[] fieldArray = typeName.split(":");
+                Field field = new Field(fieldArray[0], fieldArray[1], 4);
+                // Je sais pas comment retrouver tous les fields deja créer ... ou si je dois créer de nouveaux ...
+                typeEntry.addField(field);
+            }
+            this.listeTds.get(idCurrentTds).addType(typeEntry);         
+        }
+        else {
+            /* let
+             *      type steven = {adiruin : int}
+             *      type cloée = {adiruin : int}
+             *      type stevenAlias = steven
+             * 
+             *      var moi : steven := cloée{adiruien = 1} // ERREUR
+             *      var moi : steven := stevenAlias{adiruien = 1} // OUI
+             * 
+             *      function encoreMoi(oui : cloée) = expr
+             * in
+             *      moi := let 
+             *                  var wenjia := cloée{adiruin = 1}
+             *             in wenjia end; // ERREUUUUUUUUUUUUUUUUUUUUUUUUUUUUR 
+             * 
+             *      encoreMoi(moi); //ERREUUUUUR
+             * end
+             * 
+             * 
+             * 
+             * // CAS DE SOLUTIONS SI LES TDS NE PEUVENT PAS REMONTER VERS LEUR PARENT D'ELLES MEME
+             * 
+             * Solution pour la vérif des types si alias contient que le type_id de la délcaration :
+             *      "var moi : steven := stevenAlias{adiruien = 1}"
+             *      type_id <-- steven
+             *      type_alias_id <-- stevenAlias
+             *      
+             *      if (!type_id.equals(type_alias_id)){
+             *          boolean found = false;
+             *          TypeEntry type;
+             *          Tds tds = listeTds.get(idCurrentTds);
+             *          while (tds != null && found != true){
+             *              type = tds.getTypeEntry(type_alias_id);
+             *              while(type != null && type.getAlias() != null){
+             *                  String alias = type.getAlias();
+             *                  if (type_id.equals(alias)){
+             *                      found = true;
+             *                      break;
+             *                  }
+             *                  type = tds.getTypeEntry(alias);
+             *              }
+             *              try{
+             *                  tds = listeTds.get(tds.getIdParent());
+             *              }
+             *              catch (IndexOutOfBoundsException ex){
+             *                  tds = null;
+             *              }
+             *          }
+             * 
+             *          if (!found)
+             *              //ERREUR
+             *      }
+             * 
+             * 
+             * Solution pour la vérif des types si alias est une liste d'alias :
+             *      "var moi : steven := stevenAlias{adiruien = 1}"
+             *      type_id <-- steven
+             *      type_alias_id <-- stevenAlias
+             *      
+             *      if (!type_id.equals(type_alias_id)){
+             *          TypeEntry type = null;
+             *          Tds tds = listeTds.get(idCurrentTds);
+             *          while (type == null && tds != null){
+             *              type = tds.getTypeEntry(type_alias_id);
+             *              try{
+             *                  tds = listeTds.get(tds.getIdParent());
+             *              }
+             *              catch (IndexOutOfBoundsException ex){
+             *                  tds = null;
+             *              }
+             *          }
+             * 
+             *          if (type == null)
+             *              //ERREUR TYPE ALIAS EXISTE PAS
+             *          else (!type.getAlias().contains(type_id))
+             *              //ERREUR DE TYPE
+             *              
+             *      }
+             */
+
+            //type est un type_id pour l'alias
+            // MODIFF VERIF EXISTENCE POUR IT2RER SUR LES PARENTS
+            if (!listeTds.get(idCurrentTds).existType(type)){
+                //ERREUR
+            }
+            
+            // MODIFF GET POUR IT2RER SUR LES PARENTS
+            TypeEntry type_alias = listeTds.get(idCurrentTds).getTypeEntry(type_id);
+            
+            if (type_alias instanceof ArrayEntry){
+                ArrayEntry typeEntry = new ArrayEntry(type_id, 4, ((ArrayEntry)type_alias).getTypeComposite(), type_alias.getAlias(), type_alias.getSymbol());
+                this.listeTds.get(idCurrentTds).addType(typeEntry);
+            }
+            else{ //RecordEntry
+                RecordEntry typeEntry = new RecordEntry(type_id, 4, type_alias.getAlias(), type_alias.getSymbol());
+                this.listeTds.get(idCurrentTds).addType(typeEntry);
+            }
+            
+        }
+        return "";
     };
 
 
-    public String visit(Type_Fields affect){
-
-
+    public String visit(Type_Fields type_Fields){
+        String res = "";
+        for (Ast expr : type_Fields.listAst){
+            if (!res.equals("")){
+                res += ",";
+            }
+            res += expr.accept(this);
+        }
+        return(res);
     };
 
 
-    public String visit(Type_Field affect){
-
-
+    public String visit(Type_Field type_Field){
+        String type_id = type_Field.type_id.accept(this);
+        String id = type_Field.id.accept(this);
+        if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){
+            System.out.println("Type pas trouvé");
+        }
+        /* je sais pas si on doit verifier si id existe deja ...  
+        if ( !this.listeTds.get(idCurrentTds).existVarFunc(id) ){ 
+            System.out.println("Id pas trouvé");
+        }
+        */
+        return id + ":" + type_id;
     };
 
 
-    public String visit(TypeType affect){
+    public String visit(TypeType typeType){                        
+        String typeID = typeType.typeCopie.accept(this);
 
-
+        if ( !this.listeTds.get(idCurrentTds).existType(typeID) ){
+            System.out.println("Type pas trouvé");
+        }
+        return typeID;
     };
 
 
-    public String visit(TypeRecord affect){
+    public String visit(TypeRecord typeRecord){
+        String types = typeRecord.typeRecord.accept(this);
+        String res="Record:"+types;
 
-
+        return res;
     };
 
 
-    public String visit(TypeRecordVoid affect){
-
-
+    public String visit(TypeRecordVoid typeRecordVoid){            
+        return "Record:";
     };
 
 
-    public String visit(TypeArray affect){
-
-
+    public String visit(TypeArray typeArrayy){
+    // verifier les types dans Array : soit string, int ou autre déjà existants
+    String type = typeArrayy.typeArray.accept(this);
+    if ( !this.listeTds.get(idCurrentTds).existType(type) ){
+        System.out.println("Type pas trouvé");
+    }
+    return "ArrayOf"+type;
     };
 
 
-    public String visit(Field affect){
+    public String visit(ast.Field fieldd){              
+        String id_f = fieldd.id.accept(this); //verres
+        String expr_f = fieldd.expr.accept(this); //2 (int)
 
+        String type_id = this.listeTds.get(idCurrentTds).typeOfVarFunc(id_f);
 
+        /*
+        Il faut avoir l'idf du record actuel pcq quand on est dans le field "adiruien := 2" 
+        on sait pas si on doit regarder dans cloée (erreur type) ou dans steven (tout va bien)
+
+        type steven = {adiruin : int};
+        type cloée = {adiruin : string};
+
+        var wenjia := steven{adiruin := 2};
+        */
+
+        if ( !type_id.equals(expr_f) ){
+            System.out.println("Id et expr pas du meme type");
+        }
+        return "";
     };
 
 
-    public String visit(FieldList affect){
-
-
+    public String visit(FieldList fieldList){
+        String res = "";
+        for (Ast expr : fieldList.listAst){
+            if (!res.equals("")){
+                res += ",";
+            }
+            res += expr.accept(this);
+        }
+        return(res);
     };
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Fin du danger le code est mieux
 
     // Partie 4 :
     public String visit(VarDeclaration affect){
@@ -466,6 +623,10 @@ public class TdsCreator implements AstVisitor<String> {
         VarFuncEntry varFuncEntryr=new VariableEntry(exprType,id,4);
         this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
         return "";
+    };
+
+    public String visit(VarDeclarationType affect){
+
 
     };
 
@@ -474,12 +635,15 @@ public class TdsCreator implements AstVisitor<String> {
         String id=affect.fonctionID.accept(this);
         String typeRetor=affect.fct2Declaration.accept(this);
         String typeParametre=affect.typeField.accept(this);
+
+        // typeParametre = "id:type,id:type....""
+        // itérer
         Parameter parameter=new Parameter(typeParametre, 4);
         FunctionEntry functionEntry=new FunctionEntry(typeRetor, id, 4);
         functionEntry.addParameter(parameter);
+        
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
-
     };
 
 
@@ -493,9 +657,11 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Fct2Declaration affect){
-        
+        String type = affect.exprAffect.accept(this);
+        if (!type.equals("")){
+            //ERREUR
+        }
         return "";
-
     };
 
 
@@ -507,19 +673,23 @@ public class TdsCreator implements AstVisitor<String> {
         }
         
         return typeRetour;
-
     };
 
 
     public String visit(LvalueField affect){
-        
-        String type=affect.left.accept(this);
+        String id = affect.id.accept(this);
+        String type = affect.left.accept(this);
+        //VERIF ID DANS RECORD
+
+        /*
         if ( !this.listeTds.get(idCurrentTds).existType(type) ){
             System.out.println("Erreur type dans LvalueField");
-        }
-        return "";
+        } lunettes.verres.marque --> lunettes.verres existe car verres a été vérif avec getrecordfieldTDS(id)
+        */
 
+        String typeId = getrecordfieldTDS(id)
 
+        return typeId;
     };
     public boolean estUnEntier(String chaine) {
 		try {
@@ -534,7 +704,7 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(LvalueIndex affect){
         String index=affect.exprOr.accept(this);
 
-        if (estUnEntier(index)==false) {
+        if (!index.equals("int")) {
             System.out.println("Erreur type dans LvalueIndex");
         }
         return "";
@@ -548,6 +718,7 @@ public class TdsCreator implements AstVisitor<String> {
         if (!lengthArray.equals("int")) {
             System.out.println("longueur d\'une liste erreur Array [longueur] of type");
         }
+<<<<<<< HEAD
 
         try {
             ArrayEntry typeEntry = (ArrayEntry) listeTds.get(idCurrentTds).getTypeEntry(idType);
@@ -560,6 +731,10 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Le type " + idType +"n'est pas un array");
         }
         return idType;
+=======
+        
+        return typeArray;
+>>>>>>> 419f6380d98ca009354d67f791d0cd1a7a940bb8
     };
 
 
@@ -587,9 +762,6 @@ public class TdsCreator implements AstVisitor<String> {
     //public String visit(RecordList affect);
 
 
-    public String visit(VarDeclarationType affect){
 
-
-    };
 
 }

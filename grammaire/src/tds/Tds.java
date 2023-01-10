@@ -14,6 +14,8 @@ public class Tds {
     private ArrayList<TypeEntry> typeEntries;
 
     public Tds(int numeroImbrication, int idPrec){
+        this.varFuncEntries = new ArrayList<VarFuncEntry>();
+        this.typeEntries = new ArrayList<TypeEntry>();
         this.numeroImbrication = numeroImbrication;
         this.identifiantTablePrecedente = idPrec;
         this.identifiant = idGen;
@@ -28,6 +30,7 @@ public class Tds {
     }
 
     public boolean existVarFunc(String symbol){
+        //V2RIF TABLES PR2C2DANTES
         for (VarFuncEntry entry : varFuncEntries){
             if (entry.getSymbol().equals(symbol)){
                 return(true);
@@ -66,14 +69,27 @@ public class Tds {
         return identifiantTablePrecedente;
     }
 
-    public TypeEntry getTypeEntry(String id) throws SemanticError{
-        for (TypeEntry typeEntry : typeEntries){
-            if (typeEntry.getSymbol().equals(id)){
-                return(typeEntry);
+    //On ne peut pas remonter dans les TDS seulement avec idParent
+    //Il faudrait un pointeur
+    //Sinon le visiteur remonte tout seul
+    public TypeEntry getTypeEntry(String type_id){
+        for (TypeEntry entry : typeEntries){
+            if (entry.getSymbol().equals(type_id)){
+                return entry;
             }
         }
-        throw new SemanticError("Type inexistant");
+        return null;
     }
 
+    public VarFuncEntry getVarFuncEntry(String varFunc_id){
+        for (VarFuncEntry entry : varFuncEntries){
+            if (entry.getSymbol().equals(varFunc_id)){
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
 }
