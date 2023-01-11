@@ -24,9 +24,14 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Print affect){
+    public String visit(Print print){
+        String type = print.value.accept(this);
 
+        if (!type.equals("int")){
+            //ERREUR
+        }
 
+        return "";
     };
 
 
@@ -295,7 +300,6 @@ public class TdsCreator implements AstVisitor<String> {
         }
         whileForNode = false;
         return "";
-
     };
 
 
