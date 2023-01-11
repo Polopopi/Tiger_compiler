@@ -19,10 +19,11 @@ public class TdsCreator implements AstVisitor<String> {
     
 
     TdsCreator(){
-        this.listeTds=new ArrayList<Tds>(5);
+        this.listeTds=new ArrayList<Tds>();
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
+        this.verifList=new ArrayList<LaterVerif>();
     }
 
     public void checkList(){
@@ -696,7 +697,6 @@ public class TdsCreator implements AstVisitor<String> {
                 checkList();
             }
         }
-        // creation TDS
 
         String id=affect.fonctionID.accept(this);
         String typeRetour=affect.fct2Declaration.accept(this);
@@ -717,14 +717,21 @@ public class TdsCreator implements AstVisitor<String> {
             String[] item=unParametre.split(":");
             String idUnParam=item[0];
             String typeUnParam=item[1];
+            //dans l'ancienne tds
             Parameter parameter=new Parameter(idUnParam, typeUnParam,4);
             functionEntry.addParameter(parameter);
+            //dans la nouvelle tds
             VariableEntry var=new VariableEntry(typeParametres, typeUnParam, 4);
             tdsFonction.addVarFunc(var);
-
+            
         }
-        
 
+        //vérification
+        this.verifList.add(new LaterVerif(typeParametres, affect.typeFields));
+        checkList();
+        //ajout de nouvelle tds
+        this.listeTds.add(tdsFonction);
+        //ajout de nouvelle fct
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
     };
@@ -741,15 +748,15 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(Fct2Declaration affect){
         //Ajouter la Tds dans LaterVerif
-        verifList.add(new LaterVerif("",affect));
-        return("");
+        verifList.add(new LaterVerif("",affect.exprAffect));
+        return ("");
     };
 
 
     public String visit(Fct2DeclarationType affect){
         String typeRetour=affect.typeID.accept(this);
         ((FunctionEntry) currentEntry).setType(typeRetour);
-        verifList.add(new LaterVerif(typeRetour, affect));
+        verifList.add(new LaterVerif(typeRetour, affect.exprAffect));
         
         return typeRetour;
     };
