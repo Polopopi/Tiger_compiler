@@ -19,14 +19,21 @@ class VariableEntry{
     int decalage
 }
 class FunctionEntry
-class TypeEntry
+abstract TypeEntry
+abstract VarFuncEntry
 
 
 Tds - "*"Entry
 
-Entry <|-- VariableEntry
-Entry <|-- FunctionEntry
+Entry <|-- VarFuncEntry
 Entry <|-- TypeEntry
+VarFuncEntry <|-- VariableEntry
+VarFuncEntry <|-- FunctionEntry
+TypeEntry <|-- ArrayEntry
+TypeEntry <|-- RecordEntry
+
+RecordEntry -- "*"Field 
+FunctionEntry -- "*"Parameter
 
 
 
