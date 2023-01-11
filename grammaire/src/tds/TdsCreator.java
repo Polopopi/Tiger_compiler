@@ -14,8 +14,8 @@ public class TdsCreator implements AstVisitor<String> {
     private boolean inFunctionDecBloc;
     private boolean inTypeDecBloc;
     private ArrayList<Tds> listeTds;
-<<<<<<< HEAD
-    private ArrayList<Ast> verifListList;
+    private Entry currentEntry;
+    private ArrayList<LaterVerif> verifList;
     
 
     TdsCreator(){
@@ -23,14 +23,12 @@ public class TdsCreator implements AstVisitor<String> {
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
+    }
 
-=======
-    private Entry entry;
-
-    TdsCreator(){
-        this.listeTds=new ArrayList<Tds>(5);
-        this.idCurrentTds = 0;
->>>>>>> 419f6380d98ca009354d67f791d0cd1a7a940bb8
+    public void checkList(){
+        for (LaterVerif toCheck : verifList){
+            toCheck.check(this);
+        }
     }
     
     public String visit(Idf idf){
@@ -368,12 +366,16 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit (DeclarationList declarationList){
+        ArrayList<LaterVerif> memory = verifList;
+        verifList = new ArrayList<>();
+
         for (Ast dec : declarationList.listAst){
             dec.accept(this);
         }
 
         //VERIF RECURSIF
 
+        verifList = memory;
         return "";
     };
 
@@ -652,6 +654,13 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(FctDeclaration affect){
+        if (!inFunctionDecBloc){
+            inFunctionDecBloc = true;
+            if (inTypeDecBloc){
+                inTypeDecBloc = false;
+                checkList();
+            }
+        }
         String id=affect.fonctionID.accept(this);
         String typeRetour=affect.fct2Declaration.accept(this);
         FunctionEntry functionEntry=new FunctionEntry(typeRetour, id, 4);
@@ -687,20 +696,15 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Fct2Declaration affect){
-        String type = affect.exprAffect.accept(this);
-        if (!type.equals("")){
-            //ERREUR
-        }
-        return "";
+        verifList.add(new LaterVerif("",affect));
+        return("");
     };
 
 
     public String visit(Fct2DeclarationType affect){
         String typeRetour=affect.typeID.accept(this);
-        String lastType=affect.exprAffect.accept(this);
-        if (!typeRetour.equals(lastType)){
-            //ERREUR
-        }
+        ((FunctionEntry) currentEntry).setType(typeRetour);
+        verifList.add(new LaterVerif(typeRetour, affect));
         
         return typeRetour;
     };
@@ -749,7 +753,6 @@ public class TdsCreator implements AstVisitor<String> {
         if (!lengthArray.equals("int")) {
             System.out.println("longueur d\'une liste erreur Array [longueur] of type");
         }
-<<<<<<< HEAD
 
         try {
             ArrayEntry typeEntry = (ArrayEntry) listeTds.get(idCurrentTds).getTypeEntry(idType);
@@ -762,14 +765,11 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Le type " + idType +"n'est pas un array");
         }
         return idType;
-=======
-        
-        return typeArray;
->>>>>>> 419f6380d98ca009354d67f791d0cd1a7a940bb8
     };
 
 
     public String visit(LvalueRecord affect){
+        
         
     };
 
