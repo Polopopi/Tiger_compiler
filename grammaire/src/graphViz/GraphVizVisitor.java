@@ -600,7 +600,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String nodeIdentifier=this.nextState();
         
         String id=fctDeclaration.fonctionID.accept(this);
-        String typeField=fctDeclaration.typeField.accept(this);
+        String typeField=fctDeclaration.typeFields.accept(this);
         String fct2declaration=fctDeclaration.fct2Declaration.accept(this);
 
         this.addNode(nodeIdentifier,"Function");
