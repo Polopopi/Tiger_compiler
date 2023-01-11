@@ -11,8 +11,8 @@ public class ArrayEntry extends TypeEntry{
         this.typeComposite = typeComposite;
     }
 
-    public ArrayEntry(String symbol, int size, String typeComposite, ArrayList<String> previousAlias, String alias){
-        super(symbol, size, previousAlias, alias);
+    public ArrayEntry(String symbol, int size, String typeComposite, ArrayEntry parentAlias){
+        super(symbol, size, parentAlias);
         this.typeComposite = typeComposite;
     }
 
