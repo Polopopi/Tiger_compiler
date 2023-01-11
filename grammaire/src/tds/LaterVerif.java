@@ -5,6 +5,7 @@ import ast.Ast;
 public class LaterVerif {
     private String typeId;
     private Ast bloc;
+    private Tds tds;
     
     public LaterVerif(String typeId, Ast bloc){
         this.typeId = typeId;

@@ -29,6 +29,7 @@ public class TdsCreator implements AstVisitor<String> {
         for (LaterVerif toCheck : verifList){
             toCheck.check(this);
         }
+        verifList.clear();
     }
     
     public String visit(Idf idf){
@@ -566,9 +567,10 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Type_Field type_Field){
-        String type_id = type_Field.type_id.accept(this);
+        // String type_id = type_Field.type_id.accept(this); -
         String id = type_Field.id.accept(this);
-        if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){
+        // new LaterVerif(id, type_Field.type_id); +
+        if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ // -
             System.out.println("Type pas trouvé");
         }
         /* je sais pas si on doit verifier si id existe deja ...  
@@ -576,7 +578,7 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Id pas trouvé");
         }
         */
-        return id + ":" + type_id;
+        return id + ":" /*+ type_id*/;
     };
 
 
@@ -626,7 +628,7 @@ public class TdsCreator implements AstVisitor<String> {
         type steven = {adiruin : int}; oui
         type cloée = {adiruin : string}; non
 
-        var wenjia := steven{adiruin := 2};
+        var wenjia := steven{adiruin = 2};
         */
 
         if ( !type_id.equals(expr_f) ){
@@ -678,6 +680,7 @@ public class TdsCreator implements AstVisitor<String> {
             //ERREUR
             System.out.println(type+"n'a pas été déclaré");
         }
+        String varType = this.listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
         VariableEntry variableEntry=new VariableEntry(type, id, 4);
         this.listeTds.get(idCurrentTds).addVarFunc(variableEntry);
         return "";
@@ -693,15 +696,18 @@ public class TdsCreator implements AstVisitor<String> {
                 checkList();
             }
         }
+        // creation TDS
+
         String id=affect.fonctionID.accept(this);
         String typeRetour=affect.fct2Declaration.accept(this);
         FunctionEntry functionEntry=new FunctionEntry(typeRetour, id, 4);
 
         if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
             //ERREUR
-            System.out.println(id+" existe déjà ");
+            System.out.println(id + " existe déjà ");
         }
 
+        // ajouter les paramètres dans la TDS
         String typeParametres=affect.typeFields.accept(this);
         String[] parametres=typeParametres.split(",");
 
@@ -713,6 +719,7 @@ public class TdsCreator implements AstVisitor<String> {
             functionEntry.addParameter(parameter);
         }
         
+
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
     };
@@ -728,6 +735,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Fct2Declaration affect){
+        //Ajouter la Tds dans LaterVerif
         verifList.add(new LaterVerif("",affect));
         return("");
     };
