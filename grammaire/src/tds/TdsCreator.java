@@ -701,6 +701,8 @@ public class TdsCreator implements AstVisitor<String> {
             //ERREUR
             System.out.println(id+" existe déjà ");
         }
+        //nouvelle tds
+        Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
 
         String typeParametres=affect.typeFields.accept(this);
         String[] parametres=typeParametres.split(",");
@@ -709,8 +711,11 @@ public class TdsCreator implements AstVisitor<String> {
             String[] item=unParametre.split(":");
             String idUnParam=item[0];
             String typeUnParam=item[1];
-            Parameter parameter=new Parameter(typeUnParam, 4);
+            Parameter parameter=new Parameter(idUnParam, typeUnParam,4);
             functionEntry.addParameter(parameter);
+            VariableEntry var=new VariableEntry(typeParametres, typeUnParam, 4);
+            tdsFonction.addVarFunc(var);
+
         }
         
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
