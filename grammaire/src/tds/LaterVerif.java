@@ -13,8 +13,11 @@ public class LaterVerif {
 
     public void check(TdsCreator creator){
         String computeType = bloc.accept(creator);
-        if (typeId.equals(computeType)){
+        if (!typeId.equals(computeType)){
             System.out.println("Error Type");
         }
     }
 }
+
+// type a := {x:b}
+// type b := {x:a}
