@@ -16,6 +16,7 @@ public class TdsCreator implements AstVisitor<String> {
     private ArrayList<Tds> listeTds;
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
+    private boolean inTypeFieldDec;
     
 
     TdsCreator(){
@@ -23,6 +24,7 @@ public class TdsCreator implements AstVisitor<String> {
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
+        this.inTypeFieldDec=false;
         this.verifList=new ArrayList<LaterVerif>();
     }
 
@@ -556,11 +558,17 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Type_Fields type_Fields){
+        if (!inTypeFieldDec) {
+            inTypeFieldDec=true;
+        }
         String res = "";
         for (Ast expr : type_Fields.listAst){
+            //this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
             if (!res.equals("")){
                 res += ",";
             }
+
+            
             res += expr.accept(this);
         }
         return(res);
@@ -568,18 +576,24 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Type_Field type_Field){
-        // String type_id = type_Field.type_id.accept(this); -
+        
+        String type_id = type_Field.type_id.accept(this); 
         String id = type_Field.id.accept(this);
-        // new LaterVerif(id, type_Field.type_id); +
-        if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ // -
+
+        //new LaterVerif(id, type_Field.type_id); +
+        
+        this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
+
+        /*if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ 
             System.out.println("Type pas trouvé");
         }
-        /* je sais pas si on doit verifier si id existe deja ...  
-        if ( !this.listeTds.get(idCurrentTds).existVarFunc(id) ){ 
-            System.out.println("Id pas trouvé");
-        }
         */
-        return id + ":" /*+ type_id*/;
+       
+        if ( !this.listeTds.get(idCurrentTds).existVarFunc(id) ){ 
+            System.out.println("Id existe déjà");
+        }
+        
+        return id ;
     };
 
 
