@@ -40,9 +40,12 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(Print affect){
-
-
+    public String visit(Print print){
+        String parameterType = print.value.accept(this);
+        if (!parameterType.equals("int")){
+            System.out.println("parametre de print incorrect, int attendu");
+        }
+        return("");
     };
 
 
@@ -400,9 +403,20 @@ public class TdsCreator implements AstVisitor<String> {
     
     // Partie 3 :
     public String visit(Type_Declaration type_Declaration){
-        String type_id = type_Declaration.type_id.accept(this);
-        String type = type_Declaration.type.accept(this);
+        if (!inTypeDecBloc){
+            inTypeDecBloc = true;
+            if (inFunctionDecBloc){
+                inFunctionDecBloc = false;
+                checkList();
+            }
+        }
 
+        String type_id = type_Declaration.type_id.accept(this);
+        currentEntry = new TypeEntry(type_id);
+
+        
+        String type = type_Declaration.type.accept(this);
+        /*
         if (type.startsWith("ArrayOf")){
             String composite = type.substring(7);
             TypeEntry typeEntry = new ArrayEntry(type_id,4,composite);
@@ -424,6 +438,7 @@ public class TdsCreator implements AstVisitor<String> {
             this.listeTds.get(idCurrentTds).addType(typeEntry);         
         }
         else {
+            */
             /* let
              *      type steven = {adiruin : int}
              *      type cloée = {adiruin : int}
@@ -752,6 +767,14 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(ProcDeclaration affect){
+        if (!inFunctionDecBloc){
+            inFunctionDecBloc = true;
+            if (inTypeDecBloc){
+                inTypeDecBloc = false;
+                checkList();
+            }
+        }
+
         String id=affect.fonctionID.accept(this);
         String typeRetor=affect.fct2Declaration.accept(this);
         FunctionEntry procEntry=new FunctionEntry(typeRetor, id, 4);
