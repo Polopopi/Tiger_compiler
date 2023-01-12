@@ -8,6 +8,10 @@ public abstract class Entry {
         this.symbol = symbol;
         this.size = size;
     }
+
+    public Entry(String symbol){
+        this.symbol = symbol;
+    }
     
     public String getSymbol(){
         return this.symbol;
@@ -15,5 +19,9 @@ public abstract class Entry {
 
     public int getSize(){
         return this.size;
+    }
+
+    public void setSize(int size){
+        this.size = size;
     }
 }

@@ -5,9 +5,9 @@ public class TypeRecord implements Ast{
         return visitor.visit(this);
     }
     
-    public Ast typeRecord;
+    public Ast fields;
 
-    public TypeRecord(Ast typeRecord){
-        this.typeRecord = typeRecord;
+    public TypeRecord(Ast fields){
+        this.fields =fields;
     }
 }
