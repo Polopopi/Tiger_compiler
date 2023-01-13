@@ -10,7 +10,7 @@ import ast.*;
 public class TdsCreator implements AstVisitor<String> {
 
     private int idCurrentTds;
-    private boolean whileForNode;
+    private int whileForNode;
     private boolean inFunctionDecBloc;
     private boolean inTypeDecBloc;
     private ArrayList<Tds> listeTds;
@@ -289,7 +289,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(For forNode){
-        whileForNode = true;
+        whileForNode++;
         String id = forNode.id.accept(this);
         String debutType = forNode.debut.accept(this);
         String finType = forNode.fin.accept(this);
@@ -310,16 +310,16 @@ public class TdsCreator implements AstVisitor<String> {
         if(! blocType.equals("")){
             //ERREUR TYPE
         }
-        whileForNode = false;
+        whileForNode--;
         return "";
     };
 
 
     public String visit(While whileNode){
-        whileForNode = true;
+        whileForNode++;
         String condType = whileNode.condition.accept(this);
         String blocType = whileNode.bloc.accept(this);
-        whileForNode = false;
+        whileForNode--;
 
         if (!condType.equals("int")){
             //ERREUR TYPE
@@ -337,7 +337,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(BreakExpr breakExpr){
-        if (!whileForNode){
+        if (whileForNode <= 0){
             //ERREUR ADRIRUIEN;
         }
         return "";
@@ -515,27 +515,21 @@ public class TdsCreator implements AstVisitor<String> {
              */
 
             //type est un type_id pour l'alias
-            // MODIFF VERIF EXISTENCE POUR IT2RER SUR LES PARENTS
+            
+            /*
             if (!listeTds.get(idCurrentTds).existType(type)){
                 //ERREUR
             }
+            */
+
+            // AJOUTEr LATERVERIF POUR VERIF QUE LE PARENT EXISTE
             
-            // MODIFF GET POUR IT2RER SUR LES PARENTS
-            TypeEntry type_alias = listeTds.get(idCurrentTds).getTypeEntry(type);
-            
-            if (type_alias instanceof ArrayEntry){
-                ArrayEntry typeEntry = new ArrayEntry(type_id, 4, ((ArrayEntry)type_alias).getTypeComposite(), (ArrayEntry)type_alias);
-                this.listeTds.get(idCurrentTds).addType(typeEntry);
-            }
-            else{ //RecordEntry
-                RecordEntry typeEntry = new RecordEntry(type_id, 4, (RecordEntry)type_alias);
-                this.listeTds.get(idCurrentTds).addType(typeEntry);
-            }
-            
+            listeTds.get(idCurrentTds).addType(new TypeAliasEntry(type_id, 4, type));           
         }
         return "";
     };
 
+    /*
     public boolean sameTypes(String type1, String type2){
         TypeEntry parentAlias1 = listeTds.get(idCurrentTds).getTypeEntry(type1);
         while (parentAlias1 != null){
@@ -555,6 +549,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         return false;
     }
+    */
 
 
     public String visit(Type_Fields type_Fields){

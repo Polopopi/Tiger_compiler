@@ -9,11 +9,7 @@ public class RecordEntry extends TypeEntry{
     public RecordEntry(String symbol, int size){
         super(symbol, size);
     }
-
-    public RecordEntry(String symbol, int size, RecordEntry parentAlias){
-        super(symbol, size, parentAlias);
-    }
-
+    
     public void addField(Field field){
         this.fields.add(field);
     }
