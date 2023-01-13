@@ -16,7 +16,7 @@ public class TdsCreator implements AstVisitor<String> {
     private ArrayList<Tds> listeTds;
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
-    private boolean inTypeFieldDec;
+  
     
 
     TdsCreator(){
@@ -24,7 +24,7 @@ public class TdsCreator implements AstVisitor<String> {
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
-        this.inTypeFieldDec=false;
+        
         this.verifList=new ArrayList<LaterVerif>();
     }
 
@@ -546,10 +546,9 @@ public class TdsCreator implements AstVisitor<String> {
                 RecordEntry typeEntry = new RecordEntry(type_id, 4, (RecordEntry)type_alias);
                 this.listeTds.get(idCurrentTds).addType(typeEntry);
             }
-            
-        }
+        
         return "";
-    };
+    }
 
     public boolean sameTypes(String type1, String type2){
         TypeEntry parentAlias1 = listeTds.get(idCurrentTds).getTypeEntry(type1);
@@ -573,42 +572,40 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Type_Fields type_Fields){
-        if (!inTypeFieldDec) {
-            inTypeFieldDec=true;
-        }
+       
         String res = "";
         for (Ast expr : type_Fields.listAst){
             //this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
             if (!res.equals("")){
                 res += ",";
             }
-
-            
             res += expr.accept(this);
         }
         return(res);
     };
 
-
+/*
+ * type test1={ok : test2}
+ * type test2={ok: test1}
+ * 
+ * 
+ * 
+ * 
+ */
     public String visit(Type_Field type_Field){
         
         String type_id = type_Field.type_id.accept(this); 
         String id = type_Field.id.accept(this);
-
-        //new LaterVerif(id, type_Field.type_id); +
         
+        //verif de type
         this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
 
         /*if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ 
             System.out.println("Type pas trouvé");
         }
         */
-       
-        if ( !this.listeTds.get(idCurrentTds).existVarFunc(id) ){ 
-            System.out.println("Id existe déjà");
-        }
-        
-        return id ;
+        //contrôle sémantique à faire plus tard
+        return id+":"+type_id ;
     };
 
 
@@ -623,7 +620,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(TypeRecord typeRecord){
-        String types = typeRecord.typeRecord.accept(this);
+        String types = typeRecord.fields.accept(this);
         String res="Record:"+types;
 
         return res;
@@ -755,9 +752,7 @@ public class TdsCreator implements AstVisitor<String> {
             
         }
 
-        //vérification
-        this.verifList.add(new LaterVerif(typeParametres, affect.typeFields));
-        checkList();
+    
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
         //ajout de nouvelle fct
