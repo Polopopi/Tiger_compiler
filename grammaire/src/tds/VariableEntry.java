@@ -5,4 +5,6 @@ public class VariableEntry extends VarFuncEntry {
     public VariableEntry(String type, String symbol,int size){
         super(type, symbol, size);
     }
+
+    public boolean isFunction(){return false;}
 }

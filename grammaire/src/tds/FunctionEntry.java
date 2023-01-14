@@ -14,4 +14,8 @@ public class FunctionEntry extends VarFuncEntry{
     public void addParameter(Parameter parameter){
         this.parameters.add(parameter);
     }
+
+    public boolean isFunction(){
+        return false;
+    }
 }
