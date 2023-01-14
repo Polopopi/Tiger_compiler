@@ -551,7 +551,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(TypeRecord typeRecord){
         String nodeIdentifier=this.nextState();
 
-        String record = typeRecord.typeRecord.accept(this);
+        String record = typeRecord.fields.accept(this);
 
         this.addNode(nodeIdentifier, "{ }");
         this.addTransition(nodeIdentifier, record);
@@ -600,26 +600,30 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String nodeIdentifier=this.nextState();
         
         String id=fctDeclaration.fonctionID.accept(this);
-        String typeField=fctDeclaration.typeField.accept(this);
-        String fct2declaration=fctDeclaration.fct2Declaration.accept(this);
+        String typeField=fctDeclaration.typeFields.accept(this);
+        String typeId=fctDeclaration.typeId.accept(this);
+        String exprAffect = fctDeclaration.exprAffect.accept(this);
 
         this.addNode(nodeIdentifier,"Function");
 
         this.addTransition(nodeIdentifier, id);
         this.addTransition(nodeIdentifier, typeField);
-        this.addTransition(nodeIdentifier, fct2declaration);
+        this.addTransition(nodeIdentifier, typeId);
+        this.addTransition(nodeIdentifier, exprAffect);
         return nodeIdentifier;
     }
     public String visit(ProcDeclaration procDeclaration){
         String nodeIdentifier=this.nextState();
         
         String id=procDeclaration.fonctionID.accept(this);
-        String fct2declaration=procDeclaration.fct2Declaration.accept(this);
+        String typeField=procDeclaration.typeFields.accept(this);
+        String exprAffect = procDeclaration.exprAffect.accept(this);
 
-        this.addNode(nodeIdentifier,"Function");
+        this.addNode(nodeIdentifier,"Procedure");
 
         this.addTransition(nodeIdentifier, id);
-        this.addTransition(nodeIdentifier, fct2declaration);
+        this.addTransition(nodeIdentifier, typeField);
+        this.addTransition(nodeIdentifier, exprAffect);
         return nodeIdentifier;
     }
     public String visit(Fct2Declaration fct2Declaration){

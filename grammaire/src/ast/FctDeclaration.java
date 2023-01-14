@@ -7,11 +7,13 @@ public class FctDeclaration implements Ast {
 
     public Ast fonctionID;
     public Ast typeFields;
-    public Ast fct2Declaration;
+    public Ast typeId;
+    public Ast exprAffect;
 
-    public FctDeclaration(Ast fonctionID, Ast typeFields, Ast fct2Declaration){
+    public FctDeclaration(Ast fonctionID, Ast typeFields, Ast typeId, Ast exprAffect){
         this.fonctionID=fonctionID;
         this.typeFields=typeFields;
-        this.fct2Declaration=fct2Declaration;   
+        this.typeId = typeId;
+        this.exprAffect=exprAffect;   
     }
 }

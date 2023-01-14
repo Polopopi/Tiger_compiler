@@ -16,4 +16,7 @@ public abstract class VarFuncEntry extends Entry {
     public void setType(String type){
         this.type = type;
     }
+
+    public abstract boolean isFunction();
+    public abstract boolean isVariable();
 }

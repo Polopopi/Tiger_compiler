@@ -6,11 +6,13 @@ public class ProcDeclaration implements Ast {
     }
 
     public Ast fonctionID;
-    public Ast fct2Declaration;
+    public Ast typeFields;
+    public Ast exprAffect;
 
-    public ProcDeclaration(Ast fonctionID, Ast fct2Declaration){
+    public ProcDeclaration(Ast fonctionID, Ast typeFields, Ast exprAffect){
         this.fonctionID=fonctionID;
-        this.fct2Declaration=fct2Declaration;
+        this.typeFields = typeFields;
+        this.exprAffect=exprAffect;
     }
     
 }

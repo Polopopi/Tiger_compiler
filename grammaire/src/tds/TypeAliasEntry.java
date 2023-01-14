@@ -7,7 +7,7 @@ public class TypeAliasEntry extends TypeEntry{
     private String parent;
 
     public TypeAliasEntry(String symbol, int size, String parent){
-        super(symbol, size);
+        super(symbol);
         this.parent = parent;
     }
 

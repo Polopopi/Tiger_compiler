@@ -400,35 +400,38 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		Ast exprOr=ctx.getChild(3).accept(this);
 		return new VarDeclaration(idf,exprOr);
 	}
-	
+
 	@Override public Ast visitFctDeclaration(tigerParser.FctDeclarationContext ctx) { 
 		/*fctDeclaration    
-       : 'function' id '(' type_fields? ')'  fct2Declaration
+       : 'function' id '(' type_fields? ')' (':' type_id)? '=' expr_affect
        ; */
 		Ast idf= ctx.getChild(1).accept(this);
-		String operation=ctx.getChild(3).toString();
-		if (operation.equals(")")) {//pas de type-fields
-			Ast fct2Declaraction=ctx.getChild(4).accept(this);
-			return new ProcDeclaration(idf,fct2Declaraction);
+		String parameters=ctx.getChild(3).toString();
+		Ast typeFields;
+		Ast exprAffect;
+		Ast typeId;
+		int exprAffectIndex;
 
+		if (parameters.equals(")")) {//pas de type-fields
+			typeFields = new Type_Fields();
+			exprAffectIndex = 7;
 	   	}
-	  	Ast typeFields=ctx.getChild(3).accept(this);
-		Ast fct2Declaraction=ctx.getChild(5).accept(this);
-		return new FctDeclaration(idf,typeFields,fct2Declaraction);
+	  	else{
+			typeFields = ctx.getChild(3).accept(this);
+			exprAffectIndex = 8;
+		}
 
-	}
-	
-	@Override public Ast visitExprAffection(tigerParser.ExprAffectionContext ctx) {
-		/*'=' expr_affect   */
-		return new Fct2Declaration(ctx.getChild(1).accept(this)); 
-	}
-	
-	@Override public Ast visitExprTypeAffection(tigerParser.ExprTypeAffectionContext ctx) { 
-		/*':' type_id '=' expr_affect */
-		Ast typeIdString=ctx.getChild(1).accept(this);
-
-		return new Fct2DeclarationType(typeIdString, ctx.getChild(3).accept(this));
-	}
+		if (ctx.getChild(exprAffectIndex - 3).toString().equals(":")){
+			typeId = ctx.getChild(exprAffectIndex - 2).accept(this);
+			exprAffect = ctx.getChild(exprAffectIndex).accept(this);
+			return new FctDeclaration(idf, typeFields, typeId, exprAffect);
+		}
+		else{
+			exprAffectIndex -= 2;
+			exprAffect = ctx.getChild(exprAffectIndex).accept(this);
+			return new ProcDeclaration(idf, typeFields, exprAffect);
+		}
+	}	
 	
 	@Override public Ast visitLvalue(tigerParser.LvalueContext ctx) {
 		/*   gen_id('['expr_or']')* ('.' id ('[' expr_or ']')*)* */

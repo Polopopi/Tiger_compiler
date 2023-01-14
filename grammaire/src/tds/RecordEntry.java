@@ -7,9 +7,13 @@ public class RecordEntry extends TypeEntry{
 
 
     public RecordEntry(String symbol, int size){
-        super(symbol, size);
+        super(symbol);
     }
-    
+
+    public RecordEntry(TypeEntry typeEntry){
+        super(typeEntry);
+    }
+
     public void addField(Field field){
         this.fields.add(field);
     }

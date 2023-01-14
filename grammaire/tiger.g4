@@ -129,12 +129,7 @@ varDeclaration
 
 // DECLARATION FONCTIONS
 fctDeclaration    
-       : 'function' id '(' type_fields? ')'  fct2Declaration
-       ;
-
-fct2Declaration   
-       : '=' expr_affect                  #ExprAffection
-       | ':' type_id '=' expr_affect      #ExprTypeAffection
+       : 'function' id '(' type_fields? ')' (':' type_id)? '=' expr_affect
        ;
 
 

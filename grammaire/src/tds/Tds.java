@@ -113,11 +113,16 @@ public class Tds {
     //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
 
+
+    
+
+
+
     public void print(String string){
         System.out.format(string);
     }
 
     public void printTds(){
-        print();
+        //print();
     }
 }

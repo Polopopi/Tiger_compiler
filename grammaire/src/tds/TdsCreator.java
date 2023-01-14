@@ -16,19 +16,24 @@ public class TdsCreator implements AstVisitor<String> {
     private ArrayList<Tds> listeTds;
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
+  
     
 
     TdsCreator(){
-        this.listeTds=new ArrayList<Tds>(5);
+        this.listeTds=new ArrayList<Tds>();
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
+        
+        this.verifList=new ArrayList<LaterVerif>();
     }
+
 
     public void checkList(){
         for (LaterVerif toCheck : verifList){
             toCheck.check(this);
         }
+        verifList.clear();
     }
     
     public String visit(Idf idf){
@@ -37,13 +42,11 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Print print){
-        String type = print.value.accept(this);
-
-        if (!type.equals("int")){
-            //ERREUR
+        String parameterType = print.value.accept(this);
+        if (!parameterType.equals("int")){
+            System.out.println("parametre de print incorrect, int attendu");
         }
-
-        return "";
+        return("");
     };
 
 
@@ -400,9 +403,20 @@ public class TdsCreator implements AstVisitor<String> {
     
     // Partie 3 :
     public String visit(Type_Declaration type_Declaration){
-        String type_id = type_Declaration.type_id.accept(this);
-        String type = type_Declaration.type.accept(this);
+        if (!inTypeDecBloc){
+            inTypeDecBloc = true;
+            if (inFunctionDecBloc){
+                inFunctionDecBloc = false;
+                checkList();
+            }
+        }
 
+        String type_id = type_Declaration.type_id.accept(this);
+        currentEntry = new TypeEntry(type_id);
+
+        
+        String type = type_Declaration.type.accept(this);
+        /*
         if (type.startsWith("ArrayOf")){
             String composite = type.substring(7);
             TypeEntry typeEntry = new ArrayEntry(type_id,4,composite);
@@ -424,6 +438,7 @@ public class TdsCreator implements AstVisitor<String> {
             this.listeTds.get(idCurrentTds).addType(typeEntry);         
         }
         else {
+            */
             /* let
              *      type steven = {adiruin : int}
              *      type cloée = {adiruin : int}
@@ -521,13 +536,10 @@ public class TdsCreator implements AstVisitor<String> {
                 //ERREUR
             }
             */
-
-            // AJOUTEr LATERVERIF POUR VERIF QUE LE PARENT EXISTE
-            
-            listeTds.get(idCurrentTds).addType(new TypeAliasEntry(type_id, 4, type));           
-        }
+   
+        
         return "";
-    };
+    }
 
     /*
     public boolean sameTypes(String type1, String type2){
@@ -553,8 +565,10 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Type_Fields type_Fields){
+       
         String res = "";
         for (Ast expr : type_Fields.listAst){
+            //this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
             if (!res.equals("")){
                 res += ",";
             }
@@ -563,19 +577,28 @@ public class TdsCreator implements AstVisitor<String> {
         return(res);
     };
 
-
+/*
+ * type test1={ok : test2}
+ * type test2={ok: test1}
+ * 
+ * 
+ * 
+ * 
+ */
     public String visit(Type_Field type_Field){
-        String type_id = type_Field.type_id.accept(this);
+        
+        String type_id = type_Field.type_id.accept(this); 
         String id = type_Field.id.accept(this);
-        if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){
+        
+        //verif de type
+        this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
+
+        /*if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ 
             System.out.println("Type pas trouvé");
         }
-        /* je sais pas si on doit verifier si id existe deja ...  
-        if ( !this.listeTds.get(idCurrentTds).existVarFunc(id) ){ 
-            System.out.println("Id pas trouvé");
-        }
         */
-        return id + ":" + type_id;
+        //contrôle sémantique à faire plus tard
+        return id+":"+type_id ;
     };
 
 
@@ -590,7 +613,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(TypeRecord typeRecord){
-        String types = typeRecord.typeRecord.accept(this);
+        String types = typeRecord.fields.accept(this);
         String res="Record:"+types;
 
         return res;
@@ -625,7 +648,7 @@ public class TdsCreator implements AstVisitor<String> {
         type steven = {adiruin : int}; oui
         type cloée = {adiruin : string}; non
 
-        var wenjia := steven{adiruin := 2};
+        var wenjia := steven{adiruin = 2};
         */
 
         if ( !type_id.equals(expr_f) ){
@@ -677,7 +700,14 @@ public class TdsCreator implements AstVisitor<String> {
             //ERREUR
             System.out.println(type+"n'a pas été déclaré");
         }
-        VariableEntry variableEntry=new VariableEntry(type, id, 4);
+
+        String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
+
+        if (!typeAlias.equals(exprType)){
+            // ERREUR
+        }
+
+        VariableEntry variableEntry=new VariableEntry(typeAlias, id, 4);
         this.listeTds.get(idCurrentTds).addVarFunc(variableEntry);
         return "";
 
@@ -692,15 +722,19 @@ public class TdsCreator implements AstVisitor<String> {
                 checkList();
             }
         }
+
         String id=affect.fonctionID.accept(this);
         String typeRetour=affect.fct2Declaration.accept(this);
         FunctionEntry functionEntry=new FunctionEntry(typeRetour, id, 4);
 
         if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
             //ERREUR
-            System.out.println(id+" existe déjà ");
+            System.out.println(id + " existe déjà ");
         }
+        //nouvelle tds
+        Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
 
+        // ajouter les paramètres dans la TDS
         String typeParametres=affect.typeFields.accept(this);
         String[] parametres=typeParametres.split(",");
 
@@ -708,16 +742,33 @@ public class TdsCreator implements AstVisitor<String> {
             String[] item=unParametre.split(":");
             String idUnParam=item[0];
             String typeUnParam=item[1];
-            Parameter parameter=new Parameter(typeUnParam, 4);
+            //dans l'ancienne tds
+            Parameter parameter=new Parameter(idUnParam, typeUnParam,4);
             functionEntry.addParameter(parameter);
+            //dans la nouvelle tds
+            VariableEntry var=new VariableEntry(typeParametres, typeUnParam, 4);
+            tdsFonction.addVarFunc(var);
+            
         }
-        
+
+    
+        //ajout de nouvelle tds
+        this.listeTds.add(tdsFonction);
+        //ajout de nouvelle fct
         this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
         return "";
     };
 
 
     public String visit(ProcDeclaration affect){
+        if (!inFunctionDecBloc){
+            inFunctionDecBloc = true;
+            if (inTypeDecBloc){
+                inTypeDecBloc = false;
+                checkList();
+            }
+        }
+
         String id=affect.fonctionID.accept(this);
         String typeRetor=affect.fct2Declaration.accept(this);
         FunctionEntry procEntry=new FunctionEntry(typeRetor, id, 4);
@@ -727,15 +778,16 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Fct2Declaration affect){
-        verifList.add(new LaterVerif("",affect));
-        return("");
+        //Ajouter la Tds dans LaterVerif
+        verifList.add(new LaterVerif("",affect.exprAffect));
+        return ("");
     };
 
 
     public String visit(Fct2DeclarationType affect){
         String typeRetour=affect.typeID.accept(this);
         ((FunctionEntry) currentEntry).setType(typeRetour);
-        verifList.add(new LaterVerif(typeRetour, affect));
+        verifList.add(new LaterVerif(typeRetour, affect.exprAffect));
         
         return typeRetour;
     };
