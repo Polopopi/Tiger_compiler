@@ -6,7 +6,7 @@ public class RecordEntry extends TypeEntry{
     private ArrayList<Field> fields;
 
 
-    public RecordEntry(String symbol, int size){
+    public RecordEntry(String symbol){
         super(symbol);
     }
 
@@ -16,6 +16,11 @@ public class RecordEntry extends TypeEntry{
 
     public void addField(Field field){
         this.fields.add(field);
+    }
+
+    @Override
+    public boolean isRecord(){
+        return true;
     }
 
 }

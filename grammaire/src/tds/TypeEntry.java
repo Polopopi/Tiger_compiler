@@ -12,4 +12,14 @@ public class TypeEntry extends Entry{
     public TypeEntry(TypeEntry typeEntry){
         super(typeEntry.getSymbol());
     }
+
+    public boolean isRecord(){
+        return false;
+    }
+
+    public boolean isArray(){
+        return false;
+    }
 }
+
+

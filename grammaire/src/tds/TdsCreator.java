@@ -16,15 +16,12 @@ public class TdsCreator implements AstVisitor<String> {
     private ArrayList<Tds> listeTds;
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
-  
-    
 
     TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
-        
         this.verifList=new ArrayList<LaterVerif>();
     }
 
@@ -34,6 +31,8 @@ public class TdsCreator implements AstVisitor<String> {
             toCheck.check(this);
         }
         verifList.clear();
+        inFunctionDecBloc = false;
+        inTypeDecBloc = false;
     }
     
     public String visit(Idf idf){
@@ -535,9 +534,21 @@ public class TdsCreator implements AstVisitor<String> {
             if (!listeTds.get(idCurrentTds).existType(type)){
                 //ERREUR
             }
-            */
-   
-        
+            
+            // MODIFF GET POUR IT2RER SUR LES PARENTS
+            TypeEntry type_alias = listeTds.get(idCurrentTds).getTypeEntry(type);
+            
+            if (type_alias instanceof ArrayEntry){
+                ArrayEntry typeEntry = new ArrayEntry(type_id, 4, ((ArrayEntry)type_alias).getTypeComposite(), (ArrayEntry)type_alias);
+                this.listeTds.get(idCurrentTds).addType(typeEntry);
+            }
+            else{ //RecordEntry
+                RecordEntry typeEntry = new RecordEntry(type_id, 4, (RecordEntry)type_alias);
+                this.listeTds.get(idCurrentTds).addType(typeEntry);
+            }
+            
+        }
+        */
         return "";
     }
 
@@ -561,20 +572,14 @@ public class TdsCreator implements AstVisitor<String> {
 
         return false;
     }
-    */
-
+*/
 
     public String visit(Type_Fields type_Fields){
-       
-        String res = "";
         for (Ast expr : type_Fields.listAst){
             //this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
-            if (!res.equals("")){
-                res += ",";
-            }
-            res += expr.accept(this);
+            expr.accept(this);
         }
-        return(res);
+        return("");
     };
 
 /*
@@ -589,49 +594,57 @@ public class TdsCreator implements AstVisitor<String> {
         
         String type_id = type_Field.type_id.accept(this); 
         String id = type_Field.id.accept(this);
-        
-        //verif de type
-        this.verifList.add(new LaterVerif(type_id, type_Field.type_id));
+
+        ((RecordEntry) currentEntry).addField(new tds.Field(id, type_id));
+        verifList.add(new LaterVerifType(type_id, listeTds.get(idCurrentTds)));
 
         /*if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ 
             System.out.println("Type pas trouvé");
         }
         */
-        //contrôle sémantique à faire plus tard
-        return id+":"+type_id ;
+        
+        return id ;
     };
 
 
-    public String visit(TypeType typeType){                        
+    public String visit(TypeType typeType){         
         String typeID = typeType.typeCopie.accept(this);
+        Tds tds = listeTds.get(idCurrentTds);
+        currentEntry = new AliasEntry((TypeEntry) currentEntry);
+        tds.addType((AliasEntry) currentEntry);
 
-        if ( !this.listeTds.get(idCurrentTds).existType(typeID) ){
-            System.out.println("Type pas trouvé");
-        }
+        verifList.add(new LaterVerifType(typeID,tds));
         return typeID;
     };
 
 
     public String visit(TypeRecord typeRecord){
-        String types = typeRecord.fields.accept(this);
-        String res="Record:"+types;
+        Tds tds = listeTds.get(idCurrentTds);
+        currentEntry = new RecordEntry((TypeEntry) currentEntry);
+        tds.addType((RecordEntry) currentEntry);
+        typeRecord.fields.accept(this);
 
-        return res;
+        return "";
     };
 
 
     public String visit(TypeRecordVoid typeRecordVoid){            
-        return "Record:";
+        Tds tds = listeTds.get(idCurrentTds);
+        currentEntry = new RecordEntry((TypeEntry) currentEntry);
+        tds.addType((RecordEntry) currentEntry);
+
+        return "";
     };
 
 
     public String visit(TypeArray typeArrayy){
     // verifier les types dans Array : soit string, int ou autre déjà existants
-    String type = typeArrayy.typeArray.accept(this);
-    if ( !this.listeTds.get(idCurrentTds).existType(type) ){
-        System.out.println("Type pas trouvé");
-    }
-    return "ArrayOf"+type;
+        Tds tds = listeTds.get(idCurrentTds);
+        currentEntry = new ArrayEntry((TypeEntry) currentEntry);
+        tds.addType((ArrayEntry) currentEntry);
+        String typeComp = typeArrayy.typeArray.accept(this);
+        verifList.add(new LaterVerifType(typeComp, tds));
+        return ("");
     };
 
 
@@ -673,6 +686,9 @@ public class TdsCreator implements AstVisitor<String> {
 
     // Partie 4 :
     public String visit(VarDeclaration affect){
+        if (inFunctionDecBloc || inTypeDecBloc){
+            checkList();
+        }
         String id=affect.idf.accept(this);
         String exprType=affect.expr.accept(this);
 
@@ -687,6 +703,9 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
     public String visit(VarDeclarationType affect){
+        if (inFunctionDecBloc || inTypeDecBloc){
+            checkList();
+        }
         String id=affect.idf.accept(this);
         String type=affect.type.accept(this);
         String exprType=affect.expr.accept(this);
@@ -716,11 +735,11 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(FctDeclaration affect){
         if (!inFunctionDecBloc){
-            inFunctionDecBloc = true;
             if (inTypeDecBloc){
                 inTypeDecBloc = false;
                 checkList();
             }
+            inFunctionDecBloc = true;
         }
 
         String id=affect.fonctionID.accept(this);
@@ -751,7 +770,9 @@ public class TdsCreator implements AstVisitor<String> {
             
         }
 
-    
+        //vérification
+        this.verifList.add(new LaterVerifFunc(typeParametres, affect.typeFields));
+        checkList();
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
         //ajout de nouvelle fct
@@ -762,11 +783,11 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(ProcDeclaration affect){
         if (!inFunctionDecBloc){
-            inFunctionDecBloc = true;
             if (inTypeDecBloc){
                 inTypeDecBloc = false;
                 checkList();
             }
+            inFunctionDecBloc = true;
         }
 
         String id=affect.fonctionID.accept(this);
@@ -779,7 +800,7 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(Fct2Declaration affect){
         //Ajouter la Tds dans LaterVerif
-        verifList.add(new LaterVerif("",affect.exprAffect));
+        verifList.add(new LaterVerifFunc("",affect.exprAffect));
         return ("");
     };
 
@@ -851,25 +872,35 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(LvalueRecord affect){
-        
-        
+    public String visit(LvalueRecord record){
+        String idType = record.id.accept(this);
+        currentEntry = listeTds.get(idCurrentTds).getTypeEntry(idType);
+        if (!((TypeEntry) currentEntry).isRecord()){
+            System.out.println("Le type " + idType + " n'est pas un record");
+        }
+        else{
+            record.fieldList.accept(this);
+        }
+
+
+        return(idType);
     };
 
 
     public String visit(Call call){
         String id=call.id.accept(this);
-
-        if (inFunctionDecBloc){
-            callList.add(call);
-
+        VarFuncEntry entry = listeTds.get(idCurrentTds).getVarFuncEntry(id);
+        Entry oldEntry = currentEntry;
+        currentEntry = entry;
+        if (!entry.isFunction()){
+            System.out.println("Le symbole " + id + " n'est pas une fonction");
+        }
+        else{
+            call.listExpr.accept(this);
         }
 
-        String type=call.listExpr.accept(this);
-        RecordEntry newCall=new RecordEntry(id, 4);
-        this.listeTds.get(idCurrentTds).addType(newCall);
-        return "";
-
+        currentEntry = oldEntry;
+        return(entry.getType());
     };
 
 
