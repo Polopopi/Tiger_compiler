@@ -15,10 +15,11 @@ public class FunctionEntry extends VarFuncEntry{
         this.parameters.add(parameter);
     }
 
-    public boolean isVariable(){
-        return false;
+    public ArrayList<Parameter> getParameters(){
+        return parameters;
     }
 
+    @Override
     public boolean isFunction(){
         return true;
     }

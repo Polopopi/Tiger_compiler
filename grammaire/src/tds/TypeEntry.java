@@ -20,6 +20,10 @@ public class TypeEntry extends Entry{
     public boolean isArray(){
         return false;
     }
+
+    public boolean isAlias(){
+        return false;
+    }
 }
 
 

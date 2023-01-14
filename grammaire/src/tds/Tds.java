@@ -89,7 +89,13 @@ public class Tds {
         while (tds != null){
             for (TypeEntry entry : tds.typeEntries){
                 if (entry.getSymbol().equals(type_id)){
-                    return entry;
+                    if (entry.isAlias()){
+                        TypeEntry aliasEntry = tds.getTypeEntry(((AliasEntry)entry).getParent());
+                        return aliasEntry;
+                    }
+                    else{
+                        return entry;
+                    }
                 }
             }
             tds = tds.getParent();
@@ -114,7 +120,7 @@ public class Tds {
     //public String typeOfFuncParam(String symbol)
 
 
-    
+
 
 
 
@@ -123,6 +129,11 @@ public class Tds {
     }
 
     public void printTds(){
-        //print();
+        for (VarFuncEntry varFuncEntry : varFuncEntries){
+            print(varFuncEntry.toString());
+        }
+        for (TypeEntry typeEntry : typeEntries){
+            print(typeEntry.toString());
+        }
     }
 }

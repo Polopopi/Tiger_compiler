@@ -17,6 +17,10 @@ public abstract class VarFuncEntry extends Entry {
         this.type = type;
     }
 
-    public abstract boolean isFunction();
-    public abstract boolean isVariable();
+    public boolean isFunction(){
+        return false;
+    }
+    public boolean isVariable(){
+        return false;
+    }
 }

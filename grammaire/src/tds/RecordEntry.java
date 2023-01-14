@@ -18,6 +18,24 @@ public class RecordEntry extends TypeEntry{
         this.fields.add(field);
     }
 
+    public boolean existField(String fieldId){
+        for (Field field : fields){
+            if (field.getFieldName().equals(fieldId)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getFieldType(String fieldId){
+        for (Field field : fields){
+            if (field.getFieldName().equals(fieldId)){
+                return field.getType();
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean isRecord(){
         return true;

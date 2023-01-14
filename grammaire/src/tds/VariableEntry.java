@@ -6,11 +6,8 @@ public class VariableEntry extends VarFuncEntry {
         super(type, symbol, size);
     }
 
+    @Override
     public boolean isVariable(){
         return true;
-    }
-
-    public boolean isFunction(){
-        return false;
     }
 }
