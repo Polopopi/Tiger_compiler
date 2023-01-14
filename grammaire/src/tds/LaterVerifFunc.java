@@ -13,10 +13,12 @@ public class LaterVerifFunc implements LaterVerif{
         this.tds = tds;
     }
 
-    public void check(TdsCreator creator){ On fait comment pour la tds ?
+    public void check(TdsCreator creator){
+        creator.setTds(tds);
         String computeType = bloc.accept(creator);
         if (!typeId.equals(computeType)){
             System.out.println("Error Type");
         }
+        creator.setTds(tds.getParent());
     }
 }

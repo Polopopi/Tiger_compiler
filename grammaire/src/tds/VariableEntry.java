@@ -12,6 +12,6 @@ public class VariableEntry extends VarFuncEntry {
     }
 
     public void print(){
-        System.out.printf("Id : %-20s | Type : %-20s\n", this.getSymbol(), this.getType());
+        System.out.printf("| Id : %-15s | Type :   %-15s |\n", this.getSymbol(), this.getType());
     }
 }

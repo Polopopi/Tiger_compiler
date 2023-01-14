@@ -44,6 +44,10 @@ public class Tds {
     }
 
     public boolean existType(String symbol){
+        if (symbol.equals("int") || symbol.equals("string")){
+            return true;
+        }
+
         Tds tds = this;
         while (tds != null){
             for(TypeEntry entry : tds.typeEntries){
@@ -85,6 +89,10 @@ public class Tds {
     //Il faudrait un pointeur
     //Sinon le visiteur remonte tout seul
     public TypeEntry getTypeEntry(String type_id){
+        if (type_id.equals("int") || type_id.equals("string")){
+            return new TypeEntry(type_id);
+        }
+
         Tds tds = this;
         while (tds != null){
             for (TypeEntry entry : tds.typeEntries){

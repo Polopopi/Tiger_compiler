@@ -28,6 +28,6 @@ public class ArrayEntry extends TypeEntry{
     }
 
     public void print(){
-        System.out.printf("Id : %-20s | Type %-20s\n", this.getSymbol(), typeComposite);
+        System.out.printf("| Id : %-15s | Type :   %-15s |\n", this.getSymbol(), typeComposite);
     }
 }

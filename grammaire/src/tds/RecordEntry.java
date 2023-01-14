@@ -42,10 +42,10 @@ public class RecordEntry extends TypeEntry{
     }
 
     public void print(){
-        System.out.printf("Id : %-20s", this.getSymbol());
+        System.out.printf("| Id : %-15s", this.getSymbol());
         for (Field field : fields){
-            System.out.printf(" | %-20s : %-20s", field.getFieldName(), field.getType());
+            System.out.printf(" | %-15s : %-15s", field.getFieldName(), field.getType());
         }
-        System.out.printf("\n");
+        System.out.printf(" |\n");
     }
 }
