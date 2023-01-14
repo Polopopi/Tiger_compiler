@@ -224,7 +224,7 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = mult.right.accept(this);
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur : les opérandes ne sont pas des int"); 
+            System.out.println("Erreur : les opérandes ne sont pas des int mult"); 
         }
 
         return "int";
