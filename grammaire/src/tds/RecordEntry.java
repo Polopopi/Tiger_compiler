@@ -41,4 +41,11 @@ public class RecordEntry extends TypeEntry{
         return true;
     }
 
+    public void print(){
+        System.out.printf("Id : %-20s", this.getSymbol());
+        for (Field field : fields){
+            System.out.printf(" | %-20s : %-20s", field.getFieldName(), field.getType());
+        }
+        System.out.printf("\n");
+    }
 }

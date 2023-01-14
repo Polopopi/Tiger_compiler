@@ -26,4 +26,8 @@ public class ArrayEntry extends TypeEntry{
     public boolean isArray(){
         return true;
     }
+
+    public void print(){
+        System.out.printf("Id : %-20s | Type %-20s\n", this.getSymbol(), typeComposite);
+    }
 }

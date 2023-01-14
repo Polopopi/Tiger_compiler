@@ -121,19 +121,12 @@ public class Tds {
 
 
 
-
-
-
-    public void print(String string){
-        System.out.format(string);
-    }
-
     public void printTds(){
         for (VarFuncEntry varFuncEntry : varFuncEntries){
-            print(varFuncEntry.toString());
+            varFuncEntry.print();
         }
         for (TypeEntry typeEntry : typeEntries){
-            print(typeEntry.toString());
+            typeEntry.print();
         }
     }
 }

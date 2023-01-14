@@ -14,10 +14,10 @@ import org.antlr.v4.runtime.RecognitionException;
 
 import parser.*;
 import parser.tigerParser.ProgramContext;
-
+import tds.TdsCreator;
 import ast.*;
 import graphViz.GraphVizVisitor;
-
+import tds.TdsCreator;
 
 public class Main {
 
@@ -69,6 +69,9 @@ public class Main {
         
             graphViz.dumpGraph("./out/AST.dot");
 
+            // Visiteur de création de la TDS + création de la TDS
+            TdsCreator tdsCreator = new TdsCreator();
+            ast.accept(tdsCreator);
         } 
         catch (IOException e) {
             e.printStackTrace();

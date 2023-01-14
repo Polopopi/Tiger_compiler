@@ -24,4 +24,6 @@ public abstract class Entry {
     public void setSize(int size){
         this.size = size;
     }
+
+    public abstract void print();
 }

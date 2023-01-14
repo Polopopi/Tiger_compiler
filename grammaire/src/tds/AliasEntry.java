@@ -24,4 +24,8 @@ public class AliasEntry extends TypeEntry{
     public boolean isAlias(){
         return true;
     }
+
+    public void print(){
+        System.out.printf("Id : %-20s | Parent : %-20s\n", this.getSymbol(), parent);
+    }
 }

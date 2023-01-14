@@ -17,7 +17,7 @@ public class TdsCreator implements AstVisitor<String> {
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
 
-    TdsCreator(){
+    public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
         this.idCurrentTds=0;
         this.inFunctionDecBloc = false;
@@ -57,7 +57,15 @@ public class TdsCreator implements AstVisitor<String> {
         // On sait que le type existe donc bon...
         //tds.addType(new );
         idCurrentTds = tds.getId();
-        return program.affect.accept(this);
+        program.affect.accept(this);
+
+        for (Tds tdsBis : listeTds){
+            System.out.printf("%d - %d", tdsBis.getImbrication(), tdsBis.getId());
+            tdsBis.printTds();
+            System.out.println("\n");
+        }
+
+        return "";
     };
 
     // Partie 1 :

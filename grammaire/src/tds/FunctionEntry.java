@@ -23,4 +23,12 @@ public class FunctionEntry extends VarFuncEntry{
     public boolean isFunction(){
         return true;
     }
+
+    public void print(){
+        System.out.printf("Id : %-20s | Retour %-20s", this.getSymbol(), this.getType());
+        for (Parameter param : parameters){
+            System.out.printf(" | %-20s : %-20s", param.getSymbole(), param.getType());
+        }
+        System.out.printf("\n");
+    }
 }

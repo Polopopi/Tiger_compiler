@@ -10,4 +10,8 @@ public class VariableEntry extends VarFuncEntry {
     public boolean isVariable(){
         return true;
     }
+
+    public void print(){
+        System.out.printf("Id : %-20s | Type : %-20s\n", this.getSymbol(), this.getType());
+    }
 }

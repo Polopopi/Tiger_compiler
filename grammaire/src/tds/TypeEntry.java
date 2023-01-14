@@ -24,6 +24,8 @@ public class TypeEntry extends Entry{
     public boolean isAlias(){
         return false;
     }
+
+    public void print(){};
 }
 
 
