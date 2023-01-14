@@ -551,7 +551,7 @@ public class TdsCreator implements AstVisitor<String> {
         }
         */
         return "";
-    };
+    }
 
     /*
 
@@ -584,7 +584,14 @@ public class TdsCreator implements AstVisitor<String> {
         return("");
     };
 
-
+/*
+ * type test1={ok : test2}
+ * type test2={ok: test1}
+ * 
+ * 
+ * 
+ * 
+ */
     public String visit(Type_Field type_Field){
         
         String type_id = type_Field.type_id.accept(this); 
