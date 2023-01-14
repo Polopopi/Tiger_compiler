@@ -16,6 +16,7 @@ public class TdsCreator implements AstVisitor<String> {
     private ArrayList<Tds> listeTds;
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
+    private boolean nameIdf = false;
 
     public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
@@ -40,7 +41,20 @@ public class TdsCreator implements AstVisitor<String> {
     }
     
     public String visit(Idf idf){
-        return idf.name;
+        if (nameIdf){
+            return idf.name;
+        }
+
+        // APPEL DE VARIABLE
+        else if (listeTds.get(idCurrentTds).existVarFunc(idf.name)){
+            return listeTds.get(idCurrentTds).getVarFuncEntry(idf.name).getType();
+        }
+
+        else{
+            System.out.println("Erreur : la variable " + idf.name + " n'est pas définie");
+        }
+        
+        return null;
     };
 
 
@@ -75,7 +89,9 @@ public class TdsCreator implements AstVisitor<String> {
 
     // Partie 1 :
     public String visit(Affect affect){
+        nameIdf = true;
         String idf = affect.idf.accept(this);
+        nameIdf = false;
         String exprType = affect.expr.accept(this);
 
         Tds tds = listeTds.get(idCurrentTds);
@@ -224,7 +240,7 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = mult.right.accept(this);
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur : les opérandes ne sont pas des int mult"); 
+            System.out.println("Erreur : les opérandes ne sont pas des int"); 
         }
 
         return "int";
@@ -305,7 +321,9 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit(For forNode){
         whileForNode++;
+        nameIdf = true;
         String id = forNode.id.accept(this);
+        nameIdf = false;
         String debutType = forNode.debut.accept(this);
         String finType = forNode.fin.accept(this);
 
@@ -428,7 +446,9 @@ public class TdsCreator implements AstVisitor<String> {
 
         Entry oldEntry = currentEntry;
 
+        nameIdf = true;
         String type_id = type_Declaration.type_id.accept(this);
+        nameIdf = false;
         currentEntry = new TypeEntry(type_id);
 
         if (listeTds.get(idCurrentTds).existType(type_id)){
@@ -619,9 +639,11 @@ public class TdsCreator implements AstVisitor<String> {
  * 
  */
     public String visit(Type_Field type_Field){
-        
+        nameIdf = true;
         String type_id = type_Field.type_id.accept(this); 
+        
         String id = type_Field.id.accept(this);
+        nameIdf = false;
         
         if (currentEntry instanceof RecordEntry){
             ((RecordEntry) currentEntry).addField(new tds.Field(id, type_id));
@@ -652,7 +674,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(TypeType typeType){         
+        nameIdf = true;
         String typeID = typeType.typeCopie.accept(this);
+        nameIdf = false;
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new AliasEntry((TypeEntry) currentEntry);
         tds.addType((AliasEntry) currentEntry);
@@ -692,8 +716,10 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
-    public String visit(ast.Field fieldd){              
+    public String visit(ast.Field fieldd){    
+        nameIdf = true;          
         String id_f = fieldd.id.accept(this); //verres
+        nameIdf = false;
         String expr_f = fieldd.expr.accept(this); //2 (int)
 
         if (!((RecordEntry)currentEntry).existField(id_f)){
@@ -738,7 +764,10 @@ public class TdsCreator implements AstVisitor<String> {
         if (inFunctionDecBloc || inTypeDecBloc){
             checkList();
         }
+
+        nameIdf = true;
         String id=affect.idf.accept(this);
+        nameIdf = false;
         String exprType=affect.expr.accept(this);
 
         if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
@@ -754,8 +783,11 @@ public class TdsCreator implements AstVisitor<String> {
         if (inFunctionDecBloc || inTypeDecBloc){
             checkList();
         }
+
+        nameIdf = true;
         String id=affect.idf.accept(this);
         String type=affect.type.accept(this);
+        nameIdf = false;
         String exprType=affect.expr.accept(this);
 
         if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
@@ -788,8 +820,10 @@ public class TdsCreator implements AstVisitor<String> {
             inFunctionDecBloc = true;
         }
 
+        nameIdf = true;
         String id=affect.fonctionID.accept(this);
         String typeId=affect.typeId.accept(this);
+        nameIdf = false;
         String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(typeId).getSymbol();
         FunctionEntry functionEntry=new FunctionEntry(typeAlias, id, 4);
 
@@ -833,7 +867,9 @@ public class TdsCreator implements AstVisitor<String> {
             inFunctionDecBloc = true;
         }
 
+        nameIdf = true;
         String id=affect.fonctionID.accept(this);
+        nameIdf = false;
         FunctionEntry procEntry=new FunctionEntry("", id, 4);
 
         if(this.listeTds.get(idCurrentTds).existVarFunc(id)){
@@ -867,7 +903,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Fct2DeclarationType affect){
+        nameIdf = true;
         String typeRetour=affect.typeID.accept(this);
+        nameIdf = false;
         ((FunctionEntry) currentEntry).setType(typeRetour);
         //verifList.add(new LaterVerifFunc(typeRetour, affect.exprAffect));
         
@@ -876,8 +914,10 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueField affect){//à modifier enattandant la fonction dans tds
+        nameIdf = true;
         String id = affect.id.accept(this);
-        String recordId = affect.left.accept(this);
+        String recordId = affect.left.accept(this); // type
+        nameIdf = false;
         //VERIF ID DU FIELD DANS RECORD
 
         if ( !this.listeTds.get(idCurrentTds).existType(recordId) ){
@@ -911,7 +951,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueIndex affect){
+        nameIdf = true;
         String arrayId = affect.left.accept(this);
+        nameIdf = false;
         String index=affect.exprOr.accept(this);
 
         TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(arrayId);
@@ -927,7 +969,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Array affect){//array of type à vérifier le type 
+        nameIdf = true;
         String idType = affect.id.accept(this);
+        nameIdf = false;
         String typeArray=affect.exprOr2.accept(this);
         String lengthArray=affect.exprOr1.accept(this);
         if (!lengthArray.equals("int")) {
@@ -949,7 +993,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueRecord record){
+        nameIdf = true;
         String idType = record.id.accept(this);
+        nameIdf = false;
         Entry oldEntry = currentEntry;
         currentEntry = listeTds.get(idCurrentTds).getTypeEntry(idType);
         if (!((TypeEntry) currentEntry).isRecord()){
@@ -965,7 +1011,9 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(Call call){
+        nameIdf = true;
         String id=call.id.accept(this);
+        nameIdf = false;
         VarFuncEntry entry = listeTds.get(idCurrentTds).getVarFuncEntry(id);
         Entry oldEntry = currentEntry;
         currentEntry = entry;

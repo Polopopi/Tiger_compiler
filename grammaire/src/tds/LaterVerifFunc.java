@@ -17,7 +17,7 @@ public class LaterVerifFunc implements LaterVerif{
         creator.setTds(tds);
         String computeType = bloc.accept(creator);
         if (!typeId.equals(computeType)){
-            System.out.println("Error Type");
+            System.out.println("Erreur : jsp");
         }
         creator.setTds(tds.getParent());
     }
