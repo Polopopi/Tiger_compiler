@@ -1,0 +1,16 @@
+(
+    for i := 1 to 5 do (
+        i := 0
+    );
+
+    for i := "a" to 5 do();
+
+    for i := 1 to 5 do (
+        let 
+            var j := 0
+        in 
+            i := 0
+        end;
+        i :=0
+    )
+)
