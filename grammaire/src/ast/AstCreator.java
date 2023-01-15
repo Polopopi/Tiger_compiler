@@ -256,10 +256,6 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	
 	@Override 
 	public Ast visitDeclaration_list(tigerParser.Declaration_listContext ctx) {
-		if (ctx.getChildCount() == 1){
-			return ctx.getChild(0).accept(this);
-		}
-
 		DeclarationList declaration_list = new DeclarationList();
 
 		for (int i = 0; i<ctx.getChildCount();i++){
