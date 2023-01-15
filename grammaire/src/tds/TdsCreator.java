@@ -17,6 +17,7 @@ public class TdsCreator implements AstVisitor<String> {
     private Entry currentEntry;
     private ArrayList<LaterVerif> verifList;
     private boolean nameIdf = false;
+    private boolean isError = false;
 
     public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
@@ -55,11 +56,13 @@ public class TdsCreator implements AstVisitor<String> {
 
         // APPEL DE VARIABLE
         else if (!listeTds.get(idCurrentTds).existVarFunc(idf.name)){
+            isError = true;
             System.out.println("Erreur ligne " + idf.lineNumber + " : la variable " + idf.name + " n'est pas définie");
             return null;
         }
         else if (!listeTds.get(idCurrentTds).getVarFuncEntry(idf.name).isVariable()){
             System.out.println("Erreur ligne " + idf.lineNumber + " : l'identificateur " + idf.name + " est celui d'une fonction");
+            isError = true;
             return null;
         }
         
@@ -71,6 +74,7 @@ public class TdsCreator implements AstVisitor<String> {
         String parameterType = print.value.accept(this);
         if (!parameterType.equals("int")){
             System.out.println("Erreur ligne " + print.lineNumber + " : le paramètre de print est incorrect, int attendu");
+            isError = true;
         }
         return("");
     };    
@@ -100,8 +104,9 @@ public class TdsCreator implements AstVisitor<String> {
         String idfType = affect.idf.accept(this);
         String exprType = affect.expr.accept(this);
 
-        if (!idfType.equals(exprType)){
+        if (idfType != null && !idfType.equals(exprType)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + ", " + idfType + " était attendu");
+            isError = true;
         }
 
         return "";
@@ -114,6 +119,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + or.lineNumber + " : les opérandes du OR ne sont pas des int");
+            isError = true;
         }
 
         return "int";
@@ -126,6 +132,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes du AND ne sont pas des int");
+            isError = true;
         }
 
         return "int";
@@ -138,9 +145,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!leftType.equals(rightType)){
             System.out.println("Erreur ligne " + equal.lineNumber + " : les opérandes de l'égalité ne sont pas du même type"); 
+            isError = true;
         }
         else if (!(leftType.equals("int") | leftType.equals("string"))){
             System.out.println("Erreur ligne " + equal.lineNumber + " : les opérandes ne sont pas de type int ou string"); 
+            isError = true;
         }
 
         return "int";
@@ -153,9 +162,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!leftType.equals(rightType)){
             System.out.println("Erreur ligne " + diff.lineNumber + " : les opérandes du différent ne sont pas du même type"); 
+            isError = true;
         }
         else if (!(leftType.equals("int") | leftType.equals("string"))){
             System.out.println("Erreur ligne " + diff.lineNumber + " : les opérandes ne sont pas de type int ou string"); 
+            isError = true;
         }
 
         return "int";
@@ -168,9 +179,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!leftType.equals(rightType)){
             System.out.println("Erreur ligne " + inf.lineNumber + " : les opérandes de l'inférieur ne sont pas du même type"); 
+            isError = true;
         }
         else if (!(leftType.equals("int") | leftType.equals("string"))){
             System.out.println("Erreur ligne " + inf.lineNumber + " : les opérandes ne sont pas de type int ou string"); 
+            isError = true;
         }
 
         return "int";
@@ -183,9 +196,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!leftType.equals(rightType)){
             System.out.println("Erreur ligne " + sup.lineNumber + " : les opérandes du supérieur ne sont pas du même type"); 
+            isError = true;
         }
         else if (!(leftType.equals("int") | leftType.equals("string"))){
             System.out.println("Erreur ligne " + sup.lineNumber + " : les opérandes ne sont pas de type int ou string"); 
+            isError = true;
         }
 
         return "int";
@@ -198,9 +213,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!leftType.equals(rightType)){
             System.out.println("Erreur ligne " + infEqual.lineNumber + " : les opérandes de l'inférieur ou égal ne sont pas du même type"); 
+            isError = true;
         }
         else if (!(leftType.equals("int") | leftType.equals("string"))){
             System.out.println("Erreur ligne " + infEqual.lineNumber + " : les opérandes ne sont pas de type int ou string"); 
+            isError = true;
         }
 
         return "int";
@@ -213,9 +230,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!leftType.equals(rightType)){
             System.out.println("Erreur ligne " + supEqual.lineNumber + " : les opérandes du supérieur ou égal ne sont pas du même type"); 
+            isError = true;
         }
         else if (!(leftType.equals("int") | leftType.equals("string"))){
             System.out.println("Erreur ligne " + supEqual.lineNumber + " : les opérandes ne sont pas de type int ou string"); 
+            isError = true;
         }
 
         return "int";
@@ -228,6 +247,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + plus.lineNumber + " : les opérandes du plus ne sont pas des int"); 
+            isError = true;
         }
 
         return "int";
@@ -240,6 +260,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + minus.lineNumber + " : les opérandes du moins ne sont pas des int"); 
+            isError = true;
         }
 
         return "int";
@@ -252,6 +273,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + mult.lineNumber + " : les opérandes de la multiplication ne sont pas des int"); 
+            isError = true;
         }
 
         return "int";
@@ -264,6 +286,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + divide.lineNumber + " : les opérandes de la division ne sont pas des int"); 
+            isError = true;
         }
 
         return "int";
@@ -277,6 +300,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!type.equals("int")){
             System.out.println("Erreur ligne " + minusExpr.lineNumber + " : l'expression n'est pas un int"); 
+            isError = true;
         }
 
         return "int";
@@ -289,9 +313,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!condType.equals("int")){
             System.out.println("Erreur ligne " + ifThen.lineNumber + " : la condition ne renvoie pas de int"); 
+            isError = true;
         }
         if (!blocType.equals("")){
             System.out.println("Erreur ligne " + ifThen.lineNumber + " : le bloc renvoie une valeur"); 
+            isError = true;
         }
 
         return "";
@@ -305,9 +331,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!condType.equals("int")){
             System.out.println("Erreur ligne " + ifThenElse.lineNumber + " : la condition ne renvoie pas de int"); 
+            isError = true;
         }
         if (!thenBlocType.equals(elseBlocType)){
             System.out.println("Erreur ligne " + ifThenElse.lineNumber + " : les blocs Then et Else ne renvoient pas le même type"); 
+            isError = true;
         }
 
         return thenBlocType;
@@ -350,9 +378,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!(debutType.equals("int")) && finType.equals("int")){
             System.out.println("Erreur ligne " + forNode.lineNumber + " : les bornes ne sont pas des int"); 
+            isError = true;
         }
         if(! blocType.equals("")){
             System.out.println("Erreur ligne " + forNode.lineNumber + " : le bloc renvoie une valeur"); 
+            isError = true;
         }
         whileForNode--;
         return "";
@@ -367,9 +397,11 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!condType.equals("int")){
             System.out.println("Erreur ligne " + whileNode.lineNumber + " : la condition ne renvoie pas de int"); 
+            isError = true;
         }
         if (!blocType.equals("")){
             System.out.println("Erreur ligne " + whileNode.lineNumber + " : le bloc renvoie une valeur"); 
+            isError = true;
         }
 
         return "";
@@ -383,6 +415,7 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(BreakExpr breakExpr){
         if (whileForNode <= 0){
             System.out.println("Erreur ligne " + breakExpr.lineNumber + " : le break est en dehors d'une boucle For ou While");
+            isError = true;
         }
         return "";
     };
@@ -437,6 +470,7 @@ public class TdsCreator implements AstVisitor<String> {
             String exprType = expr.accept(this);
             if (!parameters.get(i).getType().equals(exprType)){
                 System.out.println("Erreur ligne " + listExpr.lineNumber + " : affectation du type " + exprType + " vers le paramètre " + parameters.get(i).getSymbole() + " de type " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
+                isError = true;
             }
             i++;
         }
@@ -464,169 +498,15 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (listeTds.get(idCurrentTds).existLocalType(type_id)){
             System.out.println("Erreur ligne " + type_Declaration.lineNumber + " : le type " + type_id + " est déjà défini");
+            isError = true;
         }
         
         String type = type_Declaration.type.accept(this);
 
         currentEntry = oldEntry;
-        /*
-        if (type.startsWith("ArrayOf")){
-            String composite = type.substring(7);
-            TypeEntry typeEntry = new ArrayEntry(type_id,4,composite);
-            this.listeTds.get(idCurrentTds).addType(typeEntry);         
-        }
-        else if (type.startsWith("Record")){
-            // VERIF ID FIELD UNIQUE
-
-            String composites = type.substring(7);
-            String[] list =composites.split(",");
-
-            RecordEntry typeEntry = new RecordEntry(type_id,4);
-            for (String typeName: list){
-                String[] fieldArray = typeName.split(":");
-                Field field = new Field(fieldArray[0], fieldArray[1], 4);
-                // Je sais pas comment retrouver tous les fields deja créer ... ou si je dois créer de nouveaux ...
-                typeEntry.addField(field);
-            }
-            this.listeTds.get(idCurrentTds).addType(typeEntry);         
-        }
-        else {
-            */
-            /* let
-             *      type steven = {adiruin : int}
-             *      type cloée = {adiruin : int}
-             *      type stevenAlias = steven
-             *      type stevenAlias2 = stevenAlias
-             * 
-             *      steven 1
-             *      stevenAlias : listType = (steven) 2
-             *      stevenAlias2 : listType = (stevenAlias) 3
-             * 
-             *      
-             * 
-             *      var moi : steven := cloée{adiruien = 1} // ERREUR
-             *      var moi : steven := stevenAlias2{adiruien = 1} // OUI
-             * 
-             *      function encoreMoi(oui : cloée) = expr
-             * in
-             *      moi := let 
-             *                  var wenjia := cloée{adiruin = 1}
-             *             in wenjia end; // ERREUUUUUUUUUUUUUUUUUUUUUUUUUUUUR 
-             * 
-             *      encoreMoi(moi); //ERREUUUUUR
-             * end
-             * 
-             * 
-             * 
-             * // CAS DE SOLUTIONS SI LES TDS NE PEUVENT PAS REMONTER VERS LEUR PARENT D'ELLES MEME
-             * 
-             * Solution pour la vérif des types si alias contient que le type_id de la délcaration :
-             *      "var moi : steven := stevenAlias{adiruien = 1}"
-             *      type_id <-- steven
-             *      type_alias_id <-- stevenAlias
-             *      
-             *      if (!type_id.equals(type_alias_id)){
-             *          boolean found = false;
-             *          TypeEntry type;
-             *          Tds tds = listeTds.get(idCurrentTds);
-             *          while (tds != null && found != true){
-             *              type = tds.getTypeEntry(type_alias_id);
-             *              while(type != null && type.getAlias() != null){
-             *                  String alias = type.getAlias();
-             *                  if (type_id.equals(alias)){
-             *                      found = true;
-             *                      break;
-             *                  }
-             *                  type = tds.getTypeEntry(alias);
-             *              }
-             *              try{
-             *                  tds = listeTds.get(tds.getIdParent());
-             *              }
-             *              catch (IndexOutOfBoundsException ex){
-             *                  tds = null;
-             *              }
-             *          }
-             * 
-             *          if (!found)
-             *              System.out.println("ERREUR");
-             *      }
-             * 
-             * JE SUIS LE MEILLEUR
-             * Je suis C(HUSKI)1 enfaite
-             * 
-             * ...
-             * 
-             * Solution pour la vérif des types si alias est une liste d'alias :
-             *      "var moi : steven := stevenAlias{adiruien = 1}"
-             *      type_id <-- steven
-             *      type_alias_id <-- stevenAlias
-             *      
-             *      if (!type_id.equals(type_alias_id)){
-             *          TypeEntry type = null;
-             *          Tds tds = listeTds.get(idCurrentTds);
-             *          while (type == null && tds != null){
-             *              type = tds.getTypeEntry(type_alias_id);
-             *              try{
-             *                  tds = listeTds.get(tds.getIdParent());
-             *              }
-             *              catch (IndexOutOfBoundsException ex){
-             *                  tds = null;
-             *              }
-             *          }
-             * 
-             *          if (type == null)
-             *              System.out.println("ERREUR");  ALIAS EXISTE PAS
-             *          else (!type.getAlias().contains(type_id))
-             *              System.out.println("ERREUR"); DE 
-             *              
-             *      }
-             */
-
-            //type est un type_id pour l'alias
-            
-            /*
-            if (!listeTds.get(idCurrentTds).existType(type)){
-                System.out.println("ERREUR");
-            }
-            
-            // MODIFF GET POUR IT2RER SUR LES PARENTS
-            TypeEntry type_alias = listeTds.get(idCurrentTds).getTypeEntry(type);
-            
-            if (type_alias instanceof ArrayEntry){
-                ArrayEntry typeEntry = new ArrayEntry(type_id, 4, ((ArrayEntry)type_alias).getTypeComposite(), (ArrayEntry)type_alias);
-                this.listeTds.get(idCurrentTds).addType(typeEntry);
-            }
-            else{ //RecordEntry
-                RecordEntry typeEntry = new RecordEntry(type_id, 4, (RecordEntry)type_alias);
-                this.listeTds.get(idCurrentTds).addType(typeEntry);
-            }
-            
-        }
-        */
         return "";
     }
 
-    /*
-    public boolean sameTypes(String type1, String type2){
-        TypeEntry parentAlias1 = listeTds.get(idCurrentTds).getTypeEntry(type1);
-        while (parentAlias1 != null){
-            if (type1.equals(type2)){
-                return true;
-            }
-            parentAlias1 = parentAlias1.getParentAlias();
-        }
-
-        TypeEntry parentAlias2 = listeTds.get(idCurrentTds).getTypeEntry(type2);
-        while (parentAlias2 != null){
-            if (type1.equals(type2)){
-                return true;
-            }
-            parentAlias2 = parentAlias2.getParentAlias();
-        }
-
-        return false;
-    }
-*/
 
     public String visit(Type_Fields type_Fields){
         ArrayList<String> fieldsId = new ArrayList<String>();
@@ -635,6 +515,7 @@ public class TdsCreator implements AstVisitor<String> {
             String fieldId = field.accept(this);
             if (fieldsId.contains(fieldId)){
                 System.out.println("Erreur ligne " + type_Fields.lineNumber + " : le field " + fieldId + " a été défini plusieurs fois pour le record " + currentEntry.getSymbol());
+                isError = true;
             }
             fieldsId.add(fieldId);
         }
@@ -664,6 +545,7 @@ public class TdsCreator implements AstVisitor<String> {
             
             if (!listeTds.get(idCurrentTds).existType(type_id)){
                 System.out.println("Erreur ligne " + type_Field.lineNumber + " : le type " + type_id + " n'est pas défini pour le record " + currentEntry.getSymbol());
+                isError = true;
             }
 
             String typeParamAlias = listeTds.get(idCurrentTds).getTypeEntry(type_id).getSymbol();
@@ -738,6 +620,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if (!((RecordEntry)currentEntry).existField(id_f)){
             System.out.println("Erreur ligne " + fieldd.lineNumber + " : le field " + id_f + " n'est pas défini pour le record " + currentEntry.getSymbol());
+            isError = true;
         }
 
         String type_id = ((RecordEntry) currentEntry).getFieldType(id_f);
@@ -754,6 +637,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if ( !type_id.equals(expr_f) ){
             System.out.println("Erreur ligne " + fieldd.lineNumber + " : affectation du type " + expr_f + " vers le field " + id_f + " de type " + type_id + " pour le record " + currentEntry.getSymbol());
+            isError = true;
         }
         return id_f;
     };
@@ -765,6 +649,7 @@ public class TdsCreator implements AstVisitor<String> {
             String fieldId = expr.accept(this);
             if (fieldsId.contains(fieldId)){
                 System.out.println("Erreur ligne " + fieldList.lineNumber + " : le field " + fieldId + " a été initialisé plusieurs fois pour le record " + currentEntry.getSymbol());
+                isError = true;
             }
             fieldsId.add(fieldId);
         }
@@ -787,6 +672,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la variable " + id + " est déjà définie VARDEC");
+            isError = true;
         }
         
         VariableEntry varFuncEntryr=new VariableEntry(exprType,id,4);
@@ -807,16 +693,19 @@ public class TdsCreator implements AstVisitor<String> {
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la variable " + id + " est déjà définie VARTYPEDEC");
+            isError = true;
         }
 
         if (!this.listeTds.get(idCurrentTds).existType(type)) {
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + type + " n'est pas défini");
+            isError = true;
         }
 
         String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
 
         if (!typeAlias.equals(exprType)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + " vers la variable " + id + " de type " + typeAlias);
+            isError = true;
         }
 
         VariableEntry variableEntry=new VariableEntry(typeAlias, id, 4);
@@ -846,10 +735,12 @@ public class TdsCreator implements AstVisitor<String> {
 
         if(!this.listeTds.get(idCurrentTds).existType(typeId)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour la fonction " + functionEntry.getSymbol());
+            isError = true;
         }
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
+            isError = true;
         }
         //nouvelle tds
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
@@ -892,6 +783,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la procédure " + id + " est déjà définie pour la procédure " + procEntry.getSymbol());
+            isError = true;
         }
 
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
@@ -941,10 +833,12 @@ public class TdsCreator implements AstVisitor<String> {
         TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(recordId);
         if (!typeEntry.isRecord()){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + recordId + " n'est pas un Record");
+            isError = true;
         }
 
         if (!((RecordEntry)typeEntry).existField(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le field " + id + " n'est pas défini pour le record " + recordId);
+            isError = true;
         }
 
         /*lunettes.verres.marque --> lunettes.verres existe car verres a été vérif avec getrecordfieldTDS(id)
@@ -974,10 +868,12 @@ public class TdsCreator implements AstVisitor<String> {
         TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(arrayId);
         if (!typeEntry.isArray()){
             System.out.println("Erreur ligne " + affect.lineNumber + " : Le type " + arrayId + " n'est pas un Array");
+            isError = true;
         }
 
         if (!index.equals("int")) {
             System.out.println("Erreur ligne " + affect.lineNumber + " : type indice dans LvalueIndex");
+            isError = true;
         }
             
         return ((ArrayEntry) typeEntry).getTypeComposite();           
@@ -992,17 +888,20 @@ public class TdsCreator implements AstVisitor<String> {
         String lengthArray=affect.exprOr1.accept(this);
         if (!lengthArray.equals("int")) {
             System.out.println("longueur d\'une liste erreur Array [longueur] of type");
+            isError = true;
         }
 
         try {
             ArrayEntry typeEntry = (ArrayEntry) listeTds.get(idCurrentTds).getTypeEntry(idType);
             if (!typeArray.equals(typeEntry.getTypeComposite())){
                 System.out.println("Erreur ligne " + affect.lineNumber + " : le type attendu est " + typeEntry.getTypeComposite() + ", et non " + typeArray);
+                isError = true;
             }
 
         }
         catch (Exception e){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + idType +" n'est pas un array");
+            isError = true;
         }
         return idType;
     };
@@ -1016,6 +915,7 @@ public class TdsCreator implements AstVisitor<String> {
         currentEntry = listeTds.get(idCurrentTds).getTypeEntry(idType);
         if (!((TypeEntry) currentEntry).isRecord()){
             System.out.println("Erreur ligne " + record.lineNumber + " : le type " + idType + " n'est pas un record");
+            isError = true;
         }
         else{
             record.fieldList.accept(this);
@@ -1034,6 +934,7 @@ public class TdsCreator implements AstVisitor<String> {
         VarFuncEntry entry = listeTds.get(idCurrentTds).getVarFuncEntry(id);
         if (entry==null) {
             System.out.println("fonction ou type "+id+" n'existe pas.");
+            isError = true;
         }
         else{
             Entry oldEntry = currentEntry;
@@ -1043,6 +944,7 @@ public class TdsCreator implements AstVisitor<String> {
             //listeTds.get(idCurrentTds).printTds();
             if (!entry.isFunction()){
                 System.out.println("Erreur ligne " + call.lineNumber + " : le symbole " + id + " n'est pas une fonction");
+                isError = true;
             }
             else{
                 call.listExpr.accept(this);
