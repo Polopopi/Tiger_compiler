@@ -2,7 +2,7 @@ let
     type intArray = array of int
     type listCouple = {L1 : intArray,L2 : intArray}
     var L := intArray[10] of 0
-    function fusion(couple : listCouple,len1 : int, len2 : int) =
+    function fusion(couple : listCouple,len1 : int, len2 : int) : intArray =
         let 
             var L := intArray[len1 +len2] of 0 
             var i1 := 0

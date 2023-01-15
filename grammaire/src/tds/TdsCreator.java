@@ -919,20 +919,11 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(LvalueField affect){//à modifier enattandant la fonction dans tds
         nameIdf = true;
         String id = affect.id.accept(this);
-        String recordId = affect.left.accept(this); // type
         nameIdf = false;
+        String recordId = affect.left.accept(this); // type
         //VERIF ID DU FIELD DANS RECORD
 
-        if (nameIdf){
-            return recordId;
-        }
-
-        if ( !this.listeTds.get(idCurrentTds).existVarFunc(recordId) ){
-            System.out.println("Erreur type dans LvalueField");
-        } 
-
-        VarFuncEntry varEntry = listeTds.get(idCurrentTds).getVarFuncEntry(recordId);
-        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(varEntry.getType());
+        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(recordId);
         if (!typeEntry.isRecord()){
             System.out.println("Erreur : le type " + recordId + " n'est pas un Record");
         }
@@ -959,24 +950,13 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueIndex affect){
-        nameIdf = true;
         String arrayId = affect.left.accept(this);
-        nameIdf = false;
         String index=affect.exprOr.accept(this);
-
-        if (nameIdf){
-            return arrayId;
-        }
 
         //listeTds.get(idCurrentTds).printTds();
         //System.out.println(arrayId);
 
-        if ( !this.listeTds.get(idCurrentTds).existVarFunc(arrayId) ){
-            System.out.println("Erreur type dans LvalueIndex");
-        } 
-
-        VarFuncEntry varEntry = listeTds.get(idCurrentTds).getVarFuncEntry(arrayId);
-        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(varEntry.getType());
+        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(arrayId);
         if (!typeEntry.isArray()){
             System.out.println("Erreur : Le type " + arrayId + " n'est pas un Array");
         }
