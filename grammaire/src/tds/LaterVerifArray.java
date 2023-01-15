@@ -15,8 +15,10 @@ public class LaterVerifArray extends LaterVerifType{
 
     @Override
     public void check(TdsCreator creator){
+        creator.setNameIdf(true);
         String type = this.getTypeAst().accept(creator);
-        if (type != null){
+        creator.setNameIdf(false);
+        if (this.getTds().existType(type)){
             String typeAlias = this.getTds().getTypeEntry(type).getSymbol();
             arrayEntry.setTypeComposite(typeAlias);
         }

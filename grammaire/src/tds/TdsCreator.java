@@ -49,6 +49,10 @@ public class TdsCreator implements AstVisitor<String> {
     public void setTds(Tds tds){
         idCurrentTds = tds.getId();
     }
+
+    public void setNameIdf(boolean bool){
+        nameIdf = bool;
+    }
     
     public String visit(Idf idf){
 
@@ -59,7 +63,7 @@ public class TdsCreator implements AstVisitor<String> {
         // APPEL DE VARIABLE
         else if (!listeTds.get(idCurrentTds).existVarFunc(idf.name)){
             isError ++;
-            System.out.println("Erreur ligne " + idf.lineNumber + " : la variable " + idf.name + " n'est pas définie");
+            System.out.println("Erreur ligne " + idf.lineNumber + " : la variable " + idf.name + " n'est pas définie IDF");
             return null;
         }
         else if (!listeTds.get(idCurrentTds).getVarFuncEntry(idf.name).isVariable()){
@@ -531,7 +535,7 @@ public class TdsCreator implements AstVisitor<String> {
         String id = type_Field.id.accept(this);
         nameIdf = false;
         
-        if (((TypeEntry)currentEntry).isRecord()){
+        if (inTypeDecBloc){
             if (((RecordEntry) currentEntry).existField(id)){
                 System.out.println("Erreur ligne " + type_Field.lineNumber + " : le field " + id + " a été défini plusieurs fois pour le record " + currentEntry.getSymbol());
                 isError++;
@@ -541,7 +545,7 @@ public class TdsCreator implements AstVisitor<String> {
             ((RecordEntry) currentEntry).addField(new tds.Field(id, type_id));
             verifList.add(new LaterVerifRecord((RecordEntry)currentEntry, id, type_Field.type_id, listeTds.get(idCurrentTds)));
         }
-        else{
+        else if (inFunctionDecBloc){
             if (((FunctionEntry) currentEntry).existParam(id)){
                 System.out.println("Erreur ligne " + type_Field.lineNumber + " : le paramètre " + id + " a été défini plusieurs fois pour la fonction " + currentEntry.getSymbol());
                 isError++;
@@ -561,6 +565,10 @@ public class TdsCreator implements AstVisitor<String> {
             //dans la nouvelle tds
             VariableEntry var=new VariableEntry(typeParamAlias, id, 4);
             listeTds.get(idCurrentTds).addVarFunc(var);
+        }
+
+        else{
+            System.out.println("BIZARRE");
         }
         
         /*if ( !this.listeTds.get(idCurrentTds).existType(type_id) ){ 
@@ -609,6 +617,7 @@ public class TdsCreator implements AstVisitor<String> {
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new ArrayEntry((TypeEntry) currentEntry);
         tds.addType((ArrayEntry) currentEntry);
+        
         nameIdf = true;
         String typeComp = typeArrayy.typeArray.accept(this);
         nameIdf = false;
@@ -928,7 +937,7 @@ public class TdsCreator implements AstVisitor<String> {
         TypeEntry entry = listeTds.get(idCurrentTds).getTypeEntry(idType);
 
         if (entry == null){
-            System.out.println("Erreur : l'array "+idType+" n'est pas défini");
+            System.out.println("Erreur ligne " + affect.lineNumber + " : l'array "+idType+" n'est pas défini");
             isError++;
             return null;
         }
@@ -959,7 +968,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         TypeEntry entry = listeTds.get(idCurrentTds).getTypeEntry(idType);
         if (entry == null){
-            System.out.println("Erreur : le record "+idType+" n'est pas défini");
+            System.out.println("Erreur ligne " + record.lineNumber + " : le record "+idType+" n'est pas défini");
             isError++;
             return null;
         }
@@ -987,7 +996,7 @@ public class TdsCreator implements AstVisitor<String> {
         nameIdf = false;
         VarFuncEntry entry = listeTds.get(idCurrentTds).getVarFuncEntry(id);
         if (entry==null) {
-            System.out.println("Erreur : la fonction "+id+" n'est pas définie");
+            System.out.println("Erreur ligne " + call.lineNumber + " : la fonction "+id+" n'est pas définie");
             isError ++;
             return null;
         }
