@@ -44,6 +44,15 @@ public class Tds {
         return(false);
     }
 
+    public boolean existLocalVarFunc(String id){
+        for (VarFuncEntry entry : varFuncEntries){
+            if (entry.getSymbol().equals(id)){
+                return(true);
+            }
+        }
+        return false;
+    }
+
     public boolean existType(String symbol){
         if (symbol.equals("int") || symbol.equals("string")){
             return true;
@@ -59,6 +68,19 @@ public class Tds {
             tds = tds.getParent();
         }
         return(false);
+    }
+
+    public boolean existLocalType(String id){
+        if (id.equals("int") || id.equals("string")){
+            return true;
+        }
+
+        for(TypeEntry entry : typeEntries){
+            if (entry.getSymbol().equals(id)){
+                return(true);
+            }
+        }
+        return false;
     }
 
     public String typeOfVarFunc(String symbol){
@@ -127,8 +149,6 @@ public class Tds {
      
         return null;
     }
-
-    
 
     //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
