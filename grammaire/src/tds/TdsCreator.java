@@ -1018,9 +1018,6 @@ public class TdsCreator implements AstVisitor<String> {
         Entry oldEntry = currentEntry;
         currentEntry = entry;
 
-        System.out.println(id);
-        listeTds.get(idCurrentTds).printTds();
-
         if (!entry.isFunction()){
             System.out.println("Erreur : le symbole " + id + " n'est pas une fonction");
         }

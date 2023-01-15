@@ -14,11 +14,10 @@ public class LaterVerifFunc implements LaterVerif{
     }
 
     public void check(TdsCreator creator){
-        System.out.println("OUIIIIIIIIIIIIIIIIIIIII");
         creator.setTds(tds);
         String computeType = bloc.accept(creator);
         if (!typeId.equals(computeType)){
-            System.out.println("Erreur : le type de retour n'est pas celui attendu");
+            System.out.println("Erreur : retour du type " + computeType + ", " + typeId + " était attendu");
         }
         creator.setTds(tds.getParent());
     }
