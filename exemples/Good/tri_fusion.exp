@@ -8,7 +8,7 @@ let
             var i1 := 0
             var i2 := 0
         in
-            (while i1 <len1 & i2 < len2 do
+            (while i1 <len1 & i2 < len2 do(
                 if i1 = len1 then(
                     L[i1+i2] := couple.L2[i2];
                     i2 := i2 +1
@@ -29,7 +29,7 @@ let
                             i2 := i2 + 1
                         )
                     )
-                );
+                ));
             L)
         end
     /*function separe(L : intArray,len : int) : listCouple =

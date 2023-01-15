@@ -20,6 +20,27 @@ public class RecordEntry extends TypeEntry{
         this.fields.add(field);
     }
 
+    public Field getField(String fieldId){
+        for (Field field : fields){
+            if (field.getFieldName().equals(fieldId)){
+                return field;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Field> getFields(){
+        return fields;
+    }
+
+    public void removeField(String fieldId){
+        for (int i = fields.size()-1; i >= 0; i--){
+            if (fields.get(i).getFieldName().equals(fieldId)){
+                fields.remove(i);
+            }
+        }
+    }
+
     public boolean existField(String fieldId){
         for (Field field : fields){
             if (field.getFieldName().equals(fieldId)){

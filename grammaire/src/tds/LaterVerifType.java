@@ -1,16 +1,24 @@
 package tds;
+import ast.Ast;
 
-public class LaterVerifType implements LaterVerif{
-    private String type;
+public abstract class LaterVerifType implements LaterVerif{
+    private Ast typeAst;
     private Tds tds;
 
-    public LaterVerifType(String type, Tds tds){
-        this.type = type;
+    public LaterVerifType(Ast typeAst, Tds tds){
+        this.typeAst = typeAst;
         this.tds = tds;
     }
 
-    public void check(TdsCreator creator){
-        tds.existType(type);
+    public abstract void check(TdsCreator creator);
+    public abstract TypeEntry getTypeEntry();
+
+    public Tds getTds(){
+        return this.tds;
+    }
+
+    public Ast getTypeAst(){
+        return this.typeAst;
     }
     
 }

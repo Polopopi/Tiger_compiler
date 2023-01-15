@@ -150,6 +150,11 @@ public class Tds {
         return null;
     }
 
+
+    public void removeTypeEntry(TypeEntry typeEntry){
+        this.typeEntries.remove(typeEntry);
+    }
+
     //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
 
