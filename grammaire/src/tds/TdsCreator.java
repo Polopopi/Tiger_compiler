@@ -938,7 +938,8 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur type dans LvalueField");
         } 
 
-        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(recordId);
+        VarFuncEntry varEntry = listeTds.get(idCurrentTds).getVarFuncEntry(recordId);
+        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(varEntry.getType());
         if (!typeEntry.isRecord()){
             System.out.println("Erreur : le type " + recordId + " n'est pas un Record");
         }
@@ -972,7 +973,8 @@ public class TdsCreator implements AstVisitor<String> {
 
         listeTds.get(idCurrentTds).getParent().getParent().getParent().printTds();
 
-        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(arrayId);
+        VarFuncEntry varEntry = listeTds.get(idCurrentTds).getVarFuncEntry(arrayId);
+        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(varEntry.getType());
         if (!typeEntry.isArray()){
             System.out.println("Erreur : Le type " + arrayId + " n'est pas un Array");
         }
@@ -996,8 +998,8 @@ public class TdsCreator implements AstVisitor<String> {
 
         try {
             ArrayEntry typeEntry = (ArrayEntry) listeTds.get(idCurrentTds).getTypeEntry(idType);
-            if (typeArray.equals(typeEntry.getTypeComposite())){
-                System.out.println("Erreur : le type attendu est " + typeEntry.getTypeComposite());
+            if (!typeArray.equals(typeEntry.getTypeComposite())){
+                System.out.println("Erreur : le type attendu est " + typeEntry.getTypeComposite() + ", et non " + typeArray);
             }
 
         }
