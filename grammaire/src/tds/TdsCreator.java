@@ -849,6 +849,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueIndex affect){
+        inAffectation = false;
         String arrayId = affect.left.accept(this);
         String index=affect.exprOr.accept(this);
 
@@ -898,6 +899,7 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(LvalueRecord record){
+        inAffectation = false;
         nameIdf = true;
         String idType = record.id.accept(this);
         nameIdf = false;
