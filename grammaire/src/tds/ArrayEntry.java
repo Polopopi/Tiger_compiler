@@ -32,6 +32,6 @@ public class ArrayEntry extends TypeEntry{
     }
 
     public void print(){
-        System.out.printf("| Id : %-15s | Type :   %-15s |\n", this.getSymbol(), typeComposite);
+        System.out.printf("| Id : %-15s | Type :   %-15s |\n", this.getSymbol(), "array of "+typeComposite);
     }
 }
