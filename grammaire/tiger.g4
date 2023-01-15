@@ -48,8 +48,8 @@ expr
        : '-' expr                                                                   #MinusExpr
        | 'if' expr_or 'then' '(' seq_expr ')' ('else' '(' seq_expr ')' )?           #IfExpr
        | 'let' declaration_list 'in' seq_expr 'end'                                 #LetExpr
-       | 'for' id ':=' expr_or 'to' expr_or 'do' expr_affect                        #ForExpr
-       | 'while' expr_or 'do' expr_affect                                           #WhileExpr
+       | 'for' id ':=' expr_or 'to' expr_or 'do' '(' seq_expr ')'                   #ForExpr
+       | 'while' expr_or 'do' '(' seq_expr ')'                                      #WhileExpr
        | lvalue ('('list_expr')'|'{'field_list'}'|'['expr_or']' 'of'  expr_or)?     #LValueExpr
        | '('seq_expr')'                                                             #SeqExpr
        | STR                                                                        #StrExpr

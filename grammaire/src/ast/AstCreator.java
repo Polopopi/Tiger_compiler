@@ -201,13 +201,13 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		Ast id = ctx.getChild(1).accept(this); 
 		Ast debut = ctx.getChild(3).accept(this);
 		Ast fin = ctx.getChild(5).accept(this);
-		Ast bloc = ctx.getChild(7).accept(this);
+		Ast bloc = ctx.getChild(8).accept(this);
 		return(new For(ctx.start.getLine(),id,debut,fin,bloc));
 	}
 
 	@Override public Ast visitWhileExpr(tigerParser.WhileExprContext ctx){
 		Ast condition = ctx.getChild(1).accept(this);
-		Ast bloc = ctx.getChild(3).accept(this);
+		Ast bloc = ctx.getChild(4).accept(this);
 		return(new While(ctx.start.getLine(),condition,bloc));
 	}
 
