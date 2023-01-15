@@ -1,6 +1,12 @@
 package ast;
 
-public interface Ast {
+public abstract class Ast {
+
+    public int lineNumber;
+
+    public Ast(int lineNumber){
+        this.lineNumber = lineNumber;
+    }
 
     public abstract <T> T accept(AstVisitor<T> visitor);
     

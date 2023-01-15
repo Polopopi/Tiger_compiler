@@ -1,6 +1,6 @@
 package ast;
 
-public class Program implements Ast {
+public class Program extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -9,7 +9,8 @@ public class Program implements Ast {
 
     public Ast affect;
 
-    public Program(Ast affect) {
+    public Program(int lineNumber, Ast affect) {
+        super(lineNumber);
         this.affect = affect;
     }
 }

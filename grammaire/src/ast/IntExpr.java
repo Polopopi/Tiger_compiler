@@ -1,6 +1,6 @@
 package ast;
 
-public class IntExpr implements Ast {
+public class IntExpr extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -9,7 +9,8 @@ public class IntExpr implements Ast {
 
     public int value;
 
-    public IntExpr(int value){
+    public IntExpr(int lineNumber, int value){
+        super(lineNumber);
         this.value = value;
     }
 }

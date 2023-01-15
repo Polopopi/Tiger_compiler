@@ -1,6 +1,6 @@
 package ast;
 
-public class Call implements Ast{
+public class Call extends Ast{
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
@@ -8,7 +8,8 @@ public class Call implements Ast{
     public Ast id;
     public Ast listExpr;
 
-    public Call(Ast id,Ast listExpr){
+    public Call(int lineNumber, Ast id,Ast listExpr){
+        super(lineNumber);
         this.id=id;
         this.listExpr=listExpr;
     }

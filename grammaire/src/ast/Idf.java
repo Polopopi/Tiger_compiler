@@ -1,6 +1,6 @@
 package ast;
 
-public class Idf implements Ast{
+public class Idf extends Ast{
 
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
@@ -8,7 +8,8 @@ public class Idf implements Ast{
 
     public String name;
 
-    public Idf(String name){
+    public Idf(int lineNumber, String name){
+        super(lineNumber);
         this.name=name;
     }
 }

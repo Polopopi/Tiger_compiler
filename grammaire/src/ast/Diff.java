@@ -1,6 +1,6 @@
 package ast;
 
-public class Diff implements Ast {
+public class Diff extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -11,7 +11,8 @@ public class Diff implements Ast {
     public Ast right;
 
     /* expr_plus <> expr_plus */
-    public Diff(Ast left, Ast right){
+    public Diff(int lineNumber, Ast left, Ast right){
+        super(lineNumber);
         this.left = left;
         this.right = right;
     }

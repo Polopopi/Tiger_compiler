@@ -1,6 +1,6 @@
 package ast;
 
-public class IfThenElse implements Ast{
+public class IfThenElse extends Ast{
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -11,7 +11,8 @@ public class IfThenElse implements Ast{
     public Ast thenBlock;
     public Ast elseBlock; 
 
-    public IfThenElse(Ast condition, Ast thenBlock, Ast elseBlock){
+    public IfThenElse(int lineNumber, Ast condition, Ast thenBlock, Ast elseBlock){
+        super(lineNumber);
         this.condition = condition;
         this.thenBlock = thenBlock;
         this.elseBlock = elseBlock;

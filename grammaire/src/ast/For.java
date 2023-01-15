@@ -1,7 +1,7 @@
 package ast;
 
 
-public class For implements Ast{
+public class For extends Ast{
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
@@ -11,7 +11,8 @@ public class For implements Ast{
     public Ast fin;
     public Ast bloc;
 
-    public For(Ast id,Ast debut,Ast fin,Ast bloc){
+    public For(int lineNumber, Ast id,Ast debut,Ast fin,Ast bloc){
+        super(lineNumber);
         this.id = id;
         this.debut = debut;
         this.fin = fin;
