@@ -22,6 +22,10 @@ public class ArrayEntry extends TypeEntry{
         return typeComposite;
     }
 
+    public void setTypeComposite(String typeComposite) {
+        this.typeComposite = typeComposite;
+    }
+
     @Override
     public boolean isArray(){
         return true;

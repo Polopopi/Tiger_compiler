@@ -299,7 +299,7 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur : les blocs Then et Else ne renvoient pas le même type"); 
         }
 
-        return "";
+        return thenBlocType;
     };
 
 
@@ -710,7 +710,10 @@ public class TdsCreator implements AstVisitor<String> {
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new ArrayEntry((TypeEntry) currentEntry);
         tds.addType((ArrayEntry) currentEntry);
+        nameIdf = true;
         String typeComp = typeArrayy.typeArray.accept(this);
+        nameIdf = false;
+        ((ArrayEntry) currentEntry).setTypeComposite(typeComp);
         verifList.add(new LaterVerifType(typeComp, tds));
         return ("");
     };
