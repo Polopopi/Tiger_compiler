@@ -7,8 +7,7 @@ in
           in
             rec2
           end;
-  print_int(rec1.foo);
-  print("\n")
+  print(1)
 end
 
 /* exemple du manual*/

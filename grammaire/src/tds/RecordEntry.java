@@ -8,10 +8,12 @@ public class RecordEntry extends TypeEntry{
 
     public RecordEntry(String symbol){
         super(symbol);
+        fields = new ArrayList<Field>();
     }
 
     public RecordEntry(TypeEntry typeEntry){
         super(typeEntry);
+        fields = new ArrayList<Field>();
     }
 
     public void addField(Field field){
