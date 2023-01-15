@@ -73,10 +73,7 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + print.lineNumber + " : le paramètre de print est incorrect, int attendu");
         }
         return("");
-    };
-
-    a = b
-    
+    };    
 
     public String visit(Program program){
         //AJOUTER int et string à la TDS DU PROG
