@@ -3,4 +3,5 @@
 .antlr
 .vscode
 
+grammaire/out/*
 **/*.png
