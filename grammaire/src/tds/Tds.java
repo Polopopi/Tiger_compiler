@@ -23,6 +23,7 @@ public class Tds {
     }
 
     public void addVarFunc(VarFuncEntry entry){
+        //System.out.println(entry.getSymbol()+" ok");
         varFuncEntries.add(entry);
     }
     public void addType(TypeEntry entry){
@@ -114,13 +115,16 @@ public class Tds {
     public VarFuncEntry getVarFuncEntry(String varFunc_id){
         Tds tds = this;
         while (tds != null){
+            //System.out.println(tds.getId());
             for (VarFuncEntry entry : tds.varFuncEntries){
+                
                 if (entry.getSymbol().equals(varFunc_id)){
                     return entry;
                 }
             }
             tds = tds.getParent();
         }
+     
         return null;
     }
 

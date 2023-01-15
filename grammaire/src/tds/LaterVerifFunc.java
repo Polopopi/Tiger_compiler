@@ -14,12 +14,18 @@ public class LaterVerifFunc implements LaterVerif{
     }
 
     public void check(TdsCreator creator){
-        System.out.println("OUIIIIIIIIIIIIIIIIIIIII");
+    
         creator.setTds(tds);
+        //System.out.println("tds : "+creator.getCuurentTds().getId());
         String computeType = bloc.accept(creator);
-        if (!typeId.equals(computeType)){
-            System.out.println("Erreur : jsp");
+        //System.out.println(computeType);
+        //System.out.println(typeId);
+       
+        if (!typeId.equals(computeType) ){
+            System.out.println("Erreur : il faut retourner une valeur de type "+typeId+ "mais une valeur de type "+computeType+" est retournée");
         }
         creator.setTds(tds.getParent());
+      
+
     }
 }
