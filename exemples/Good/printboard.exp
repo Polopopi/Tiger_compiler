@@ -1,6 +1,14 @@
 let function printboard() =
         (for i := 0 to 1 do 
+<<<<<<< HEAD
             (for j := 0 to 1 do
                 print(2));
         print(0))
 in  end
+=======
+            (for j := 0 to 1 do 
+                print(if col[i]=j then (" O") else (" ."));
+                print("n"));
+        print("n"))
+in end
+>>>>>>> c8fa095c5879790968ab63aae4b1d2bfc1c59318

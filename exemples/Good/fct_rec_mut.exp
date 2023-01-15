@@ -1,0 +1,6 @@
+let 
+function a() = b()
+function b() = a()
+in 
+a()
+end;

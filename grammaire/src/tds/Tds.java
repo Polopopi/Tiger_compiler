@@ -124,6 +124,8 @@ public class Tds {
         return null;
     }
 
+    
+
     //public String getTypeOfRecordField(String idf)
     //public String typeOfFuncParam(String symbol)
 
