@@ -1,6 +1,6 @@
 package ast;
 
-public class Plus implements Ast {
+public class Plus extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -11,7 +11,8 @@ public class Plus implements Ast {
     public Ast right;
 
     /* expr_mult + expr_mult */
-    public Plus(Ast left, Ast right){
+    public Plus(int lineNumber, Ast left, Ast right){
+        super(lineNumber);
         this.left = left;
         this.right = right;
     }

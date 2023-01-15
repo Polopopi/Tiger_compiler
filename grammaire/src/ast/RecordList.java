@@ -9,7 +9,7 @@ public class RecordList /*implements Ast*/ {
     
     public ArrayList<Ast> recordList;
     
-    public RecordList(){
+    public RecordList(int lineNumber){
         this.recordList=new ArrayList<>();
     }
     public void addRecord(Ast record){

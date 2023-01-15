@@ -1,6 +1,6 @@
 package ast;
 
-public class Divide implements Ast{
+public class Divide extends Ast{
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -11,7 +11,8 @@ public class Divide implements Ast{
     public Ast right;
 
     /* expr / expr */
-    public Divide(Ast left, Ast right){
+    public Divide(int lineNumber, Ast left, Ast right){
+        super(lineNumber);
         this.left = left;
         this.right = right;
     }    

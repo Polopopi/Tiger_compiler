@@ -1,6 +1,6 @@
 package ast;
 
-public class Minus implements Ast {
+public class Minus extends Ast {
 
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -12,7 +12,8 @@ public class Minus implements Ast {
 
 
     /* expr_mult - expr_mult */
-    public Minus(Ast left, Ast right){
+    public Minus(int lineNumber, Ast left, Ast right){
+        super(lineNumber);
         this.left = left;
         this.right = right;
     }
