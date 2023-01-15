@@ -75,6 +75,8 @@ public class TdsCreator implements AstVisitor<String> {
         return("");
     };
 
+    a = b
+    
 
     public String visit(Program program){
         //AJOUTER int et string à la TDS DU PROG
