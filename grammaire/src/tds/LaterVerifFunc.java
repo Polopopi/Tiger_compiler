@@ -16,7 +16,6 @@ public class LaterVerifFunc implements LaterVerif{
     public void check(TdsCreator creator){
     
         creator.setTds(tds);
-        //System.out.println("tds : "+creator.getCuurentTds().getId());
         String computeType = bloc.accept(creator);
         if (!typeId.equals(computeType)){
             System.out.println("Erreur : retour du type " + computeType + ", " + typeId + " était attendu");
