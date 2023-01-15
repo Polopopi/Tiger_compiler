@@ -26,6 +26,14 @@ public class TdsCreator implements AstVisitor<String> {
         this.verifList=new ArrayList<LaterVerif>();
     }
 
+    public ArrayList<Tds> getTds(){
+        return this.listeTds;
+    }
+
+    public Tds getCuurentTds(){
+        return this.listeTds.get(idCurrentTds);
+    }
+
 
     public void checkList(){
         for (LaterVerif toCheck : verifList){
@@ -819,14 +827,16 @@ public class TdsCreator implements AstVisitor<String> {
             if (inTypeDecBloc){
                 inTypeDecBloc = false;
                 checkList();
+                System.out.println("check");
             }
             inFunctionDecBloc = true;
         }
-
+/* 'function' id '(' type_fields? ')' (':' type_id)? '=' expr_affect */
         nameIdf = true;
         String id=affect.fonctionID.accept(this);
         String typeId=affect.typeId.accept(this);
         nameIdf = false;
+
         String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(typeId).getSymbol();
         FunctionEntry functionEntry=new FunctionEntry(typeAlias, id, 4);
 
@@ -847,6 +857,7 @@ public class TdsCreator implements AstVisitor<String> {
         currentEntry = functionEntry;
         
         affect.typeFields.accept(this);
+    
 
         currentEntry = oldEntry;
         idCurrentTds = tdsFonction.getParent().getId();
@@ -1016,20 +1027,30 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(Call call){
         nameIdf = true;
         String id=call.id.accept(this);
+        //System.out.println(id);
         nameIdf = false;
         VarFuncEntry entry = listeTds.get(idCurrentTds).getVarFuncEntry(id);
-        Entry oldEntry = currentEntry;
-        currentEntry = entry;
-
-        if (!entry.isFunction()){
-            System.out.println("Erreur : le symbole " + id + " n'est pas une fonction");
+        if (entry==null) {
+            System.out.println("fonction ou type "+id+" n'existe pas.");
         }
         else{
-            call.listExpr.accept(this);
+            Entry oldEntry = currentEntry;
+            currentEntry = entry;
+    
+            //System.out.println(id);
+            //listeTds.get(idCurrentTds).printTds();
+            if (!entry.isFunction()){
+                System.out.println("Erreur : le symbole " + id + " n'est pas une fonction");
+            }
+            else{
+                call.listExpr.accept(this);
+            }
+    
+            currentEntry = oldEntry;
+            return(entry.getType());
         }
-
-        currentEntry = oldEntry;
-        return(entry.getType());
+        return "";
+        
     };
 
 
