@@ -19,6 +19,15 @@ public class FunctionEntry extends VarFuncEntry{
         return parameters;
     }
 
+    public boolean existParam(String paramId){
+        for (Parameter param : parameters){
+            if (param.getSymbole().equals(paramId)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isFunction(){
         return true;
