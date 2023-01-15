@@ -20,6 +20,8 @@ public class LaterVerifFunc implements LaterVerif{
         if (!typeId.equals(computeType)){
             System.out.println("Erreur : retour du type " + computeType + ", " + typeId + " était attendu");
         }
+        //System.out.println(computeType);
+        //System.out.println(typeId);
        
         if (!typeId.equals(computeType) ){
             System.out.println("Erreur : il faut retourner une valeur de type "+typeId+ "mais une valeur de type "+computeType+" est retournée");
