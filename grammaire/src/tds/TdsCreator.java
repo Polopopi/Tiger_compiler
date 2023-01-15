@@ -923,20 +923,7 @@ public class TdsCreator implements AstVisitor<String> {
         String recordId = affect.left.accept(this); // type
         //VERIF ID DU FIELD DANS RECORD
 
-<<<<<<< HEAD
         TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(recordId);
-=======
-        if (nameIdf){
-            return recordId;
-        }
-
-        if ( !this.listeTds.get(idCurrentTds).existVarFunc(recordId) ){
-            System.out.println("Erreur line" + affect.lineNumber + " : type dans LvalueField");
-        } 
-
-        VarFuncEntry varEntry = listeTds.get(idCurrentTds).getVarFuncEntry(recordId);
-        TypeEntry typeEntry = listeTds.get(idCurrentTds).getTypeEntry(varEntry.getType());
->>>>>>> 392116b98fcb2dc81de824742e644bcbbbe351fd
         if (!typeEntry.isRecord()){
             System.out.println("Erreur line" + affect.lineNumber + " : le type " + recordId + " n'est pas un Record");
         }
