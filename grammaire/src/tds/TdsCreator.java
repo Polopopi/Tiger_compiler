@@ -1,9 +1,7 @@
 package tds;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import javax.swing.CellEditor;
 
 import ast.*;
 
@@ -18,7 +16,7 @@ public class TdsCreator implements AstVisitor<String> {
     private ArrayList<LaterVerif> verifList;
     private boolean nameIdf = false;
     private boolean inAffectation = false;
-    private int isError = 0;
+    private int isError;
 
     public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
@@ -26,6 +24,7 @@ public class TdsCreator implements AstVisitor<String> {
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
         this.verifList=new ArrayList<LaterVerif>();
+        this.isError = 0;
     }
 
     public ArrayList<Tds> getTds(){
@@ -500,7 +499,7 @@ public class TdsCreator implements AstVisitor<String> {
             isError ++;
         }
         
-        String type = type_Declaration.type.accept(this);
+        type_Declaration.type.accept(this);
 
         currentEntry = oldEntry;
         return "";

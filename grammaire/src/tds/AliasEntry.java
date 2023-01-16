@@ -1,6 +1,6 @@
 package tds;
 
-import javax.sound.sampled.AudioFileFormat.Type;
+
 
 public class AliasEntry extends TypeEntry{
     
