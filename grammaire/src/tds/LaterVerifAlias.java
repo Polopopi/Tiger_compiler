@@ -23,6 +23,7 @@ public class LaterVerifAlias extends LaterVerifType{
             aliasEntry.setParent(typeAlias);
         }
         else{
+            System.out.println("Erreur ligne " + this.getTypeAst().lineNumber + " : le type " + type + "n'est pas défini pour " + aliasEntry.getSymbol());
             this.getTds().removeTypeEntry(aliasEntry);
         }
     }

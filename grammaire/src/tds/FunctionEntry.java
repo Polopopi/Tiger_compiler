@@ -34,7 +34,12 @@ public class FunctionEntry extends VarFuncEntry{
     }
 
     public void print(){
-        System.out.printf("| Id : %-15s | Retour : %-15s", this.getSymbol(), this.getType());
+        if (this.getType().equals("")){
+            System.out.printf("| PROC   | Id : %-15s | Param :  %-15s", this.getSymbol(), this.getParameters().size());
+        }
+        else{
+            System.out.printf("| FUNC   | Id : %-15s | Retour : %-15s | Param :  %-15s", this.getSymbol(), this.getType(), this.getParameters().size());
+        }
         for (Parameter param : parameters){
             System.out.printf(" | %-15s : %-15s", param.getSymbole(), param.getType());
         }

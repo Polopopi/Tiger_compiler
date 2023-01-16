@@ -23,6 +23,7 @@ public class LaterVerifArray extends LaterVerifType{
             arrayEntry.setTypeComposite(typeAlias);
         }
         else{
+            System.out.println("Erreur ligne " + this.getTypeAst().lineNumber + " : le type " + type + "n'est pas défini pour l'array " + arrayEntry.getSymbol());
             this.getTds().removeTypeEntry(arrayEntry);
         }
     }

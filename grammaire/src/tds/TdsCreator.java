@@ -63,7 +63,7 @@ public class TdsCreator implements AstVisitor<String> {
         // APPEL DE VARIABLE
         else if (!listeTds.get(idCurrentTds).existVarFunc(idf.name)){
             isError ++;
-            System.out.println("Erreur ligne " + idf.lineNumber + " : la variable " + idf.name + " n'est pas définie IDF");
+            System.out.println("Erreur ligne " + idf.lineNumber + " : la variable " + idf.name + " n'est pas définie");
             return null;
         }
         else if (!listeTds.get(idCurrentTds).getVarFuncEntry(idf.name).isVariable()){
@@ -146,7 +146,7 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = and.right.accept(this);
 
         if (leftType != null && rightType != null && !(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes du AND ne sont pas des int");
+            System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes de & ne sont pas des int");
             isError ++;
         }
 
@@ -198,7 +198,7 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = sup.right.accept(this);
 
         if (leftType != null && rightType != null && !leftType.equals(rightType)){
-            System.out.println("Erreur ligne " + sup.lineNumber + " : les opérandes du > ne sont pas du même type"); 
+            System.out.println("Erreur ligne " + sup.lineNumber + " : les opérandes de > ne sont pas du même type"); 
             isError ++;
         }
 

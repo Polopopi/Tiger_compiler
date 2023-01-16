@@ -65,7 +65,7 @@ public class RecordEntry extends TypeEntry{
     }
 
     public void print(){
-        System.out.printf("| Id : %-15s", this.getSymbol());
+        System.out.printf("| RECORD | Id : %-15s | Fields : %-15s", this.getSymbol(), this.getFields().size());
         for (Field field : fields){
             System.out.printf(" | %-15s : %-15s", field.getFieldName(), field.getType());
         }

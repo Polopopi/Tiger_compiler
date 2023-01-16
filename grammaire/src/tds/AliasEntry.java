@@ -30,6 +30,6 @@ public class AliasEntry extends TypeEntry{
     }
 
     public void print(){
-        System.out.printf("| Id : %-15s | Parent : %-15s |\n", this.getSymbol(), parent);
+        System.out.printf("| ALIAS  | Id : %-15s | Parent : %-15s |\n", this.getSymbol(), parent);
     }
 }
