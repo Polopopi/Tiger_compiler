@@ -1,0 +1,11 @@
+let 
+    var a:=5
+    var b:=6
+    function test1()=print(2)
+    function test2(c :int)=print(c)
+in
+    test1(a,b);
+    test2();
+    test2(a,b)
+
+end
