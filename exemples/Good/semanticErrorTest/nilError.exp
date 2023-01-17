@@ -1,8 +1,12 @@
 let
-var a : int :=nil
+    var a : int :=nil
+    function f1(a :int) :int =1
+    function test1()=print(2)
 in
-if nil=nil then (print(1));
-if nil>nil then (print(1));
-if nil>=nil then (print(1));
-if a<>nil then (print(1))
+    if nil=nil then (print(1));
+    if nil=nil then (print(1));
+    if nil>nil then (print(1));
+    if nil>=nil then (print(1));
+    if a<>nil then (print(1));
+    f1("a","b")
 end
