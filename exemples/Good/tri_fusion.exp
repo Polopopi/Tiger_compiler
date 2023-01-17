@@ -1,8 +1,8 @@
 let 
     type list = {head : int, tail : list}
     type coupleList = {L1 : list, L2: list}
-    var L := list{head = 5, tail = list{head = 2, tail = list{head = 3, tail = list{head = 1, tail = list{head = 4,tail = list{head = 6, head = nil}}}}}}
-    function separe(list : L) : coupleList =
+    var L := list{head = 5, tail = list{head = 2, tail = list{head = 3, tail = list{head = 1, tail = list{head = 4,tail = list{head = 6, tail = nil}}}}}}
+    function separe(L : list) : coupleList =
         if L = nil then(
             coupleList{L1 = nil, L2 = nil}
         )
@@ -43,7 +43,7 @@ let
             let 
                 var couple := separe(L)
             in
-                fusion(listCouple(L1 = triFusion(couple.L1), L2 = triFusion(couple.L2)))
+                fusion(coupleList{L1 = triFusion(couple.L1), L2 = triFusion(couple.L2)})
             end
         )
 in

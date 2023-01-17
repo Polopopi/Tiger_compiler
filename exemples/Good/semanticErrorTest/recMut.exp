@@ -1,0 +1,22 @@
+(let 
+    type typeA = {field1 : typeB}
+    type typeB = {field1 : typeA}
+    type typeC = {field1 : typeD}
+    var x := 0
+    type typeD = {field1 : typeD}
+    in end;
+
+let 
+    type typeA = array of typeB
+    type typeB = {field1 : typeA}
+    function fctA() = fctB()
+    function fctB() = fctA()
+in end;
+
+let 
+    type typeA = array of typeB    
+    function fctA() = fctB()
+    type typeB = {field1 : typeA}
+    function fctB() = fctA()
+in end
+)
