@@ -457,20 +457,44 @@ public class TdsCreator implements AstVisitor<String> {
 
     public String visit (ListExpr listExpr){
         ArrayList<Parameter> parameters = ((FunctionEntry) currentEntry).getParameters();
-        int i = 0;
-        for (Ast expr : listExpr.listExpr){
-            String exprType = expr.accept(this);
-            if (exprType != null && !parameters.get(i).getType().equals(exprType)){
-                System.out.println("Erreur ligne " + listExpr.lineNumber + " : affectation du type " + exprType + " vers le paramètre " + parameters.get(i).getSymbole() + " de type " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
-                isError ++;
-            }
-            i++;
-        }
+        int listExprSize=listExpr.listExpr.size();
+        
+        if (parameters.size()>0) {
 
-        if (parameters.size() != listExpr.listExpr.size()){
-            System.out.println("Erreur ligne " + listExpr.lineNumber + " : tous les paramètres de la fonction" + currentEntry.getSymbol() + " n'ont pas été initialisés (" + (parameters.size() - listExpr.listExpr.size()) + " sont manquants)");
-            isError++;
+
+            if ( listExprSize < ((FunctionEntry)currentEntry).getParameters().size()){
+           
+                System.out.println("Erreur ligne " + listExpr.lineNumber + " : la fonction " + currentEntry.getSymbol() + " attend " + parameters.size()+ " paramètres, mais " + listExprSize+ " paramètres sont donnés "+ (parameters.size() - listExprSize) + " paramètres sont manquants).");
+                isError++;
+            }
+            else if(listExprSize > ((FunctionEntry)currentEntry).getParameters().size()){
+                System.out.println("Erreur ligne " + listExpr.lineNumber + " : la fonction " + currentEntry.getSymbol() + " attend " + parameters.size()+ " paramètres, mais " + listExprSize+ " paramètres sont donnés.");
+                isError++;
+            }
+            else{
+                int i = 0;
+                for (Ast expr : listExpr.listExpr){
+                    String exprType = expr.accept(this);
+                    
+                    if (exprType != null && !parameters.get(i).getType().equals(exprType)){
+                        System.out.println("Erreur ligne " + listExpr.lineNumber + " : affectation du type " + exprType + " vers le paramètre " + parameters.get(i).getSymbole() + " de type " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
+                        isError ++;
+                    }
+                    i++;
+                }
+            }
         }
+        else{
+            if ( listExprSize>0){
+           
+                System.out.println("Erreur ligne " + listExpr.lineNumber + " : la fonction " + currentEntry.getSymbol() + " n'attend pas de paramètres, mais " + listExprSize+ " paramètres sont donnés.");
+                isError++;
+            }
+        }
+        
+        
+        
+        
 
         return "";
     };
