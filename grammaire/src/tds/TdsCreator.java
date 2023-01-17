@@ -124,13 +124,14 @@ public class TdsCreator implements AstVisitor<String> {
         String idfType = affect.idf.accept(this);
         inAffectation = false;
         String exprType = affect.expr.accept(this);
+        
 
         if (idfType != null ){
             if (idfType.equals("nil") && exprType.equals("nil")) {
                 System.out.println("Erreur ligne "+affect.lineNumber+" : affectation du type (nil ne doit pas être affecté à un type nil).");
                 isError++;
             }
-            else if (!idfType.equals(exprType)&& !idfType.equals("nil")) {
+            else if (!idfType.equals(exprType)&& !exprType.equals("nil")) {
                 System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + ", " + idfType + " était attendu");
                 isError ++;
             }
