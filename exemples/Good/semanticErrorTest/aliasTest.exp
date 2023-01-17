@@ -2,6 +2,8 @@ let
     type a = array of int 
     type b = a 
     var x : b := a[5] of 0
+    function fctA(x : b) = ()
 in 
-    x := b[5] of 0
+    x := b[5] of 0;
+    fctA(b[5] of 0)
 end
