@@ -165,11 +165,30 @@ public class Tds {
 
 
     public void printTds(){
-        for (VarFuncEntry varFuncEntry : varFuncEntries){
-            varFuncEntry.print();
+        for (TypeEntry typeEntry : typeEntries){
+            if (typeEntry.isRecord())
+                typeEntry.print();
         }
         for (TypeEntry typeEntry : typeEntries){
-            typeEntry.print();
+            if (typeEntry.isArray())
+                typeEntry.print();
+        }
+        for (TypeEntry typeEntry : typeEntries){
+            if (typeEntry.isAlias())
+                typeEntry.print();
+        }
+
+        for (VarFuncEntry varFuncEntry : varFuncEntries){
+            if (varFuncEntry.isFunction() && !varFuncEntry.getType().equals(""))
+                varFuncEntry.print();
+        }
+        for (VarFuncEntry varFuncEntry : varFuncEntries){
+            if (varFuncEntry.isFunction() && varFuncEntry.getType().equals(""))
+                varFuncEntry.print();
+        }
+        for (VarFuncEntry varFuncEntry : varFuncEntries){
+            if (varFuncEntry.isVariable())
+                varFuncEntry.print();
         }
     }
 }
