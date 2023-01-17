@@ -1,0 +1,7 @@
+let 
+    type a = array of int 
+    type b = a 
+    var x : b := a[5] of 0
+in 
+    x := b[5] of 0
+end
