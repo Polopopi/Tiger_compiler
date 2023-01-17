@@ -1,0 +1,8 @@
+let
+var a : int :=nil
+in
+if nil=nil then (print(1));
+if nil>nil then (print(1));
+if nil>=nil then (print(1));
+if a<>nil then (print(1))
+end

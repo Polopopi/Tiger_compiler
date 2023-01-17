@@ -76,11 +76,13 @@
 
     let 
         function f1(x : int) = ()
+        function f2() : int = (1)
     in
         f1(2, 1);
         f1();
         f1("a");
-        f1("a", 1)
+        f1("a", 1);
+        f2(2)
     end;
 
 

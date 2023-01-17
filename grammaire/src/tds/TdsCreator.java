@@ -123,6 +123,10 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + ", " + idfType + " était attendu");
             isError ++;
         }
+        if (idfType.equals("nil") && exprType.equals("nil")) {
+            System.out.println("Erreur ligne "+affect.lineNumber+" : affectation du type (nil ne doit pas être affecté à un type nil).");
+            isError++;
+        }
 
         return "";
     };
@@ -135,6 +139,10 @@ public class TdsCreator implements AstVisitor<String> {
         if (leftType != null && rightType != null && !(leftType.equals("int") && rightType.equals("int"))){
             System.out.println("Erreur ligne " + or.lineNumber + " : les opérandes de | ne sont pas des int");
             isError ++;
+        }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+or.lineNumber+" : nil|nil est illégal.");//erreur à précisier
+            isError++;
         }
 
         return "int";
@@ -149,6 +157,10 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes de & ne sont pas des int");
             isError ++;
         }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+and.lineNumber+" : nil&nil est illégal.");
+            isError++;
+        }
 
         return "int";
     };
@@ -158,9 +170,14 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = equal.left.accept(this);
         String rightType = equal.right.accept(this);
 
-        if (leftType != null && rightType != null && !leftType.equals(rightType)){
+        if (leftType != null && rightType != null && !leftType.equals(rightType) && !rightType.equals("nil")){
+        
             System.out.println("Erreur ligne " + equal.lineNumber + " : les opérandes de = ne sont pas du même type"); 
             isError ++;
+        }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+equal.lineNumber+" : nil ne peut pas être comparé avec nil.");
+            isError++;
         }
 
         return "int";
@@ -171,9 +188,13 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = diff.left.accept(this);
         String rightType = diff.right.accept(this);
 
-        if (leftType != null && rightType != null &&!leftType.equals(rightType)){
+        if (leftType != null && rightType != null &&!leftType.equals(rightType) && !rightType.equals("nil")){
             System.out.println("Erreur ligne " + diff.lineNumber + " : les opérandes de <> ne sont pas du même type"); 
             isError ++;
+        }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+diff.lineNumber+" : nil ne peut pas être comparé avec nil.");
+            isError++;
         }
 
         return "int";
@@ -188,6 +209,10 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + inf.lineNumber + " : les opérandes de < ne sont pas du même type"); 
             isError ++;
         }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+inf.lineNumber+" : nil ne peut pas être comparé avec nil.");
+            isError++;
+        }
 
         return "int";
     };
@@ -200,6 +225,10 @@ public class TdsCreator implements AstVisitor<String> {
         if (leftType != null && rightType != null && !leftType.equals(rightType)){
             System.out.println("Erreur ligne " + sup.lineNumber + " : les opérandes de > ne sont pas du même type"); 
             isError ++;
+        }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+sup.lineNumber+" : nil ne peut pas être comparé avec nil.");
+            isError++;
         }
 
         return "int";
@@ -214,6 +243,10 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + infEqual.lineNumber + " : les opérandes de <= ne sont pas du même type"); 
             isError ++;
         }
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+infEqual.lineNumber+" : nil ne peut pas être comparé avec nil.");
+            isError++;
+        }
 
         return "int";
     };
@@ -227,7 +260,10 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + supEqual.lineNumber + " : les opérandes de >= ne sont pas du même type"); 
             isError ++;
         }
-
+        if (leftType.equals("nil") && rightType.equals("nil")) {
+            System.out.println("Erreur ligne "+supEqual.lineNumber+" : nil ne peut pas être comparé avec nil.");
+            isError++;
+        }
         return "int";
     };
 
@@ -740,7 +776,7 @@ public class TdsCreator implements AstVisitor<String> {
         if (inFunctionDecBloc || inTypeDecBloc){
             checkList();
         }
-
+        
         nameIdf = true;
         String id=affect.idf.accept(this);
         nameIdf = false;
@@ -754,6 +790,10 @@ public class TdsCreator implements AstVisitor<String> {
         else if (exprType != null){
             VariableEntry varFuncEntryr=new VariableEntry(exprType,id,4);
             this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
+            if (exprType.equals("nil")) {
+                System.out.println("Erreur ligne "+affect.lineNumber+" : type de la variable déclarée n'est pas définie, affectaion de nil n'est pas autorisée.");
+                isError++;
+            }
         }
         
         return "";
