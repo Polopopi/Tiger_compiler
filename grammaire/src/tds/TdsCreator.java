@@ -787,17 +787,13 @@ public class TdsCreator implements AstVisitor<String> {
         String typeId=affect.typeId.accept(this);
         nameIdf = false;
 
-
-        if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
-            isError ++;
-        }
-
         String typeAlias;
+        boolean existType = true;
         if(!this.listeTds.get(idCurrentTds).existType(typeId)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour la fonction " + id);
             isError ++;
             typeAlias = ""; //DEVIENT UNE PROCEDURE
+            existType = false;
         }
         else{
             typeAlias = listeTds.get(idCurrentTds).getTypeEntry(typeId).getSymbol();
@@ -825,7 +821,13 @@ public class TdsCreator implements AstVisitor<String> {
         //this.verifList.add(new LaterVerifFunc(typeParametres, affect.typeFields)); //BIZARRE FAUDRIAT METTRE LE BLOC PAS LE  FIELD
         this.verifList.add(new LaterVerifFunc(typeAlias, affect.exprAffect, tdsFonction));
         //ajout de nouvelle fct
-        this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
+        if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
+            System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
+            isError ++;
+        }
+        else if (existType){
+            this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
+        }
         return "";
     };
 
@@ -844,11 +846,6 @@ public class TdsCreator implements AstVisitor<String> {
         nameIdf = false;
         FunctionEntry procEntry=new FunctionEntry("", id, 4);
 
-        if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : la procédure " + id + " est déjà définie pour la procédure " + procEntry.getSymbol());
-            isError ++;
-        }
-
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
@@ -863,7 +860,15 @@ public class TdsCreator implements AstVisitor<String> {
         idCurrentTds = tdsFonction.getParent().getId();
 
         verifList.add(new LaterVerifFunc("", affect.exprAffect, tdsFonction));
-        this.listeTds.get(idCurrentTds).addVarFunc(procEntry);
+
+        if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
+            System.out.println("Erreur ligne " + affect.lineNumber + " : la procédure " + id + " est déjà définie");
+            isError ++;
+        }
+        else{
+            this.listeTds.get(idCurrentTds).addVarFunc(procEntry);
+        }
+        
         return "";
     };
 
