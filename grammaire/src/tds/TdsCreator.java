@@ -372,7 +372,7 @@ public class TdsCreator implements AstVisitor<String> {
             System.out.println("Erreur ligne " + forNode.lineNumber + " : les bornes ne sont pas des int"); 
             isError ++;
         }
-        if(debutType != null && !blocType.equals("")){
+        if(blocType != null && !blocType.equals("")){
             System.out.println("Erreur ligne " + forNode.lineNumber + " : le bloc renvoie une valeur"); 
             isError ++;
         }
@@ -460,15 +460,15 @@ public class TdsCreator implements AstVisitor<String> {
         int i = 0;
         for (Ast expr : listExpr.listExpr){
             String exprType = expr.accept(this);
-            if (!parameters.get(i).getType().equals(exprType)){
+            if (exprType != null && !parameters.get(i).getType().equals(exprType)){
                 System.out.println("Erreur ligne " + listExpr.lineNumber + " : affectation du type " + exprType + " vers le paramètre " + parameters.get(i).getSymbole() + " de type " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
                 isError ++;
             }
             i++;
         }
 
-        if (parameters.size() != ((FunctionEntry)currentEntry).getParameters().size()){
-            System.out.println("Erreur ligne " + listExpr.lineNumber + " : tous les paramètres de la fonction" + currentEntry.getSymbol() + " n'ont pas été initialisés (" + (parameters.size() - ((FunctionEntry)currentEntry).getParameters().size()) + " sont manquants)");
+        if (parameters.size() != listExpr.listExpr.size()){
+            System.out.println("Erreur ligne " + listExpr.lineNumber + " : tous les paramètres de la fonction" + currentEntry.getSymbol() + " n'ont pas été initialisés (" + (parameters.size() - listExpr.listExpr.size()) + " sont manquants)");
             isError++;
         }
 

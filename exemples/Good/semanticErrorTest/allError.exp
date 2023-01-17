@@ -1,0 +1,147 @@
+(
+    /* Déclarations et appels */
+    let
+        type rec = {a : undeclared}
+        type arr = array of undeclared
+        type aliasType = undeclared
+        function f(x : undeclared) : undeclared = ()
+        var test : undeclared := 2
+
+
+        type arr1 = array of int
+        type rec1 = {a : arr1}
+        function f1(x : rec1) = ()
+        var x1 := arr1[1] of 1
+
+        var y1 := undeclared(y1)
+        var y1 := undeclared{b = x1}
+        var y1 := undeclared[1] of 1
+        var y1 := undeclared.a
+        var y1 := undeclared[0]
+        var y1 := rec1{b = x1}
+        var t1 := arr1[1] of undeclared
+
+        function f2() : int = ("a")
+        var z1 : rec1 := "string"
+
+        var N : int := 2
+        var x2 : arr1 := arr1[N] of 0
+    in 
+        t1 := arr1["a"] of "b";
+        x1 := rec1{a = x1};
+        f1 := 2;
+        z1 := rec1{a = 2};
+        x2 := arr1[N] of f1;
+        x2 := arr1[N] of x2;
+
+        x1(1);
+        N := f[0];
+        x1 := f.a
+    end;
+
+
+
+    /* for while ifthen(else) */
+    for i := 1 to 5 do (
+        let 
+        in 
+            i := 0;
+            for i := "a" to "b" do()
+        end;
+        i := 0;
+        1
+    );
+
+
+    while "a" do (
+        1
+    );
+
+
+    if "a" then (
+        1
+    );
+
+
+    if "a" then (
+        1
+    )
+    else (
+        "b"
+    );
+
+
+    break;
+
+
+    let 
+        function f1(x : int) = ()
+    in
+        f1(2, 1);
+        f1();
+        f1("a");
+        f1("a", 1)
+    end;
+
+
+    let
+        type rec1 = {f : int}
+        var x := rec1{g = 1, f = 1}
+        var y := rec1{}
+        var z := rec1{f = "a"}
+        var a := rec1{g = 1, f = "a"}
+    in
+    end;
+
+
+    let
+        type arr = array of int
+        type rec = {a : int}
+        var x := 1
+        function f() = ()
+
+
+        type arr = array of string
+        type rec = {b : int}
+        type arr = {a : int}
+        type rec = array of int
+
+        var x := "a"
+        function f(x : string) = ()
+        var f := 1
+        function x() = ()
+    in
+    end;
+
+
+    let
+        type rec = {a : int, a : string}
+        function f(a : int, a : string)
+    in
+    end;
+
+
+    (1) := 2;
+
+
+
+
+
+    /* Opérateurs binaires */
+    1 + "a";
+    1 - "a";
+    1 * "a";
+    1 / "a";
+    1 | "a";
+    1 & "a";
+    1 = "a";
+    1 <> "a";
+    1 > "a";
+    1 < "a";
+    1 >= "a";
+    1 <= "a";
+
+
+
+    /*  */
+)
