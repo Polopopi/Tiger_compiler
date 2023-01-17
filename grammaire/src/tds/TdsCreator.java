@@ -92,15 +92,17 @@ public class TdsCreator implements AstVisitor<String> {
     public void compareNil(String typeLeft, String typeRight, int lineNumber){
         Tds tds = listeTds.get(idCurrentTds);
 
-        if (tds.existType(typeLeft)){
-            if (!tds.getTypeEntry(typeLeft).isRecord()){
-                System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
-                isError ++;
-            }
-            else if (!tds.getTypeEntry(typeRight).isRecord()){
-                System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
-                isError ++;
-            }
+        if (!typeLeft.equals("nil") && !tds.getTypeEntry(typeLeft).isRecord()){
+            System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
+            isError ++;
+        }
+        else if (!typeRight.equals("nil") && !tds.getTypeEntry(typeRight).isRecord()){
+            System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
+            isError ++;
+        }
+        else{
+            System.out.println("Erreur ligne " + lineNumber + " : deux nil ne peuvent être comparés");
+            isError ++;
         }
     }
 
