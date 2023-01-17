@@ -112,6 +112,10 @@ public class Tds {
     //Il faudrait un pointeur
     //Sinon le visiteur remonte tout seul
     public TypeEntry getTypeEntry(String type_id){
+        if (type_id == null){
+            return null;
+        }
+
         if (type_id.equals("int") || type_id.equals("string")){
             return new TypeEntry(type_id);
         }

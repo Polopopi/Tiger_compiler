@@ -25,7 +25,7 @@ public class LaterVerifRecord extends LaterVerifType{
             recordEntry.getField(fieldId).setType(typeAlias);
         }
         else{
-            System.out.println("Erreur ligne " + this.getTypeAst().lineNumber + " : le type " + type + "n'est pas défini pour le record " + recordEntry.getSymbol());
+            System.out.println("Erreur ligne " + this.getTypeAst().lineNumber + " : le type " + type + " n'est pas défini pour le record " + recordEntry.getSymbol());
             recordEntry.removeField(fieldId);
         }
     }

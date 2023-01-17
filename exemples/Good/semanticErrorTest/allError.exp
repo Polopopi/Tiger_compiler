@@ -116,7 +116,7 @@
 
     let
         type rec = {a : int, a : string}
-        function f(a : int, a : string)
+        function f(a : int, a : string) = ()
     in
     end;
 
@@ -139,7 +139,7 @@
     1 > "a";
     1 < "a";
     1 >= "a";
-    1 <= "a";
+    1 <= "a"
 
 
 

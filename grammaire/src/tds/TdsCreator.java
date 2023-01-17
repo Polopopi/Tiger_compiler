@@ -753,20 +753,21 @@ public class TdsCreator implements AstVisitor<String> {
             isError++;
         }
 
-        if (!this.listeTds.get(idCurrentTds).existType(type)) {
+        else if (!this.listeTds.get(idCurrentTds).existType(type)) {
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + type + " n'est pas défini");
             isError ++;
         }
 
-        String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
+        else {
+            String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
+            if (exprType != null && !typeAlias.equals(exprType)){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + " vers la variable " + id + " de type " + typeAlias);
+                isError ++;
+            }
 
-        if (exprType != null && !typeAlias.equals(exprType)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + " vers la variable " + id + " de type " + typeAlias);
-            isError ++;
+            VariableEntry variableEntry=new VariableEntry(typeAlias, id, 4);
+            this.listeTds.get(idCurrentTds).addVarFunc(variableEntry);
         }
-
-        VariableEntry variableEntry=new VariableEntry(typeAlias, id, 4);
-        this.listeTds.get(idCurrentTds).addVarFunc(variableEntry);
         return "";
 
     };
@@ -777,7 +778,6 @@ public class TdsCreator implements AstVisitor<String> {
             if (inTypeDecBloc){
                 inTypeDecBloc = false;
                 checkList();
-                System.out.println("check");
             }
             inFunctionDecBloc = true;
         }
@@ -787,18 +787,24 @@ public class TdsCreator implements AstVisitor<String> {
         String typeId=affect.typeId.accept(this);
         nameIdf = false;
 
-        String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(typeId).getSymbol();
-        FunctionEntry functionEntry=new FunctionEntry(typeAlias, id, 4);
-
-        if(!this.listeTds.get(idCurrentTds).existType(typeId)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour la fonction " + functionEntry.getSymbol());
-            isError ++;
-        }
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
             isError ++;
         }
+
+        String typeAlias;
+        if(!this.listeTds.get(idCurrentTds).existType(typeId)){
+            System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour la fonction " + id);
+            isError ++;
+            typeAlias = ""; //DEVIENT UNE PROCEDURE
+        }
+        else{
+            typeAlias = listeTds.get(idCurrentTds).getTypeEntry(typeId).getSymbol();
+        }
+
+        FunctionEntry functionEntry=new FunctionEntry(typeAlias, id, 4);
+        
         //nouvelle tds
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
         //ajout de nouvelle tds
