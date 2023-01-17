@@ -42,7 +42,12 @@ public class TdsCreator implements AstVisitor<String> {
 
     public void checkList(){
         for (LaterVerif toCheck : verifList){
-            toCheck.check(this);
+            if (toCheck.isAliasVerif())
+                toCheck.check(this);
+        }
+        for (LaterVerif toCheck : verifList){
+            if (!toCheck.isAliasVerif())
+                toCheck.check(this);
         }
         verifList.clear();
         inFunctionDecBloc = false;
@@ -926,7 +931,7 @@ public class TdsCreator implements AstVisitor<String> {
         if(!this.listeTds.get(idCurrentTds).existType(typeId)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour le type de retour de la fonction " + id);
             isError ++;
-            typeAlias = ""; //DEVIENT UNE PROCEDURE
+            typeAlias = ""; //DEVIENT UNE PROCEDURE POUR LATERVERIF
             existType = false;
         }
         else{

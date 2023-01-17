@@ -13,7 +13,7 @@ public class AliasEntry extends TypeEntry{
 
     public AliasEntry(TypeEntry typeEntry){
         super(typeEntry);
-        this.parent = typeEntry.getSymbol(); // DU coup c mieux de prendre en compte l'alias dans le getSymbol()
+        this.parent = null; // DU coup c mieux de prendre en compte l'alias dans le getSymbol()
     }
 
     public String getParent() {

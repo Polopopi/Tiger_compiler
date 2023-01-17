@@ -6,8 +6,8 @@
         type arr = array of undeclaredType /* Pas ajouté car pas de type */
         type aliasType = undeclaredType
         function f(x : undeclaredType, param1 : int) : undeclaredType = (let var varInUndeclaredFct := 1 in end)
-        function f(x : int, param2 : int) : undeclaredType = ()
-        function f(x : undeclaredType, param3 : int) : int = (1) /* Ajouté dans la TDS quand même sans paramètre */
+        function f(x : int, param2 : int) : undeclaredType = (1)
+        function f(x : undeclaredType, param3 : int) = (1) /* Ajouté dans la TDS quand même sans paramètre */
         var test : undeclaredType := 2
 
 
