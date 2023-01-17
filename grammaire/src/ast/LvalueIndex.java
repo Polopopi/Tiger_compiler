@@ -1,6 +1,6 @@
 package ast;
 
-public class LvalueIndex extends Ast {
+public class LvalueIndex extends AbstractIdf {
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }

@@ -87,10 +87,12 @@
 
     /* Erreurs paramètres des fonctions en appel (type et nombre) */
     let 
-        function f1(x : int) : int = ()
+        function f1(x : int) = ()
+        function f2() : int = (1)
 
         var x := f1("a", 1)
-        var y := f1()
+        var y := f1()     
+        var z := f2(2)
     in
     end;
 

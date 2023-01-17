@@ -1,0 +1,16 @@
+let
+    var a : int :=nil  /* true*/
+    var b :=nil /* false*/
+    var c : int :=1  /* true*/ 
+    type typeD ={a :nil} /* false*/
+    function f1(a :int) :int =1  /* true*/
+    type intArray = array of nil /* false*/
+in
+    if nil=nil then (print(1));/* false*/
+    if nil=nil then (print(1)); /* false*/
+    if nil>nil then (print(1)); /* false*/
+    if nil>=nil then (print(1));/* false*/
+    if a<>nil then (print(1)); /* true*/
+    f1("nil"); /*true*/
+    c :=nil  /* true*/
+end

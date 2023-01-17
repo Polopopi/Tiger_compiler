@@ -3,25 +3,25 @@ package tds;
 import java.util.ArrayList;
 
 public class RecordEntry extends TypeEntry{
-    private ArrayList<Field> fields;
+    private ArrayList<FieldEntry> fields;
 
 
     public RecordEntry(String symbol){
         super(symbol);
-        fields = new ArrayList<Field>();
+        fields = new ArrayList<FieldEntry>();
     }
 
     public RecordEntry(TypeEntry typeEntry){
         super(typeEntry);
-        fields = new ArrayList<Field>();
+        fields = new ArrayList<FieldEntry>();
     }
 
-    public void addField(Field field){
+    public void addField(FieldEntry field){
         this.fields.add(field);
     }
 
-    public Field getField(String fieldId){
-        for (Field field : fields){
+    public FieldEntry getField(String fieldId){
+        for (FieldEntry field : fields){
             if (field.getFieldName().equals(fieldId)){
                 return field;
             }
@@ -29,7 +29,7 @@ public class RecordEntry extends TypeEntry{
         return null;
     }
 
-    public ArrayList<Field> getFields(){
+    public ArrayList<FieldEntry> getFields(){
         return fields;
     }
 
@@ -42,7 +42,7 @@ public class RecordEntry extends TypeEntry{
     }
 
     public boolean existField(String fieldId){
-        for (Field field : fields){
+        for (FieldEntry field : fields){
             if (field.getFieldName().equals(fieldId)){
                 return true;
             }
@@ -51,7 +51,7 @@ public class RecordEntry extends TypeEntry{
     }
 
     public String getFieldType(String fieldId){
-        for (Field field : fields){
+        for (FieldEntry field : fields){
             if (field.getFieldName().equals(fieldId)){
                 return field.getType();
             }
@@ -66,7 +66,7 @@ public class RecordEntry extends TypeEntry{
 
     public void print(){
         System.out.printf("| RECORD | Id : %-15s | Fields : %-15s", this.getSymbol(), this.getFields().size());
-        for (Field field : fields){
+        for (FieldEntry field : fields){
             System.out.printf(" | %-15s : %-15s", field.getFieldName(), field.getType());
         }
         System.out.printf(" |\n");
