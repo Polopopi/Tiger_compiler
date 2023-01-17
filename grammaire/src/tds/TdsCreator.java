@@ -17,6 +17,7 @@ public class TdsCreator implements AstVisitor<String> {
     private boolean nameIdf = false;
     private boolean inAffectation = false;
     private int isError;
+    private boolean existTypeError = false;
 
     public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
@@ -521,6 +522,7 @@ public class TdsCreator implements AstVisitor<String> {
         if (listeTds.get(idCurrentTds).existLocalType(type_id)){
             System.out.println("Erreur ligne " + type_Declaration.lineNumber + " : le type " + type_id + " est déjà défini");
             isError ++;
+            existTypeError = true;
         }
         
         type_Declaration.type.accept(this);
@@ -609,7 +611,12 @@ public class TdsCreator implements AstVisitor<String> {
         nameIdf = false;
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new AliasEntry((TypeEntry) currentEntry);
-        tds.addType((AliasEntry) currentEntry);
+        if (!existTypeError){
+            tds.addType((AliasEntry) currentEntry);
+        }
+        else{
+            existTypeError = false;
+        }
 
         verifList.add(new LaterVerifAlias((AliasEntry)currentEntry, typeType.typeCopie, tds));
         return typeID;
@@ -619,7 +626,12 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(TypeRecord typeRecord){
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new RecordEntry((TypeEntry) currentEntry);
-        tds.addType((RecordEntry) currentEntry);
+        if (!existTypeError){
+            tds.addType((RecordEntry) currentEntry);
+        }
+        else{
+            existTypeError = false;
+        }
         typeRecord.fields.accept(this);
 
         return "";
@@ -629,7 +641,12 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(TypeRecordVoid typeRecordVoid){            
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new RecordEntry((TypeEntry) currentEntry);
-        tds.addType((RecordEntry) currentEntry);
+        if (!existTypeError){
+            tds.addType((RecordEntry) currentEntry);
+        }
+        else{
+            existTypeError = false;
+        }
 
         return "";
     };
@@ -639,7 +656,12 @@ public class TdsCreator implements AstVisitor<String> {
     // verifier les types dans Array : soit string, int ou autre déjà existants
         Tds tds = listeTds.get(idCurrentTds);
         currentEntry = new ArrayEntry((TypeEntry) currentEntry);
-        tds.addType((ArrayEntry) currentEntry);
+        if (!existTypeError){
+            tds.addType((ArrayEntry) currentEntry);
+        }
+        else{
+            existTypeError = false;
+        }
         
         nameIdf = true;
         String typeComp = typeArrayy.typeArray.accept(this);
