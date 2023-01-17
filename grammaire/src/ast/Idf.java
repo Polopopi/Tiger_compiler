@@ -12,4 +12,8 @@ public class Idf extends AbstractIdf{
         super(lineNumber);
         this.name=name;
     }
+
+    public boolean isAffectable(){
+        return true;
+    }
 }

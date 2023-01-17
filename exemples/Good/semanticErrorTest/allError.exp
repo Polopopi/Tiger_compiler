@@ -164,9 +164,86 @@
     1 > "a";
     1 < "a";
     1 >= "a";
-    1 <= "a"
+    1 <= "a";
 
 
 
-    /*  */
+    /* Récursivité mutuelle */
+    /* Fonctionne et erreur */
+    let 
+        type typeA = {field1 : typeB}
+        type typeB = {field1 : typeA}
+        type typeC = {field1 : typeD}
+        var x := 0
+        type typeD = {field1 : typeD}
+    in 
+    end;
+    /* Fonctionne */
+    let
+        type typeA = array of typeB
+        type typeB = {field1 : typeA}
+        function fctA() = fctB()
+        function fctB() = fctA()
+    in 
+    end;
+    /* Erreurs */
+    let 
+        type typeA = array of typeB    
+        function fctA() = fctB()
+        type typeB = {field1 : typeA}
+        function fctB() = fctA()
+    in
+    end;
+
+
+
+    /* FONCTIONNE */
+
+    /* Alias */
+    /* Array */
+    let 
+        type a = array of int 
+        type b = a 
+
+        /* Alias d'alias */
+        type c = b
+
+        /* En déclaration */
+        var x : b := a[5] of 0               /* a dans b */
+        var y : a := b[5] of 0
+        function fctA(x : a) : a = b[5] of 0 /* b dans a */
+        function fctB(x : b) : b = a[5] of 0
+    in 
+        /* En affectation où les types sont a dans la TDS */
+        x := c[5] of 0;
+        fctA(c[5] of 0);
+        fctB(c[5] of 0)
+    end;
+
+    /* Record */
+    let 
+        type a = {x : int}
+        type b = a 
+        
+        var x : b := a{x = 5}
+        var y : a := b{x = 5}
+        function fctA(c : a) : a = b{x = 5}
+        function fctB(c : b) : b = a{x = 5}
+    in 
+        x := b{x = 5};
+        fctA(b{x = 5});
+        fctB(a{x = 5})
+    end;
+
+
+
+    /* Récursivité mutuelle avec des alias */
+    let
+        type x = array of b
+        type y = {field : b}
+        type a = {}
+        type b = a
+    in
+    end 
+
 )

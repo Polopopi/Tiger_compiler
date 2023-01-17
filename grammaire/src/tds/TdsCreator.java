@@ -89,6 +89,21 @@ public class TdsCreator implements AstVisitor<String> {
         return listeTds.get(idCurrentTds).getVarFuncEntry(idf.name).getType();
     };
 
+    public void compareNil(String typeLeft, String typeRight, int lineNumber){
+        Tds tds = listeTds.get(idCurrentTds);
+
+        if (tds.existType(typeLeft)){
+            if (!tds.getTypeEntry(typeLeft).isRecord()){
+                System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
+                isError ++;
+            }
+            else if (!tds.getTypeEntry(typeRight).isRecord()){
+                System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
+                isError ++;
+            }
+        }
+    }
+
 
     public String visit(Print print){
         String parameterType = print.value.accept(this);
@@ -122,7 +137,7 @@ public class TdsCreator implements AstVisitor<String> {
     // Partie 1 :
     public String visit(Affect affect){
 
-        if (affect.idf.isAffectable()){
+        if (!affect.idf.isAffectable()){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le membre de gauche de l'affectation n'est pas une valeur affectable");
             return null;
         }
@@ -133,12 +148,14 @@ public class TdsCreator implements AstVisitor<String> {
         String exprType = affect.expr.accept(this);
         
 
-        if (idfType != null && exprType != null){
-            if (idfType.equals("nil") && exprType.equals("nil")) {
-                System.out.println("Erreur ligne "+affect.lineNumber+" : affectation du type (nil ne doit pas être affecté à un type nil).");
-                isError++;
+        if (idfType != null && exprType != null ){
+            if (exprType.equals("nil")) {
+                if (!listeTds.get(idCurrentTds).getTypeEntry(idfType).isRecord()){
+                    System.out.println("Erreur ligne "+affect.lineNumber+" : affectation du type (nil ne doit pas être affecté à un type nil).");
+                    isError++;
+                }
             }
-            else if (!idfType.equals(exprType)&& !exprType.equals("nil")) {
+            else if (!idfType.equals(exprType)) {
                 System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + ", " + idfType + " était attendu");
                 isError ++;
             }
@@ -155,12 +172,7 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = or.right.accept(this);
 
         if (leftType != null && rightType != null ){
-
-            if (leftType.equals("nil") && rightType.equals("nil")) {
-                System.out.println("Erreur ligne "+or.lineNumber+" : nil|nil est illégal.");//erreur à précisier
-                isError++;
-            }
-            else if (!(leftType.equals("int") && rightType.equals("int"))) {
+            if (!(leftType.equals("int") && rightType.equals("int"))) {
                 System.out.println("Erreur ligne " + or.lineNumber + " : les opérandes de | ne sont pas des int");
                 isError ++;
             }
@@ -175,11 +187,7 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = and.right.accept(this);
 
         if (leftType != null && rightType != null ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
-                System.out.println("Erreur ligne "+and.lineNumber+" : nil&nil est illégal.");
-                isError++;
-            }
-            else if (!(leftType.equals("int") && rightType.equals("int"))) {
+            if (!(leftType.equals("int") && rightType.equals("int"))) {
                 System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes de & ne sont pas des int");
                 isError ++;
             }
@@ -195,7 +203,10 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = equal.right.accept(this);
 
         if (leftType != null && rightType != null  ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
+            if (leftType == "nil" || rightType == "nil"){
+                compareNil(leftType, rightType, equal.lineNumber);
+            }
+            else if (leftType.equals("nil") && rightType.equals("nil")) {
                 System.out.println("Erreur ligne "+equal.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
@@ -214,7 +225,10 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = diff.right.accept(this);
 
         if (leftType != null && rightType != null ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
+            if (leftType == "nil" || rightType == "nil"){
+                compareNil(leftType, rightType, diff.lineNumber);
+            }
+            else if (leftType.equals("nil") && rightType.equals("nil")) {
                 System.out.println("Erreur ligne "+diff.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
@@ -234,7 +248,10 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = inf.right.accept(this);
 
         if (leftType != null && rightType != null ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
+            if (leftType == "nil" || rightType == "nil"){
+                compareNil(leftType, rightType, inf.lineNumber);
+            }
+            else if (leftType.equals("nil") && rightType.equals("nil")) {
                 System.out.println("Erreur ligne "+inf.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
@@ -254,7 +271,10 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = sup.right.accept(this);
 
         if (leftType != null && rightType != null ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
+            if (leftType == "nil" || rightType == "nil"){
+                compareNil(leftType, rightType, sup.lineNumber);
+            }
+            else if (leftType.equals("nil") && rightType.equals("nil")) {
                 System.out.println("Erreur ligne "+sup.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
@@ -275,7 +295,10 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = infEqual.right.accept(this);
 
         if (leftType != null && rightType != null ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
+            if (leftType == "nil" || rightType == "nil"){
+                compareNil(leftType, rightType, infEqual.lineNumber);
+            }
+            else if (leftType.equals("nil") && rightType.equals("nil")) {
                 System.out.println("Erreur ligne "+infEqual.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
@@ -296,7 +319,10 @@ public class TdsCreator implements AstVisitor<String> {
         String rightType = supEqual.right.accept(this);
 
         if (leftType != null && rightType != null ){
-            if (leftType.equals("nil") && rightType.equals("nil")) {
+            if (leftType == "nil" || rightType == "nil"){
+                compareNil(leftType, rightType, supEqual.lineNumber);
+            }
+            else if (leftType.equals("nil") && rightType.equals("nil")) {
                 System.out.println("Erreur ligne "+supEqual.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
@@ -566,9 +592,17 @@ public class TdsCreator implements AstVisitor<String> {
                 for (Ast expr : listExpr.listExpr){
                     String exprType = expr.accept(this);
                     
-                    if (exprType != null && !parameters.get(i).getType().equals(exprType) && !exprType.equals("nil")){
-                        System.out.println("Erreur ligne " + listExpr.lineNumber + " : affectation du type " + exprType + " vers le paramètre " + parameters.get(i).getSymbole() + " de type " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
-                        isError ++;
+                    if (exprType != null){
+                        String parameterType = parameters.get(i).getType();
+                        if (!listeTds.get(idCurrentTds).getTypeEntry(parameterType).isRecord() && exprType.equals("nil")){
+                            System.out.println("Erreur ligne " + listExpr.lineNumber + " : la valeur nil ne peut être affecté qu'à un record");
+                            isError ++;
+                        }
+
+                        else if (!parameters.get(i).getType().equals(exprType)){
+                            System.out.println("Erreur ligne " + listExpr.lineNumber + " : affectation du type " + exprType + " vers le paramètre " + parameters.get(i).getSymbole() + " de type " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
+                            isError ++;
+                        }
                     }
                     i++;
                 }
@@ -899,7 +933,12 @@ public class TdsCreator implements AstVisitor<String> {
 
         else {
             String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
-            if (exprType != null && !typeAlias.equals(exprType) && !exprType.equals("nil")){
+            if (!listeTds.get(idCurrentTds).getTypeEntry(typeAlias).isRecord() && exprType.equals("nil")){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : la valeur nil ne peut être affecté qu'à un record");
+                isError ++;
+            }
+
+            else if (exprType != null && !typeAlias.equals(exprType)){
                 System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + " vers la variable " + id + " de type " + typeAlias);
                 isError ++;
             }

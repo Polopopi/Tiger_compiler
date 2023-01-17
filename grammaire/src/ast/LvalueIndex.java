@@ -14,4 +14,8 @@ public class LvalueIndex extends AbstractIdf {
         this.left=left;
         this.exprOr=exprOr;
     }
+
+    public boolean isAffectable(){
+        return true;
+    }
 }
