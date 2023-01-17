@@ -19,7 +19,9 @@ public class LaterVerifArray extends LaterVerifType{
         String type = this.getTypeAst().accept(creator);
         creator.setNameIdf(false);
         if (this.getTds().existType(type)){
+            System.out.println("TEST");
             String typeAlias = this.getTds().getTypeEntry(type).getSymbol();
+            System.out.println("TEST");
             arrayEntry.setTypeComposite(typeAlias);
         }
         else{

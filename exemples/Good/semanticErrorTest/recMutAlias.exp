@@ -1,0 +1,5 @@
+let
+    type a = array of c
+    type b = {}
+    type c = b
+in end 
