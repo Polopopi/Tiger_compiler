@@ -111,6 +111,11 @@ public class TdsCreator implements AstVisitor<String> {
     // Partie 1 :
     public String visit(Affect affect){
 
+        if (affect.idf.isAffectable()){
+            System.out.println("Erreur ligne " + affect.lineNumber + " : le membre de gauche de l'affectation n'est pas une valeur affectable");
+            return null;
+        }
+        
         inAffectation = true;
         String idfType = affect.idf.accept(this);
         inAffectation = false;

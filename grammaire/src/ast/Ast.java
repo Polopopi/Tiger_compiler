@@ -9,5 +9,9 @@ public abstract class Ast {
     }
 
     public abstract <T> T accept(AstVisitor<T> visitor);
+
+    public boolean isAffectable(){
+        return(false);
+    }
     
 }

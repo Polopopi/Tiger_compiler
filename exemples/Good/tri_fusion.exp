@@ -1,52 +1,53 @@
-let
-    type intArray = array of int
-    type listCouple = {L1 : intArray,L2 : intArray}
-    var L := intArray[10] of 0
-    function fusion(couple : listCouple,len1 : int, len2 : int) : intArray =
-        let 
-            var L := intArray[len1 +len2] of 0 
-            var i1 := 0
-            var i2 := 0
-        in
-            (while i1 <len1 & i2 < len2 do
-                if i1 = len1 then(
-                    L[i1+i2] := couple.L2[i2];
-                    i2 := i2 +1
+let 
+    type list = {head : int, tail : list}
+    type coupleList = {L1 : list, L2: list}
+    var L := list{head = 5, tail = list{head = 2, tail = list{head = 3, tail = list{head = 1, tail = list{head = 4,tail = list{head = 6, head = nil}}}}}}
+    function separe(list : L) : coupleList =
+        if L = nil then(
+            coupleList{L1 = nil, L2 = nil}
+        )
+        else(
+            if L.tail = nil then (
+                coupleList{L1 = list{head = L.head, tail = nil}, L2 = nil}
+            )
+            else(
+                let
+                    var couple := separe(L.tail.tail)
+                in
+                    coupleList{L1 = list{head = L.head, tail = couple.L1},L2 = list{head=L.tail.head, tail = couple.L2}}
+                end
+            )
+        )
+    function fusion(couple : coupleList) : list =
+        if couple.L1 = nil then(
+            couple.L2
+        )
+        else (
+            if couple.L2 = nil then(
+                couple.L1
+            )
+            else(
+                if couple.L1.head < couple.L2.head then(
+                    list{head = couple.L1.head, tail = fusion(coupleList{L1 = couple.L1.tail, L2 = couple.L2})}
                 )
                 else(
-                    if i2 = len2 then(
-                        L[i1+i2] := couple.L1[i1];
-                        i1 := i1+1
-                    )
-                    else(
-                        if couple.L1[i1] < couple.L2[i2]
-                        then(
-                            L[i1+i2] := couple.L1[i1];
-                            i1 := i1 + 1
-                        )
-                        else(
-                            L[i1+i2] := couple.L2[i2];
-                            i2 := i2 + 1
-                        )
-                    )
-                );
-            L)
-        end
-    /*function separe(L : intArray,len : int) : listCouple =
-        let var couple = listCouple{L1 = intArray[len/2 + (len/2*2 <> len)] of 0,L2 = intArray[len/2] of 0} in
-            for i = 0 to len - 1 do
-                if i/2*2 = i 
-                then(
-                    couple.L1[i/2] = L[i]
+                    list{head = couple.L2.head, tail = fusion(coupleList{L1 = couple.L1, L2 = couple.L2.tail})}
                 )
-                else(
-                    couple.L2[i/2] = L[i]
-                )
-        
-        */
-
-in ()
+            )
+        )
+    function triFusion(L : list) : list =
+        if L = nil | L.tail = nil then(
+            L
+        )
+        else(
+            let 
+                var couple := separe(L)
+            in
+                fusion(listCouple(L1 = triFusion(couple.L1), L2 = triFusion(couple.L2)))
+            end
+        )
+in
+    triFusion(L)
 end
 
-                
 
