@@ -290,11 +290,6 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 	@Override
 	public Ast visitList_expr(tigerParser.List_exprContext ctx){
 		/* (expr_or (',' expr_or)*)? */
-		if (ctx.getChildCount() == 1){
-			return ctx.getChild(0).accept(this);
-		}
-
-
 		ListExpr expr_list = new ListExpr(ctx.start.getLine());
 
 		for (int i = 0; i<ctx.getChildCount();i=i+2){

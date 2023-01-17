@@ -18,6 +18,8 @@ public class TdsCreator implements AstVisitor<String> {
     private boolean inAffectation = false;
     private int isError;
     private boolean existTypeError = false;
+    private boolean callError = false;
+    private boolean recordCallError = false;
 
     public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
@@ -32,7 +34,7 @@ public class TdsCreator implements AstVisitor<String> {
         return this.listeTds;
     }
 
-    public Tds getCuurentTds(){
+    public Tds getCurentTds(){
         return this.listeTds.get(idCurrentTds);
     }
 
@@ -119,7 +121,7 @@ public class TdsCreator implements AstVisitor<String> {
         inAffectation = false;
         String exprType = affect.expr.accept(this);
 
-        if (idfType != null && !idfType.equals(exprType)){
+        if (idfType != null && exprType != null && !idfType.equals(exprType)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + ", " + idfType + " était attendu");
             isError ++;
         }
@@ -369,7 +371,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         idCurrentTds = tds.getParent().getId();
 
-        if ( debutType != null && finType != null && !(debutType.equals("int")) && finType.equals("int")){
+        if ( debutType != null && finType != null && !(debutType.equals("int") && finType.equals("int"))){
             System.out.println("Erreur ligne " + forNode.lineNumber + " : les bornes ne sont pas des int"); 
             isError ++;
         }
@@ -457,6 +459,13 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit (ListExpr listExpr){
+        if (callError){
+            for (Ast expr : listExpr.listExpr){
+                expr.accept(this);
+            }
+            return "";
+        }
+
         ArrayList<Parameter> parameters = ((FunctionEntry) currentEntry).getParameters();
         int listExprSize=listExpr.listExpr.size();
         
@@ -465,7 +474,7 @@ public class TdsCreator implements AstVisitor<String> {
 
             if ( listExprSize < ((FunctionEntry)currentEntry).getParameters().size()){
            
-                System.out.println("Erreur ligne " + listExpr.lineNumber + " : la fonction " + currentEntry.getSymbol() + " attend " + parameters.size()+ " paramètres, mais " + listExprSize+ " paramètres sont donnés "+ (parameters.size() - listExprSize) + " paramètres sont manquants).");
+                System.out.println("Erreur ligne " + listExpr.lineNumber + " : la fonction " + currentEntry.getSymbol() + " attend " + parameters.size()+ " paramètres, mais " + listExprSize+ " paramètres sont donnés ("+ (parameters.size() - listExprSize) + " paramètre(s) est/sont manquant(s)).");
                 isError++;
             }
             else if(listExprSize > ((FunctionEntry)currentEntry).getParameters().size()){
@@ -578,7 +587,7 @@ public class TdsCreator implements AstVisitor<String> {
             }
 
             if (!listeTds.get(idCurrentTds).existType(type_id)){
-                System.out.println("Erreur ligne " + type_Field.lineNumber + " : le type " + type_id + " n'est pas défini pour la fonction " + currentEntry.getSymbol());
+                System.out.println("Erreur ligne " + type_Field.lineNumber + " : le type " + type_id + " n'est pas défini pour le paramètre " + id + " de la fonction " + currentEntry.getSymbol());
                 isError++;
                 return id;
             }
@@ -676,11 +685,18 @@ public class TdsCreator implements AstVisitor<String> {
         nameIdf = true;          
         String id_f = fieldd.id.accept(this); //verres
         nameIdf = false;
-        String expr_f = fieldd.expr.accept(this); //2 (int)
+
+
+        if (recordCallError){
+            String expr_f = fieldd.expr.accept(this); //2 (int)
+            return "";
+        }
+
 
         if (!((RecordEntry)currentEntry).existField(id_f)){
             System.out.println("Erreur ligne " + fieldd.lineNumber + " : le field " + id_f + " n'est pas défini pour le record " + currentEntry.getSymbol());
             isError++;
+            String expr_f = fieldd.expr.accept(this); //2 (int)
             return null;
         }
 
@@ -695,7 +711,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         var wenjia := steven{adiruin = 2};
         */
-
+        String expr_f = fieldd.expr.accept(this); //2 (int)
         if (expr_f != null && !type_id.equals(expr_f) ){
             System.out.println("Erreur ligne " + fieldd.lineNumber + " : affectation du type " + expr_f + " vers le field " + id_f + " de type " + type_id + " pour le record " + currentEntry.getSymbol());
             isError ++;
@@ -706,6 +722,13 @@ public class TdsCreator implements AstVisitor<String> {
 
 
     public String visit(FieldList fieldList){
+        if (recordCallError){
+            for (Ast expr : fieldList.listAst){
+                expr.accept(this);
+            }
+            return "";
+        }
+
         ArrayList<String> fieldsId = new ArrayList<String>();
         for (Ast expr : fieldList.listAst){
             String fieldId = expr.accept(this);
@@ -726,7 +749,7 @@ public class TdsCreator implements AstVisitor<String> {
         }
 
         if (absentFields.size() > 0){
-            System.out.println("Erreur ligne " + fieldList.lineNumber + " : tous les fields du record " + currentEntry.getSymbol() + " n'ont pas été initialisés (" + absentFields.toString() + " sont manquants)");
+            System.out.println("Erreur ligne " + fieldList.lineNumber + " : tous les fields du record " + currentEntry.getSymbol() + " n'ont pas été initialisés (" + absentFields.toString() + " est/sont manquant(s))");
             isError++;
         }
 
@@ -752,8 +775,14 @@ public class TdsCreator implements AstVisitor<String> {
             isError++;
         }
         else if (exprType != null){
-            VariableEntry varFuncEntryr=new VariableEntry(exprType,id,4);
-            this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
+            if (exprType.equals("")){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : l'expression ne retourne rien à la variable " + id);
+                isError++;
+            }
+            else{
+                VariableEntry varFuncEntryr=new VariableEntry(exprType,id,4);
+                this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
+            }
         }
         
         return "";
@@ -776,7 +805,7 @@ public class TdsCreator implements AstVisitor<String> {
         }
 
         else if (!this.listeTds.get(idCurrentTds).existType(type)) {
-            System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + type + " n'est pas défini");
+            System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + type + " n'est pas défini pour la variable " + id);
             isError ++;
         }
 
@@ -812,7 +841,7 @@ public class TdsCreator implements AstVisitor<String> {
         String typeAlias;
         boolean existType = true;
         if(!this.listeTds.get(idCurrentTds).existType(typeId)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour la fonction " + id);
+            System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + typeId + " n'est pas défini pour le type de retour de la fonction " + id);
             isError ++;
             typeAlias = ""; //DEVIENT UNE PROCEDURE
             existType = false;
@@ -841,7 +870,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         //vérification
         //this.verifList.add(new LaterVerifFunc(typeParametres, affect.typeFields)); //BIZARRE FAUDRIAT METTRE LE BLOC PAS LE  FIELD
-        this.verifList.add(new LaterVerifFunc(typeAlias, affect.exprAffect, tdsFonction));
+        this.verifList.add(new LaterVerifFunc(functionEntry, typeAlias, affect.exprAffect, tdsFonction));
         //ajout de nouvelle fct
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
@@ -881,7 +910,7 @@ public class TdsCreator implements AstVisitor<String> {
         currentEntry = oldEntry;
         idCurrentTds = tdsFonction.getParent().getId();
 
-        verifList.add(new LaterVerifFunc("", affect.exprAffect, tdsFonction));
+        verifList.add(new LaterVerifFunc(procEntry, "", affect.exprAffect, tdsFonction));
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
             System.out.println("Erreur ligne " + affect.lineNumber + " : la procédure " + id + " est déjà définie");
@@ -986,33 +1015,38 @@ public class TdsCreator implements AstVisitor<String> {
         nameIdf = true;
         String idType = affect.id.accept(this);
         nameIdf = false;
-        String typeArray=affect.exprOr2.accept(this);
-        String lengthArray=affect.exprOr1.accept(this);
 
-        
         TypeEntry entry = listeTds.get(idCurrentTds).getTypeEntry(idType);
 
         if (entry == null){
             System.out.println("Erreur ligne " + affect.lineNumber + " : l'array "+idType+" n'est pas défini");
             isError++;
+            String typeArray=affect.exprOr2.accept(this);
+            String lengthArray=affect.exprOr1.accept(this);
             return null;
         }
+
+
         if (!entry.isArray()){
             System.out.println("Erreur ligne " + affect.lineNumber + " : le type " + idType +" n'est pas un array");
             isError ++;
+            String typeArray=affect.exprOr2.accept(this);
+            String lengthArray=affect.exprOr1.accept(this);
         }
         else{
+            String typeArray=affect.exprOr2.accept(this);
+            String lengthArray=affect.exprOr1.accept(this);
             if (lengthArray != null && !lengthArray.equals("int")) {
                 System.out.println("Erreur ligne " + affect.lineNumber + " : le type de l'indice pour l'array " + idType + " n'est pas un int");
                 isError++;
             }
-            else if (typeArray != null && !typeArray.equals(((ArrayEntry)entry).getTypeComposite())){
-                System.out.println("Erreur ligne " + affect.lineNumber + " : le type attendu est " + ((ArrayEntry)entry).getTypeComposite() + ", et non " + typeArray);
+            if (typeArray != null && !typeArray.equals(((ArrayEntry)entry).getTypeComposite())){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : le type attendu est " + ((ArrayEntry)entry).getTypeComposite() + ", et non " + typeArray + " pour les éléments de l'array "+ idType);
                 isError++;
             }
         }
 
-        return idType;
+        return entry.getSymbol();
     };
 
 
@@ -1026,6 +1060,9 @@ public class TdsCreator implements AstVisitor<String> {
         if (entry == null){
             System.out.println("Erreur ligne " + record.lineNumber + " : le record "+idType+" n'est pas défini");
             isError++;
+            recordCallError = true;
+            record.fieldList.accept(this);
+            recordCallError = false;
             return null;
         }
         else{
@@ -1040,7 +1077,7 @@ public class TdsCreator implements AstVisitor<String> {
             }
             currentEntry = oldEntry;
 
-            return(idType);
+            return(entry.getSymbol());
         }
     };
 
@@ -1054,6 +1091,9 @@ public class TdsCreator implements AstVisitor<String> {
         if (entry==null) {
             System.out.println("Erreur ligne " + call.lineNumber + " : la fonction "+id+" n'est pas définie");
             isError ++;
+            callError = true;
+            call.listExpr.accept(this);
+            callError = false;
             return null;
         }
         else{

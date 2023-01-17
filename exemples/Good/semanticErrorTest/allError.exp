@@ -1,42 +1,49 @@
 (
     /* Déclarations et appels */
     let
-        type rec = {a : undeclared}
-        type arr = array of undeclared
-        type aliasType = undeclared
-        function f(x : undeclared) : undeclared = ()
-        var test : undeclared := 2
+        /* undeclaredType */
+        type rec = {a : undeclaredType} /* Ajouté dans la TDS quand même sans le mauvais field */
+        type arr = array of undeclaredType /* Pas ajouté car pas de type */
+        type aliasType = undeclaredType
+        function f(x : undeclaredType, param1 : int) : undeclaredType = (let var varInUndeclaredFct := 1 in end)
+        function f(x : int, param2 : int) : undeclaredType = ()
+        function f(x : undeclaredType, param3 : int) : int = (1) /* Ajouté dans la TDS quand même sans paramètre */
+        var test : undeclaredType := 2
 
 
         type arr1 = array of int
         type rec1 = {a : arr1}
         function f1(x : rec1) = ()
         var x1 := arr1[1] of 1
-
-        var y1 := undeclared(y1)
-        var y1 := undeclared{b = x1}
-        var y1 := undeclared[1] of 1
-        var y1 := undeclared.a
-        var y1 := undeclared[0]
-        var y1 := rec1{b = x1}
-        var t1 := arr1[1] of undeclared
-
-        function f2() : int = ("a")
-        var z1 : rec1 := "string"
-
+        var t1 := rec1{a = x1}
         var N : int := 2
-        var x2 : arr1 := arr1[N] of 0
-    in 
-        t1 := arr1["a"] of "b";
-        x1 := rec1{a = x1};
-        f1 := 2;
-        z1 := rec1{a = 2};
-        x2 := arr1[N] of f1;
-        x2 := arr1[N] of x2;
 
+        /* undelcaredId */
+        var y1 := undeclaredFct(undeclaredParam)
+        var y1 := undeclaredRec{undeclaredField = undeclaredVar}
+        var y1 := undeclaredArrVar[undeclaredLength] of undeclaredType
+        var y1 := undeclaredRecVar.undeclaredField /* id pas défini mais on spécifie pas qu'on voulait un record */
+        var y1 := t1.undeclaredField
+        var y1 := undeclaredArrVar[0]
+        var y1 := rec1{undeclaredField = undeclaredVar} /* Ajouté dans la TDS quand même */
+
+        /* Erreurs type d'affectation en déclaration */
+        function f2(x : int) : int = ("a")
+        var z1 : rec1 := "string"
+        var test := f1(z1)
+        var a := f2("a")
+        var b : arr1 := rec1{a = x1}
+        var c : rec1 := rec1{a = 2}
+        var d : arr1 := arr1[N] of x1
+    in         
+        undeclaredVar := arr1["a"] of "b"; /* Continue l'analyse */
+        
+        /* contrôles sur l'id des fonctions */
         x1(1);
-        N := f[0];
-        x1 := f.a
+        f1 := 2;
+        x1 := arr1[N] of f1;
+        N := f1[0];
+        x1 := f1.a
     end;
 
 
@@ -44,11 +51,14 @@
     /* for while ifthen(else) */
     for i := 1 to 5 do (
         let 
+            /* TDS vide */
         in 
             i := 0;
             for i := "a" to "b" do()
         end;
+
         i := 0;
+
         1
     );
 
@@ -74,46 +84,57 @@
     break;
 
 
+
+    /* Erreurs paramètres des fonctions en appel (type et nombre) */
     let 
-        function f1(x : int) = ()
+        function f1(x : int) : int = ()
+
+        var x := f1("a", 1)
+        var y := f1()
     in
-        f1(2, 1);
-        f1();
-        f1("a");
-        f1("a", 1)
     end;
 
-
+    /* Erreurs fields des records en appel (type et nombre) */
     let
         type rec1 = {f : int}
-        var x := rec1{g = 1, f = 1}
+
+        var x := rec1{g = 1, f = "a"}
         var y := rec1{}
-        var z := rec1{f = "a"}
-        var a := rec1{g = 1, f = "a"}
     in
     end;
 
 
+
+
+    /* Erreurs redéclaration dans espace de nommage */
     let
         type arr = array of int
         type rec = {a : int}
         var x := 1
-        function f() = ()
+        function f(a : int) = ()
 
-
+        /* signature différente */
         type arr = array of string
         type rec = {b : int}
+        var x := "a"
+        function f(b : string) = ()
+
+        /* swap type */
         type arr = {a : int}
         type rec = array of int
-
-        var x := "a"
-        function f(x : string) = ()
         var f := 1
-        function x() = ()
+        function x(c : int) = ()
+
+        /* changement d'espace de nommage (pas d'erreurs) */
+        type x = array of int
+        type f = {a : int}
+        var arr := 1
+        function rec(d : int) = ()
     in
     end;
 
 
+    /* Erreurs paramètres et fields identiques */
     let
         type rec = {a : int, a : string}
         function f(a : int, a : string) = ()
@@ -121,6 +142,8 @@
     end;
 
 
+
+    /* Erreur affectation à une expression car LL(1) */
     (1) := 2;
 
 
