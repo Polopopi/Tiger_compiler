@@ -1,5 +1,6 @@
 package tds;
 
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 
 import org.antlr.v4.runtime.ListTokenSource;
@@ -175,13 +176,37 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = or.left.accept(this);
         String rightType = or.right.accept(this);
 
-        if (leftType != null && rightType != null ){
-            if (!(leftType.equals("int") && rightType.equals("int"))) {
-                System.out.println("Erreur ligne " + or.lineNumber + " : les opérandes de | ne sont pas des int");
+
+        if (leftType != null){
+            if (rightType != null){
+                if (!leftType.equals("int")){
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + or.lineNumber + " : les opérandes de | ne sont pas des int");
+                        isError++;
+                    }
+                    else{
+                        System.out.println("Erreur ligne " + or.lineNumber + " : l'opérande gauche de | n'est pas un int");
+                        isError ++;
+                    }
+                }
+                else{
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + or.lineNumber + " : l'opérande droite de | n'est pas un int");
+                        isError++;
+                    }
+                }
+            }
+            else if (!leftType.equals("int")){
+                System.out.println("Erreur ligne " + or.lineNumber + " : l'opérande gauche de | n'est pas un int");
                 isError ++;
             }
         }
-        
+
+        else if (rightType != null && !rightType.equals("int")){
+            System.out.println("Erreur ligne " + or.lineNumber + " : l'opérande droite de | n'est pas un int");
+            isError++;
+        }
+    
         return "int";
     };
 
@@ -190,11 +215,34 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = and.left.accept(this);
         String rightType = and.right.accept(this);
 
-        if (leftType != null && rightType != null ){
-            if (!(leftType.equals("int") && rightType.equals("int"))) {
-                System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes de & ne sont pas des int");
+        if (leftType != null){
+            if (rightType != null){
+                if (!leftType.equals("int")){
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + and.lineNumber + " : les opérandes de & ne sont pas des int");
+                        isError++;
+                    }
+                    else{
+                        System.out.println("Erreur ligne " + and.lineNumber + " : l'opérande gauche de & n'est pas un int");
+                        isError ++;
+                    }
+                }
+                else{
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + and.lineNumber + " : l'opérande droite de & n'est pas un int");
+                        isError++;
+                    }
+                }
+            }
+            else if (!leftType.equals("int")){
+                System.out.println("Erreur ligne " + and.lineNumber + " : l'opérande gauche de & n'est pas un int");
                 isError ++;
             }
+        }
+
+        else if (rightType != null && !rightType.equals("int")){
+            System.out.println("Erreur ligne " + and.lineNumber + " : l'opérande droite de & n'est pas un int");
+            isError++;
         }
         
 
@@ -247,6 +295,51 @@ public class TdsCreator implements AstVisitor<String> {
     };
 
 
+    public void pasTuVasLeChercher(String leftType, String rightType, int lineNumber, String op){
+        boolean error = false;
+        if (leftType.equals("int")){
+            if (!rightType.equals("int")){
+                System.out.print("Erreur ligne " + lineNumber + " : l'opérande droite de " + op + " est de type " + rightType + ", or l'opérande de gauche est de type " + leftType);
+                isError ++;
+                error = true;
+            }
+        }
+
+        else if (leftType.equals("string")){
+            if (!rightType.equals("string")){
+                System.out.print("Erreur ligne " + lineNumber + " : l'opérande droite de " + op + " est de type " + rightType + ", or l'opérande de gauche est de type " + leftType);
+                isError ++;
+                error = true;
+            }
+        }
+
+        else if (rightType.equals("int")){
+            if (!leftType.equals("int")){
+                System.out.print("Erreur ligne " + lineNumber + " : l'opérande gauche de " + op + " est de type " + leftType + ", or l'opérande de droite est de type " + rightType);
+                isError ++;
+                error = true;
+            }
+        }
+
+        else if (rightType.equals("string")){
+            if (!leftType.equals("string")){
+                System.out.print("Erreur ligne " + lineNumber + " : l'opérande gauche de " + op + " est de type " + leftType + ", or l'opérande de droite est de type " + rightType);
+                isError ++;
+                error = true;
+            }
+        }
+        else {
+            System.out.print("Erreur ligne " + lineNumber + " : les opérandes de " + op + " ne sont pas du même type, celle de gauche est de type " + leftType + " et celle de droite est de type " + rightType);
+            isError ++;
+            error = true;
+        }
+
+        if (error){
+            System.out.println(" (les opérandes doivent être de même type et seuls les types int et string sont acceptés)");
+        }
+    }
+
+
     public String visit(Inf inf){
         String leftType = inf.left.accept(this);
         String rightType = inf.right.accept(this);
@@ -259,9 +352,8 @@ public class TdsCreator implements AstVisitor<String> {
                 System.out.println("Erreur ligne "+inf.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
-            else if (!leftType.equals(rightType) &&!rightType.equals("nil")) {
-                System.out.println("Erreur ligne " + inf.lineNumber + " : les opérandes de < ne sont pas du même type"); 
-                isError ++;   
+            else {
+                pasTuVasLeChercher(leftType, rightType, inf.lineNumber, "<");
             }
         }
         
@@ -282,9 +374,8 @@ public class TdsCreator implements AstVisitor<String> {
                 System.out.println("Erreur ligne "+sup.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
-            else if (!leftType.equals(rightType)  &&!rightType.equals("nil")) {
-                System.out.println("Erreur ligne " + sup.lineNumber + " : les opérandes de > ne sont pas du même type"); 
-                isError ++;
+            else {
+                pasTuVasLeChercher(leftType, rightType, sup.lineNumber, ">");
             }
             
         }
@@ -306,9 +397,8 @@ public class TdsCreator implements AstVisitor<String> {
                 System.out.println("Erreur ligne "+infEqual.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
-            else if ( !leftType.equals(rightType)  &&!rightType.equals("nil")) {
-                System.out.println("Erreur ligne " + infEqual.lineNumber + " : les opérandes de <= ne sont pas du même type"); 
-                isError ++;
+            else {
+                pasTuVasLeChercher(leftType, rightType, infEqual.lineNumber, "<=");
             }
         
         }
@@ -330,9 +420,8 @@ public class TdsCreator implements AstVisitor<String> {
                 System.out.println("Erreur ligne "+supEqual.lineNumber+" : nil ne peut pas être comparé avec nil.");
                 isError++;
             }
-            else if( !leftType.equals(rightType)  &&!rightType.equals("nil")){
-                System.out.println("Erreur ligne " + supEqual.lineNumber + " : les opérandes de >= ne sont pas du même type"); 
-                isError ++;
+            else {
+                pasTuVasLeChercher(leftType, rightType, supEqual.lineNumber, ">=");
             }
             
         }
@@ -345,9 +434,34 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = plus.left.accept(this);
         String rightType = plus.right.accept(this);
 
-        if (leftType != null && rightType != null && !(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur ligne " + plus.lineNumber + " : les opérandes de + ne sont pas des int"); 
-            isError ++;
+        if (leftType != null){
+            if (rightType != null){
+                if (!leftType.equals("int")){
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + plus.lineNumber + " : les opérandes de + ne sont pas des int");
+                        isError++;
+                    }
+                    else{
+                        System.out.println("Erreur ligne " + plus.lineNumber + " : l'opérande gauche de + n'est pas un int");
+                        isError ++;
+                    }
+                }
+                else{
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + plus.lineNumber + " : l'opérande droite de + n'est pas un int");
+                        isError++;
+                    }
+                }
+            }
+            else if (!leftType.equals("int")){
+                System.out.println("Erreur ligne " + plus.lineNumber + " : l'opérande gauche de + n'est pas un int");
+                isError ++;
+            }
+        }
+
+        else if (rightType != null && !rightType.equals("int")){
+            System.out.println("Erreur ligne " + plus.lineNumber + " : l'opérande droite de + n'est pas un int");
+            isError++;
         }
 
         return "int";
@@ -358,9 +472,34 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = minus.left.accept(this);
         String rightType = minus.right.accept(this);
 
-        if (leftType != null && rightType != null && !(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur ligne " + minus.lineNumber + " : les opérandes de - ne sont pas des int"); 
-            isError ++;
+        if (leftType != null){
+            if (rightType != null){
+                if (!leftType.equals("int")){
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + minus.lineNumber + " : les opérandes de - ne sont pas des int");
+                        isError++;
+                    }
+                    else{
+                        System.out.println("Erreur ligne " + minus.lineNumber + " : l'opérande gauche de - n'est pas un int");
+                        isError ++;
+                    }
+                }
+                else{
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + minus.lineNumber + " : l'opérande droite de - n'est pas un int");
+                        isError++;
+                    }
+                }
+            }
+            else if (!leftType.equals("int")){
+                System.out.println("Erreur ligne " + minus.lineNumber + " : l'opérande gauche de - n'est pas un int");
+                isError ++;
+            }
+        }
+
+        else if (rightType != null && !rightType.equals("int")){
+            System.out.println("Erreur ligne " + minus.lineNumber + " : l'opérande droite de - n'est pas un int");
+            isError++;
         }
 
         return "int";
@@ -371,9 +510,34 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = mult.left.accept(this);
         String rightType = mult.right.accept(this);
 
-        if (leftType != null && rightType != null && !(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur ligne " + mult.lineNumber + " : les opérandes de * ne sont pas des int"); 
-            isError ++;
+        if (leftType != null){
+            if (rightType != null){
+                if (!leftType.equals("int")){
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + mult.lineNumber + " : les opérandes de * ne sont pas des int");
+                        isError++;
+                    }
+                    else{
+                        System.out.println("Erreur ligne " + mult.lineNumber + " : l'opérande gauche de * n'est pas un int");
+                        isError ++;
+                    }
+                }
+                else{
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + mult.lineNumber + " : l'opérande droite de * n'est pas un int");
+                        isError++;
+                    }
+                }
+            }
+            else if (!leftType.equals("int")){
+                System.out.println("Erreur ligne " + mult.lineNumber + " : l'opérande gauche de * n'est pas un int");
+                isError ++;
+            }
+        }
+
+        else if (rightType != null && !rightType.equals("int")){
+            System.out.println("Erreur ligne " + mult.lineNumber + " : l'opérande droite de * n'est pas un int");
+            isError++;
         }
 
         return "int";
@@ -384,9 +548,34 @@ public class TdsCreator implements AstVisitor<String> {
         String leftType = divide.left.accept(this);
         String rightType = divide.right.accept(this);
 
-        if (leftType != null && rightType != null && !(leftType.equals("int") && rightType.equals("int"))){
-            System.out.println("Erreur ligne " + divide.lineNumber + " : les opérandes de / ne sont pas des int"); 
-            isError ++;
+        if (leftType != null){
+            if (rightType != null){
+                if (!leftType.equals("int")){
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + divide.lineNumber + " : les opérandes de / ne sont pas des int");
+                        isError++;
+                    }
+                    else{
+                        System.out.println("Erreur ligne " + divide.lineNumber + " : l'opérande gauche de / n'est pas un int");
+                        isError ++;
+                    }
+                }
+                else{
+                    if (!rightType.equals("int")){
+                        System.out.println("Erreur ligne " + divide.lineNumber + " : l'opérande droite de / n'est pas un int");
+                        isError++;
+                    }
+                }
+            }
+            else if (!leftType.equals("int")){
+                System.out.println("Erreur ligne " + divide.lineNumber + " : l'opérande gauche de / n'est pas un int");
+                isError ++;
+            }
+        }
+
+        else if (rightType != null && !rightType.equals("int")){
+            System.out.println("Erreur ligne " + divide.lineNumber + " : l'opérande droite de / n'est pas un int");
+            isError++;
         }
 
         return "int";

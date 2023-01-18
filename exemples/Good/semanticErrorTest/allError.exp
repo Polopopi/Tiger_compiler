@@ -157,18 +157,31 @@
 
 
     /* Opérateurs binaires */
-    1 + "a";
-    1 - "a";
-    1 * "a";
-    1 / "a";
-    1 | "a";
-    1 & "a";
-    1 = "a";
-    1 <> "a";
-    1 > "a";
-    1 < "a";
-    1 >= "a";
-    1 <= "a";
+    let
+        type rec = {}
+        var rec := rec{}
+    in
+        /* int */
+        1 + "a";
+        "a" - 1;
+        1 * "a";
+        "a" / 1;
+        - "a";
+
+        1 | "a";
+        "a" & 1;
+
+        /* Même type */
+        1 = "a";
+        1 <> "a";
+
+        /* Même type et int et string */
+        1 > "a";
+        "a" < 1;
+        rec < "a";
+        1 >= rec;
+        rec <= rec
+    end;
 
 
 
