@@ -112,18 +112,21 @@
     let
         type arr = array of int
         type rec = {a : int}
+        type alias = rec
         var x := 1
         function f(a : int) = ()
 
         /* signature différente */
         type arr = array of string
         type rec = {b : int}
+        type alias = arr
         var x := "a"
         function f(b : string) = ()
 
         /* swap type */
         type arr = {a : int}
-        type rec = array of int
+        type rec = alias
+        type alias = array of int
         var f := 1
         function x(c : int) = ()
 
@@ -132,6 +135,7 @@
         type f = {a : int}
         var arr := 1
         function rec(d : int) = ()
+        var alias := 1
     in
     end;
 
@@ -190,7 +194,7 @@
     let 
         type typeA = array of typeB    
         function fctA() = fctB()
-        type typeB = {field1 : typeA}
+        type typeB = {field1 : typeA} /* Erreur car typeA est un array mal déclaré donc pas dans TDS */
         function fctB() = fctA()
     in
     end;
@@ -252,18 +256,22 @@
     let
         var a : int :=nil               /* false */
         var b :=nil                     /* false */
+
         var c : int :=1                 /* true */ 
-        type typeD ={a : int}           /* true */
         function f1(a :int) :int =1     /* true */
-        type intArray = array of int    /* true */
+        type rec = {x : string}
+        var d := rec{x = "oui"}
     in
         if nil=nil then (print(1));     /* false */
-        if nil=nil then (print(1));     /* false */
+        if nil<=nil then (print(1));    /* false */
         if nil>nil then (print(1));     /* false */
+        if nil<nil then (print(1));     /* false */
         if nil>=nil then (print(1));    /* false */
         if a<>nil then (print(1));      /* false */
         if nil=a then (print(1));       /* false */
-        f1("nil");                      /* false */
-        c :=nil                         /* false */
+        f1(nil);                        /* false */
+        d.x :=nil;                        /* false */
+
+        if d = nil then (print(1))    /* true */
     end
 )

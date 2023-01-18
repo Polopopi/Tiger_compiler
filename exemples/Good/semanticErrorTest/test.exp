@@ -1,0 +1,6 @@
+let
+    type a = {}
+    var x := a{}
+in
+    if x<>nil then (print(1))      /* false */
+end

@@ -89,18 +89,20 @@ public class TdsCreator implements AstVisitor<String> {
         return listeTds.get(idCurrentTds).getVarFuncEntry(idf.name).getType();
     };
 
+
+
     public void compareNil(String typeLeft, String typeRight, int lineNumber){
         Tds tds = listeTds.get(idCurrentTds);
 
-        if (!typeLeft.equals("nil") && !tds.getTypeEntry(typeLeft).isRecord()){
+        if (typeRight.equals("nil") && !typeLeft.equals("nil") && !tds.getTypeEntry(typeLeft).isRecord()){
             System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
             isError ++;
         }
-        else if (!typeRight.equals("nil") && !tds.getTypeEntry(typeRight).isRecord()){
+        else if (typeLeft.equals("nil") && !typeRight.equals("nil") && !tds.getTypeEntry(typeRight).isRecord()){
             System.out.println("Erreur ligne " + lineNumber + " : nil doit être comparé à un record");
             isError ++;
         }
-        else{
+        else if (typeRight.equals("nil") && typeLeft.equals("nil")){
             System.out.println("Erreur ligne " + lineNumber + " : deux nil ne peuvent être comparés");
             isError ++;
         }
@@ -153,7 +155,7 @@ public class TdsCreator implements AstVisitor<String> {
         if (idfType != null && exprType != null ){
             if (exprType.equals("nil")) {
                 if (!listeTds.get(idCurrentTds).getTypeEntry(idfType).isRecord()){
-                    System.out.println("Erreur ligne "+affect.lineNumber+" : affectation du type (nil ne doit pas être affecté à un type nil).");
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : la valeur nil ne peut être affectée qu'à un type record, le membre gauche est de type " + idfType);
                     isError++;
                 }
             }
@@ -597,7 +599,7 @@ public class TdsCreator implements AstVisitor<String> {
                     if (exprType != null){
                         String parameterType = parameters.get(i).getType();
                         if (!listeTds.get(idCurrentTds).getTypeEntry(parameterType).isRecord() && exprType.equals("nil")){
-                            System.out.println("Erreur ligne " + listExpr.lineNumber + " : la valeur nil ne peut être affecté qu'à un record");
+                            System.out.println("Erreur ligne " + listExpr.lineNumber + " : la valeur nil ne peut être affectée qu'à un type record, le paramètre " + parameters.get(i).getSymbole() + " est un " + parameters.get(i).getType() + " pour la fonction " + currentEntry.getSymbol());
                             isError ++;
                         }
 
@@ -645,7 +647,15 @@ public class TdsCreator implements AstVisitor<String> {
         currentEntry = new TypeEntry(type_id);
 
         if (listeTds.get(idCurrentTds).existLocalType(type_id)){
-            System.out.println("Erreur ligne " + type_Declaration.lineNumber + " : le type " + type_id + " est déjà défini");
+            if (listeTds.get(idCurrentTds).getTypeEntry(type_id).isAlias()){
+                System.out.println("Erreur ligne " + type_Declaration.lineNumber + " : l'alias " + type_id + " est déjà défini");
+            }
+            else if (listeTds.get(idCurrentTds).getTypeEntry(type_id).isArray()){
+                System.out.println("Erreur ligne " + type_Declaration.lineNumber + " : l'array " + type_id + " est déjà défini");
+            }
+            else if (listeTds.get(idCurrentTds).getTypeEntry(type_id).isRecord()){
+                System.out.println("Erreur ligne " + type_Declaration.lineNumber + " : le record " + type_id + " est déjà défini");
+            }
             isError ++;
             existTypeError = true;
         }
@@ -891,8 +901,20 @@ public class TdsCreator implements AstVisitor<String> {
 
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : la variable " + id + " est déjà définie");
-            isError++;
+            if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isVariable()){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : la variable " + id + " est déjà définie");
+                isError++;
+            }
+            else if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isFunction()){
+                if (!this.listeTds.get(idCurrentTds).getVarFuncEntry(id).getType().equals("")){
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une fonction déjà définie");
+                    isError++;
+                }
+                else {
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une procédure déjà définie");
+                    isError++;
+                }
+            }
         }
         else if (exprType != null){
             if (exprType.equals("")){
@@ -924,8 +946,20 @@ public class TdsCreator implements AstVisitor<String> {
         String exprType=affect.expr.accept(this);
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : la variable " + id + " est déjà définie");
-            isError++;
+            if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isVariable()){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : la variable " + id + " est déjà définie");
+                isError++;
+            }
+            else if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isFunction()){
+                if (!this.listeTds.get(idCurrentTds).getVarFuncEntry(id).getType().equals("")){
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une fonction déjà définie");
+                    isError++;
+                }
+                else {
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une procédure déjà définie");
+                    isError++;
+                }
+            }
         }
 
         else if (!this.listeTds.get(idCurrentTds).existType(type)) {
@@ -936,7 +970,7 @@ public class TdsCreator implements AstVisitor<String> {
         else {
             String typeAlias = listeTds.get(idCurrentTds).getTypeEntry(type).getSymbol();
             if (!listeTds.get(idCurrentTds).getTypeEntry(typeAlias).isRecord() && exprType.equals("nil")){
-                System.out.println("Erreur ligne " + affect.lineNumber + " : la valeur nil ne peut être affecté qu'à un record");
+                System.out.println("Erreur ligne " + affect.lineNumber + " : la valeur nil ne peut être affectée qu'à un record, " + id + " est de type " + typeAlias);
                 isError ++;
             }
 
@@ -1002,8 +1036,20 @@ public class TdsCreator implements AstVisitor<String> {
         this.verifList.add(new LaterVerifFunc(functionEntry, typeAlias, affect.exprAffect, tdsFonction));
         //ajout de nouvelle fct
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
-            isError ++;
+            if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isFunction()){
+                if (!this.listeTds.get(idCurrentTds).getVarFuncEntry(id).getType().equals("")){
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : la fonction " + id + " est déjà définie");
+                    isError++;
+                }
+                else {
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une procédure déjà définie");
+                    isError++;
+                }
+            }
+            else if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isVariable()){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une variable déjà définie");
+                isError++;
+            }
         }
         else if (existType){
             this.listeTds.get(idCurrentTds).addVarFunc(functionEntry);
@@ -1042,8 +1088,20 @@ public class TdsCreator implements AstVisitor<String> {
         verifList.add(new LaterVerifFunc(procEntry, "", affect.exprAffect, tdsFonction));
 
         if(this.listeTds.get(idCurrentTds).existLocalVarFunc(id)){
-            System.out.println("Erreur ligne " + affect.lineNumber + " : la procédure " + id + " est déjà définie");
-            isError ++;
+            if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isFunction()){
+                if (!this.listeTds.get(idCurrentTds).getVarFuncEntry(id).getType().equals("")){
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une fonction déjà définie");
+                    isError++;
+                }
+                else {
+                    System.out.println("Erreur ligne " + affect.lineNumber + " : la procédure " + id + " est déjà définie");
+                    isError++;
+                }
+            }
+            else if (this.listeTds.get(idCurrentTds).getVarFuncEntry(id).isVariable()){
+                System.out.println("Erreur ligne " + affect.lineNumber + " : l'identificateur " + id + " est une variable déjà définie");
+                isError++;
+            }
         }
         else{
             this.listeTds.get(idCurrentTds).addVarFunc(procEntry);
