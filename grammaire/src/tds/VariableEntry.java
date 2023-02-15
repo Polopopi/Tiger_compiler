@@ -4,8 +4,8 @@ public class VariableEntry extends VarFuncEntry {
 
     private boolean affectable;
     
-    public VariableEntry(String type, String symbol,int size){
-        super(type, symbol, size);
+    public VariableEntry(String type, String symbol){
+        super(type, symbol);
         affectable = true;
     }
 

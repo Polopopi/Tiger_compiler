@@ -659,7 +659,7 @@ public class TdsCreator implements AstVisitor<String> {
         Tds tds = new Tds(imbrication + 1, listeTds.get(idCurrentTds));
         listeTds.add(tds);
         idCurrentTds = tds.getId();
-        VariableEntry newEntry = new VariableEntry("int",id,4);
+        VariableEntry newEntry = new VariableEntry("int",id);
         newEntry.setAffectable(false);
         tds.addVarFunc(newEntry);
 
@@ -912,7 +912,7 @@ public class TdsCreator implements AstVisitor<String> {
             Parameter parameter=new Parameter(id, typeParamAlias,4);
             ((FunctionEntry) currentEntry).addParameter(parameter);
             //dans la nouvelle tds
-            VariableEntry var=new VariableEntry(typeParamAlias, id, 4);
+            VariableEntry var=new VariableEntry(typeParamAlias, id);
             listeTds.get(idCurrentTds).addVarFunc(var);
         }
 
@@ -1115,7 +1115,7 @@ public class TdsCreator implements AstVisitor<String> {
                 isError++;
             }
             else{
-                VariableEntry varFuncEntryr=new VariableEntry(exprType,id,4);
+                VariableEntry varFuncEntryr=new VariableEntry(exprType,id);
                 this.listeTds.get(idCurrentTds).addVarFunc(varFuncEntryr);
             }
         }
@@ -1168,7 +1168,7 @@ public class TdsCreator implements AstVisitor<String> {
                 isError ++;
             }
 
-            VariableEntry variableEntry=new VariableEntry(typeAlias, id, 4);
+            VariableEntry variableEntry=new VariableEntry(typeAlias, id);
             this.listeTds.get(idCurrentTds).addVarFunc(variableEntry);
         }
         return "";
@@ -1202,7 +1202,7 @@ public class TdsCreator implements AstVisitor<String> {
             typeAlias = listeTds.get(idCurrentTds).getTypeEntry(typeId).getSymbol();
         }
 
-        FunctionEntry functionEntry=new FunctionEntry(typeAlias, id, 4);
+        FunctionEntry functionEntry=new FunctionEntry(typeAlias, id);
         
         //nouvelle tds
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
@@ -1259,7 +1259,7 @@ public class TdsCreator implements AstVisitor<String> {
         nameIdf = true;
         String id=affect.fonctionID.accept(this);
         nameIdf = false;
-        FunctionEntry procEntry=new FunctionEntry("", id, 4);
+        FunctionEntry procEntry=new FunctionEntry("", id);
 
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
         //ajout de nouvelle tds
