@@ -24,6 +24,7 @@ public class Tds {
 
     public void addVarFunc(VarFuncEntry entry){
         //System.out.println(entry.getSymbol()+" ok");
+        entry.setDeplacement(varFuncEntries.size());
         varFuncEntries.add(entry);
     }
     public void addType(TypeEntry entry){

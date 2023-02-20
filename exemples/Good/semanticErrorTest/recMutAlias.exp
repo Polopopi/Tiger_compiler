@@ -1,0 +1,6 @@
+let
+    type x = array of b
+    type y = {field : b}
+    type a = {}
+    type b = a
+in end 

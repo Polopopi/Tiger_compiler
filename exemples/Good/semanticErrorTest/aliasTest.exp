@@ -1,0 +1,23 @@
+(let 
+    type a = array of int 
+    type b = a 
+    type c = b
+    var x : b := a[5] of 0
+    function fctA(x : b) : a = b[5] of 0
+in 
+    x := b[5] of 0;
+    fctA(b[5] of 0)
+end;
+
+let 
+    type a = {x : int}
+    type b = a 
+    var x : b := a{x = 5}
+    var y : a := b{x = 5}
+    function fctA(c : a) : a = b{x = 5}
+    function fctB(c : b) : b = a{x = 5}
+in 
+    x := b{x = 5};
+    fctA(b{x = 5});
+    fctB(a{x = 5})
+end)

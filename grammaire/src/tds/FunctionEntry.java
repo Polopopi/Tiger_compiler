@@ -6,8 +6,8 @@ public class FunctionEntry extends VarFuncEntry{
     private ArrayList<Parameter> parameters;
     
 
-    public FunctionEntry(String type, String symbol,int size){
-        super(type, symbol, size);
+    public FunctionEntry(String type, String symbol){
+        super(type, symbol);
         this.parameters=new ArrayList<Parameter>();
     }
 

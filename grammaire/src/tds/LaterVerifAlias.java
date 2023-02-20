@@ -14,6 +14,12 @@ public class LaterVerifAlias extends LaterVerifType{
     }
 
     @Override
+    public boolean isAliasVerif(){
+        return true;
+    }
+        
+
+    @Override
     public void check(TdsCreator creator){
         creator.setNameIdf(true);
         String type = this.getTypeAst().accept(creator);

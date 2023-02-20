@@ -1,7 +1,7 @@
 package tds;
 import ast.Ast;
 
-public abstract class LaterVerifType implements LaterVerif{
+public abstract class LaterVerifType extends LaterVerif{
     private Ast typeAst;
     private Tds tds;
 

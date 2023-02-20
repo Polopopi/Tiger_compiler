@@ -6,8 +6,8 @@
         type arr = array of undeclaredType /* Pas ajouté car pas de type */
         type aliasType = undeclaredType
         function f(x : undeclaredType, param1 : int) : undeclaredType = (let var varInUndeclaredFct := 1 in end)
-        function f(x : int, param2 : int) : undeclaredType = ()
-        function f(x : undeclaredType, param3 : int) : int = (1) /* Ajouté dans la TDS quand même sans paramètre */
+        function f(x : int, param2 : int) : undeclaredType = (1)
+        function f(x : undeclaredType, param3 : int) = (1) /* Ajouté dans la TDS quand même sans paramètre */
         var test : undeclaredType := 2
 
 
@@ -112,18 +112,21 @@
     let
         type arr = array of int
         type rec = {a : int}
+        type alias = rec
         var x := 1
         function f(a : int) = ()
 
         /* signature différente */
         type arr = array of string
         type rec = {b : int}
+        type alias = arr
         var x := "a"
         function f(b : string) = ()
 
         /* swap type */
         type arr = {a : int}
-        type rec = array of int
+        type rec = alias
+        type alias = array of int
         var f := 1
         function x(c : int) = ()
 
@@ -132,6 +135,7 @@
         type f = {a : int}
         var arr := 1
         function rec(d : int) = ()
+        var alias := 1
     in
     end;
 
@@ -153,20 +157,134 @@
 
 
     /* Opérateurs binaires */
-    1 + "a";
-    1 - "a";
-    1 * "a";
-    1 / "a";
-    1 | "a";
-    1 & "a";
-    1 = "a";
-    1 <> "a";
-    1 > "a";
-    1 < "a";
-    1 >= "a";
-    1 <= "a"
+    let
+        type rec = {}
+        var rec := rec{}
+    in
+        /* int */
+        1 + "a";
+        "a" - 1;
+        1 * "a";
+        "a" / 1;
+        - "a";
+
+        1 | "a";
+        "a" & 1;
+
+        /* Même type */
+        1 = "a";
+        1 <> "a";
+
+        /* Même type et int et string */
+        1 > "a";
+        "a" < 1;
+        rec < "a";
+        1 >= rec;
+        rec <= rec
+    end;
 
 
 
-    /*  */
+    /* Récursivité mutuelle */
+    /* Fonctionne et erreur */
+    let 
+        type typeA = {field1 : typeB}
+        type typeB = {field1 : typeA}
+        type typeC = {field1 : typeD}
+        var x := 0
+        type typeD = {field1 : typeD}
+    in 
+    end;
+    /* Fonctionne */
+    let
+        type typeA = array of typeB
+        type typeB = {field1 : typeA}
+        function fctA() = fctB()
+        function fctB() = fctA()
+    in 
+    end;
+    /* Erreurs */
+    let 
+        type typeA = array of typeB    
+        function fctA() = fctB()
+        type typeB = {field1 : typeA} /* Erreur car typeA est un array mal déclaré donc pas dans TDS */
+        function fctB() = fctA()
+    in
+    end;
+
+
+
+    /* FONCTIONNE */
+
+    /* Alias */
+    /* Array */
+    let 
+        type a = array of int 
+        type b = a 
+
+        /* Alias d'alias */
+        type c = b
+
+        /* En déclaration */
+        var x : b := a[5] of 0               /* a dans b */
+        var y : a := b[5] of 0
+        function fctA(x : a) : a = b[5] of 0 /* b dans a */
+        function fctB(x : b) : b = a[5] of 0
+    in 
+        /* En affectation où les types sont a dans la TDS */
+        x := c[5] of 0;
+        fctA(c[5] of 0);
+        fctB(c[5] of 0)
+    end;
+
+    /* Record */
+    let 
+        type a = {x : int}
+        type b = a 
+        
+        var x : b := a{x = 5}
+        var y : a := b{x = 5}
+        function fctA(c : a) : a = b{x = 5}
+        function fctB(c : b) : b = a{x = 5}
+    in 
+        x := b{x = 5};
+        fctA(b{x = 5});
+        fctB(a{x = 5})
+    end;
+
+
+
+    /* Récursivité mutuelle avec des alias */
+    let
+        type x = array of b
+        type y = {field : b}
+        type a = {}
+        type b = a
+    in
+    end;
+
+    
+
+    /* Nil */
+    let
+        var a : int :=nil               /* false */
+        var b :=nil                     /* false */
+
+        var c : int :=1                 /* true */ 
+        function f1(a :int) :int =1     /* true */
+        type rec = {x : string}
+        var d := rec{x = "oui"}
+    in
+        if nil=nil then (print(1));     /* false */
+        if nil<=nil then (print(1));    /* false */
+        if nil>nil then (print(1));     /* false */
+        if nil<nil then (print(1));     /* false */
+        if nil>=nil then (print(1));    /* false */
+        if a<>nil then (print(1));      /* false */
+        if nil=a then (print(1));       /* false */
+        f1(nil);                        /* false */
+        d.x :=nil;                        /* false */
+
+        if d = nil then (print(1))    /* true */
+    end
 )

@@ -14,4 +14,8 @@ public class LvalueField extends AbstractIdf {
         this.left=left;
         this.id=id;
     }
+
+    public boolean isAffectable(){
+        return true;
+    }
 }
