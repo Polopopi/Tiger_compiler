@@ -219,7 +219,8 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String rightState = minus.right.accept(this);
 
         this.addNode(nodeIdentifier, "-");
-        
+
+
         this.addTransition(nodeIdentifier, leftState);
         this.addTransition(nodeIdentifier, rightState);
 

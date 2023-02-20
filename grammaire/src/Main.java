@@ -1,3 +1,13 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.print.PrintException;
@@ -6,6 +16,7 @@ import javax.swing.JPanel;
 
 import java.io.IOException;
 
+import assembleur.AsrCreator;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -72,15 +83,19 @@ public class Main {
             // Visiteur de création de la TDS + création de la TDS
             TdsCreator tdsCreator = new TdsCreator();
             ast.accept(tdsCreator);
-        } 
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (RecognitionException e) {
-            e.printStackTrace();
-        }
-        
+            String asrFileName = "./out/asr.txt";
+            AsrCreator asrCreator=new AsrCreator();
+            ast.accept(asrCreator);
+            ArrayList<String> data=asrCreator.getData();
+            System.out.println(data);
+            Path fichier= Paths.get(asrFileName);
+            Files.write(fichier,data, StandardCharsets.UTF_8);
 
+
+        } 
+        catch (IOException | RecognitionException e) {
+            e.printStackTrace();
+        }
 
 
     }
