@@ -2,12 +2,21 @@ package assembleur;
 
 import ast.*;
 
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
+    private ArrayList<String> data;
     public AsrCreator(){
         this.asr=new Asr();
+        data=new ArrayList<String>();
+
+    }
+    public ArrayList<String> getData(){
+        return data;
     }
     @Override
     public String visit(Idf affect) {
@@ -21,6 +30,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Program affect) {
+
         return null;
     }
 
@@ -76,11 +86,18 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Minus minus) {//
-        String left = minus.left.accept(this);
-        int leftValue= Integer.parseInt(left);
-        String right = minus.right.accept(this);
-        int rightValue = Integer.parseInt(right);
+        data.add(asr.incrementerSp(1)); //réserver une case pour la valeur de retour d'opération minus
+       // data.add(asr.positionnerBP());
+        int rightValue = Integer.parseInt(minus.right.accept(this));// Il faut bien commencer par partie droite, on visite ensuite la partie gauche
+        int leftValue= Integer.parseInt(minus.left.accept(this));
 
+        data.add(asr.lireVarSP());
+        data.add(asr.enregistreValeur());
+        data.add(asr.decrementerSp(1));
+        data.add(asr.lireVarSP());
+        data.add(asr.moins());
+        data.add(asr.decrementerSp(1));
+        data.add(asr.stockerValeurSP());
 
         return null;
     }
