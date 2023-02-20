@@ -3,20 +3,24 @@ package assembleur;
 import ast.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
-    private ArrayList<String> data;
+
     public AsrCreator(){
         this.asr=new Asr();
-        data=new ArrayList<String>();
 
     }
-    public ArrayList<String> getData(){
-        return data;
+    public void asrFichier(String asrFileName) throws IOException {
+        ArrayList<String> data=asr.getAsr();
+        Path fichier= Paths.get(asrFileName);
+        Files.write(fichier,data, StandardCharsets.UTF_8);
     }
     @Override
     public String visit(Idf affect) {
@@ -29,28 +33,32 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Program affect) {
-
+    public String visit(Program program) {
+        String texte=program.affect.accept(this);
         return null;
     }
 
     @Override
     public String visit(Affect affect) {
+
         return null;
     }
 
     @Override
     public String visit(Or affect) {
+
         return null;
     }
 
     @Override
     public String visit(And affect) {
+
         return null;
     }
 
     @Override
     public String visit(Equal affect) {
+
         return null;
     }
 
@@ -86,18 +94,22 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Minus minus) {//
-        data.add(asr.incrementerSp(1)); //réserver une case pour la valeur de retour d'opération minus
-       // data.add(asr.positionnerBP());
-        int rightValue = Integer.parseInt(minus.right.accept(this));// Il faut bien commencer par partie droite, on visite ensuite la partie gauche
-        int leftValue= Integer.parseInt(minus.left.accept(this));
+        String left= minus.left.accept(this);
+        String right=minus.right.accept(this);
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
 
-        data.add(asr.lireVarSP());
-        data.add(asr.enregistreValeur());
-        data.add(asr.decrementerSp(1));
-        data.add(asr.lireVarSP());
-        data.add(asr.moins());
-        data.add(asr.decrementerSp(1));
-        data.add(asr.stockerValeurSP());
+        asr.lireVarSP();
+        asr.moins("R1","R2","R1");//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
+                                  // où on peut donner une valeur à un stack
+        asr.stockerValeurSP();
 
         return null;
     }
@@ -153,12 +165,13 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(IntExpr affect) {
-        return null;
+    public String visit(IntExpr intExpr) {
+        return String.valueOf(intExpr.value);
     }
 
     @Override
     public String visit(StrExpr affect) {
+
         return null;
     }
 

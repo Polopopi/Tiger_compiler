@@ -86,10 +86,7 @@ public class Main {
             String asrFileName = "./out/asr.txt";
             AsrCreator asrCreator=new AsrCreator();
             ast.accept(asrCreator);
-            ArrayList<String> data=asrCreator.getData();
-            System.out.println(data);
-            Path fichier= Paths.get(asrFileName);
-            Files.write(fichier,data, StandardCharsets.UTF_8);
+            asrCreator.asrFichier(asrFileName);
 
 
         } 
