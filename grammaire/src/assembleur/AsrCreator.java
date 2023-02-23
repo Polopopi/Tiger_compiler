@@ -3,6 +3,7 @@ package assembleur;
 import ast.*;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,7 +35,21 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Program program) {
+        asr.jump("end_functions");
+
+        try {
+            Path path = Path.of("./src/assembleur/div.S");
+            String div_str = Files.readString(path);
+            asr.addFunction(div_str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        asr.label("end_functions");
+
         String texte=program.affect.accept(this);
+
+        asr.end();
         return null;
     }
 
@@ -95,7 +110,7 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Minus minus) {//
         String left= minus.left.accept(this);
-        String right=minus.right.accept(this);
+        String right=minus.right.accept(this); // STEVEN Il faudrait le faire après car sinon le résultat de left contenu dans R1 sera écrasé
         if (left!=null){
             asr.incrementerSp(1);
             asr.setVar(Integer.parseInt(left));
@@ -109,7 +124,8 @@ public class AsrCreator implements AstVisitor<String> {
         asr.lireVarSP();
         asr.moins("R1","R2","R1");//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
                                   // où on peut donner une valeur à un stack
-        asr.stockerValeurSP();
+        asr.stockerValeurSP();  // STEVEN pk on stocke la valeur dans la pile après le SUB ? 
+                                //jcrois on stocke le résultat du membre gauche dans la pile pour faire le SUB mais c tout
 
         return null;
     }
@@ -120,13 +136,30 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Divide affect) {
+    public String visit(Divide divide) {
+        String left = divide.left.accept(this);
+        if (left!=null){
+            asr.setVar(Integer.parseInt(left));
+        }
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
+
+        String right = divide.right.accept(this);
+        if (right!=null){
+            asr.setVar(Integer.parseInt(right));
+        }
+
+        asr.lireVarSP();
+        asr.decrementerSp(1);
+        
+        asr.link("div");
+
         return null;
     }
 
     @Override
-    public String visit(MinusExpr affect) {
-        return null;
+    public String visit(MinusExpr minusExpr) {
+        return "-" + String.valueOf(minusExpr.expr.accept(this));
     }
 
     @Override

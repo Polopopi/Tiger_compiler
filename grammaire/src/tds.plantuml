@@ -15,11 +15,9 @@ abstract Entry{
     void toString()
 }
 
-class VariableEntry{
-    int decalage
-}
+class VariableEntry
 class FunctionEntry
-abstract TypeEntry
+class TypeEntry
 abstract VarFuncEntry
 
 
@@ -31,8 +29,9 @@ VarFuncEntry <|-- VariableEntry
 VarFuncEntry <|-- FunctionEntry
 TypeEntry <|-- ArrayEntry
 TypeEntry <|-- RecordEntry
+TypeEntry <|-- AliasEntry
 
-RecordEntry -- "*"Field 
+RecordEntry -- "*"FieldEntry
 FunctionEntry -- "*"Parameter
 
 

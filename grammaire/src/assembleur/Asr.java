@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Asr {
 
     private ArrayList<String> asr;
+
     public Asr(){
         this.asr=new ArrayList<String>();
     }
@@ -45,7 +46,7 @@ public class Asr {
 
     /**stockerValeurSP est destiné à stocker une valeur dans le stack qui est pointé par SP
      * */
-    public void stockerValeurSP(){
+    public void stockerValeurSP(){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR R1, [SP, #0]");
     }
 
@@ -59,7 +60,9 @@ public class Asr {
         this.asr.add("    LDR R2, [SP, #0]");
     }
 
-
+    public void stockerValeursSP(String registres){
+        this.asr.add("    STMFA SP!, {"+registres+"}");
+    }
 
 
     public void enregistreValeur(){
@@ -69,9 +72,24 @@ public class Asr {
 
 
 
+    public void link(String label){
+        this.asr.add("    BL " + label);
+    }
 
+    public void jump(String label){
+        this.asr.add("    B " + label);
+    }
 
+    public void label(String label){
+        this.asr.add(label);
+    }
 
+    public void addFunction(String content){
+        this.asr.add(content);
+    }
 
+    public void end(){
+        this.asr.add("    END");
+    }
 
 }
