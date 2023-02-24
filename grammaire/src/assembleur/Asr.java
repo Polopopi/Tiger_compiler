@@ -123,13 +123,13 @@ public class Asr {
         this.asr.add("    BL " + label);
     }
 
-    /*
+    
 
     public void jump(String label){
         this.asr.add("    B" + cond + " " + label);
     }
 
-    */
+    
 
     public void label(String label){
         this.asr.add(label);
