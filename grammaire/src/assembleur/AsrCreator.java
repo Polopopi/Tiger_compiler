@@ -172,7 +172,7 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Plus affect) {
+    public String visit(plus affect) {
         String left= plus.left.accept(this);
         String right=plus.right.accept(this);
         if (left!=null){
@@ -216,7 +216,25 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Mult affect) {
+    public String visit(mult affect) {
+        String left= mult.left.accept(this);
+        String right=mult.right.accept(this);
+
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
+
+        asr.lireVarSP();
+        asr.multiplie("R1","R2","R1");
+        asr.stockerValeurSP();
+
         return null;
     }
 
