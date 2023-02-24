@@ -89,7 +89,9 @@ public class Asr {
     public void or(String regDest, String reg1, String reg2){
         this.asr.add("    ORR" + cond + " " + regDest + ", " + reg1 + ", " + reg2);
     }
-
+    public void multiplie(String regDest, String reg1, String reg2){
+        this.asr.add("    mul " + regDest + ", " + reg1 + ", " + reg2);
+    }
 
 
     public void enregistreValeur(){
@@ -99,14 +101,35 @@ public class Asr {
         this.asr.add("    CMP "+reg1+", "+reg2);
     }
 
+    public void mov(String op1, String op2){
+        this.asr.add("    MOV " + op1 +", " +op2);
+    }
+
+
+    public void b(String flag){
+        this.asr.add("    B " + flag);
+    }
+
+    public void b(String cond, String flag){
+        this.asr.add("    B" + cond + " " + flag);
+    }
+
+    public void flag(String name){
+        this.asr.add(name);
+    }
+
 
     public void link(String label){
         this.asr.add("    BL " + label);
     }
 
+    /*
+
     public void jump(String label){
         this.asr.add("    B" + cond + " " + label);
     }
+
+    */
 
     public void label(String label){
         this.asr.add(label);

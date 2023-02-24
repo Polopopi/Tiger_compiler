@@ -15,6 +15,16 @@ public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
     private int labelId;
 
+    private int idGenerator;
+
+    private int generateId(){
+        return(idGenerator++);
+    }
+
+    private String generateFlag(){
+        return("flag"+generateId());
+    }
+
     public AsrCreator(){
         this.asr=new Asr();
         labelId = 0;
@@ -293,7 +303,23 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Plus affect) {
+    public String visit(plus affect) {
+        String left= plus.left.accept(this);
+        String right=plus.right.accept(this);
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
+
+        asr.lireVarSP();
+        asr.plus("R1","R2","R1");
+        asr.stockerValeurSP();
+
         return null;
     }
 
@@ -321,7 +347,25 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Mult affect) {
+    public String visit(mult affect) {
+        String left= mult.left.accept(this);
+        String right=mult.right.accept(this);
+
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
+
+        asr.lireVarSP();
+        asr.multiplie("R1","R2","R1");
+        asr.stockerValeurSP();
+
         return null;
     }
 
@@ -353,12 +397,30 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(IfThen affect) {
+    public String visit(IfThen ifThen) {
+        String thenFlag = generateFlag();
+        String elseFlag = generateFlag();
+
+        ifThen.condition.accept(this);
+        asr.cmp("r1","#0");
+        asr.b("NE", thenFlag);
+        asr.b(elseFlag);
+        asr.flag(thenFlag);
+        ifThen.thenBlock.accept(this);
         return null;
     }
 
     @Override
-    public String visit(IfThenElse affect) {
+    public String visit(IfThenElse ifThenElse) {
+        String thenFlag = generateFlag();
+        String elseFlag = generateFlag();
+
+        ifThenElse.condition.accept(this);
+        asr.cmp("r1","#0");
+        asr.b("NE", thenFlag);
+        asr.b(elseFlag);
+        asr.flag(thenFlag);
+        ifThenElse.thenBlock.accept(this);
         return null;
     }
 
@@ -369,11 +431,30 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(For affect) {
+        String forFlag = generateFlag();
+        String forEndFlag = generateFlag();
+
+        asr.flag(forFlag);
+
+
         return null;
     }
 
     @Override
-    public String visit(While affect) {
+    public String visit(While whileNode) {
+        String whileFlag = generateFlag();
+        String whileEndFlag = generateFlag();
+
+        asr.flag(whileFlag);
+        whileNode.condition.accept(this);
+        asr.cmp("r1", "#0");
+        asr.b("EQ",whileEndFlag);
+
+        whileNode.bloc.accept(this);
+
+        asr.b(whileFlag);
+        asr.flag(whileEndFlag);
+
         return null;
     }
 
