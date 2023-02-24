@@ -360,7 +360,7 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(mult affect) {
+    public String visit(Mult mult) {
         String left= mult.left.accept(this);
         String right=mult.right.accept(this);
 
