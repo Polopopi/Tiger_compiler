@@ -66,10 +66,26 @@ public class Asr {
         this.asr.add( "    MOV R1,R2");
     }
 
+    public void mov(String op1, String op2){
+        this.asr.add("    MOV " + op1 +", " +op2);
+    }
 
 
+    public void cmp(String op1,String op2){
+        this.asr.add("    CMP " + op1 + ", " + op2);
+    }
 
+    public void b(String flag){
+        this.asr.add("    B " + flag);
+    }
 
+    public void b(String cond, String flag){
+        this.asr.add("    B" + cond + " " + flag);
+    }
+
+    public void flag(String name){
+        this.asr.add(name);
+    }
 
 
 

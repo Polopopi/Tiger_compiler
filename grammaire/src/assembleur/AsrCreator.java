@@ -13,6 +13,16 @@ import java.util.Date;
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
 
+    private int idGenerator;
+
+    private int generateId(){
+        return(idGenerator++);
+    }
+
+    private String generateFlag(){
+        return("flag"+generateId());
+    }
+
     public AsrCreator(){
         this.asr=new Asr();
 
@@ -130,12 +140,30 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(IfThen affect) {
+    public String visit(IfThen ifThen) {
+        String thenFlag = generateFlag();
+        String elseFlag = generateFlag();
+
+        ifThen.condition.accept(this);
+        asr.cmp("r1","#0");
+        asr.b("NE", thenFlag);
+        asr.b(elseFlag);
+        asr.flag(thenFlag);
+        ifThen.thenBlock.accept(this);
         return null;
     }
 
     @Override
-    public String visit(IfThenElse affect) {
+    public String visit(IfThenElse ifThenElse) {
+        String thenFlag = generateFlag();
+        String elseFlag = generateFlag();
+
+        ifThenElse.condition.accept(this);
+        asr.cmp("r1","#0");
+        asr.b("NE", thenFlag);
+        asr.b(elseFlag);
+        asr.flag(thenFlag);
+        ifThenElse.thenBlock.accept(this);
         return null;
     }
 
@@ -146,11 +174,30 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(For affect) {
+        String forFlag = generateFlag();
+        String forEndFlag = generateFlag();
+
+        asr.flag(forFlag);
+
+
         return null;
     }
 
     @Override
-    public String visit(While affect) {
+    public String visit(While whileNode) {
+        String whileFlag = generateFlag();
+        String whileEndFlag = generateFlag();
+
+        asr.flag(whileFlag);
+        whileNode.condition.accept(this);
+        asr.cmp("r1", "#0");
+        asr.b("EQ",whileEndFlag);
+
+        whileNode.bloc.accept(this);
+
+        asr.b(whileFlag);
+        asr.flag(whileEndFlag);
+
         return null;
     }
 
