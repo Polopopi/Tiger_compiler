@@ -46,7 +46,7 @@ public class Asr {
         this.asr.add("    STR"+cond+" R1, [SP, #0]");
     }
     public void stockerRegistreSP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
-        this.asr.add("    STR"+cond+param+ ", [SP, #0]");
+        this.asr.add("    STR"+cond+""+param+ ", [SP, #0]");
     }
     public void empilerValeurs(String registres){
         this.asr.add("    STMFA" + cond + " SP!, {"+registres+"}");
@@ -126,13 +126,13 @@ public class Asr {
         this.asr.add("    BL " + label);
     }
 
-    /*
+
 
     public void jump(String label){
         this.asr.add("    B" + cond + " " + label);
     }
 
-    */
+
 
     public void label(String label){
         this.asr.add(label);
