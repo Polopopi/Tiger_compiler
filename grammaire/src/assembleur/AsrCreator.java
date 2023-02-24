@@ -316,6 +316,12 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setVar(rightValue);
         }
 
+        if (left == null && right == null){
+            asr.lireVarSP();
+            asr.mov("R1","R2");
+            asr.decrementerSp(1);
+        }
+
         asr.lireVarSP();
         asr.plus("R1","R2","R1");
         asr.stockerValeurSP();
