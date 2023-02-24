@@ -163,6 +163,22 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Plus affect) {
+        String left= plus.left.accept(this);
+        String right=plus.right.accept(this);
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
+
+        asr.lireVarSP();
+        asr.plus("R1","R2","R1");
+        asr.stockerValeurSP();
+
         return null;
     }
 
