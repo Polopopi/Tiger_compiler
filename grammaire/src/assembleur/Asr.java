@@ -45,6 +45,9 @@ public class Asr {
     public void stockerValeurSP(){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR"+cond+" R1, [SP, #0]");
     }
+    public void stockerRegistreSP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
+        this.asr.add("    STR"+cond+param+ ", [SP, #0]");
+    }
     public void empilerValeurs(String registres){
         this.asr.add("    STMFA" + cond + " SP!, {"+registres+"}");
     }
@@ -93,7 +96,7 @@ public class Asr {
 
 
     public void enregistreValeur(){
-        this.asr.add( "    MOV R1,R2");
+        this.asr.add( "    MOV R2,R1");
     }
     public void cmp(String reg1, String reg2){
         this.asr.add("    CMP "+reg1+", "+reg2);

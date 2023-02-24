@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -46,7 +47,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Program program) {
-        asr.jump("end_functions");
+        //asr.jump("end_functions");
 
         try {
             Path path = Path.of("./src/assembleur/div.S");
@@ -81,7 +82,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.setVar(1);
         int labelIdCopie = labelId;
         labelId++;
-        asr.jump("end_or_" + labelIdCopie);
+      //  asr.jump("end_or_" + labelIdCopie);
         asr.resetCond();
 
         asr.incrementerSp(1);
@@ -117,7 +118,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.setVar(1);
         int labelIdCopie = labelId;
         labelId++;
-        asr.jump("end_and_" + labelIdCopie);
+       // asr.jump("end_and_" + labelIdCopie);
         asr.resetCond();
 
         asr.incrementerSp(1);
@@ -153,7 +154,28 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Inf inf) {
+        String left= inf.left.accept(this);
+        String right=inf.right.accept(this);
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
+
+        asr.lireVarSP();
+        asr.moins("R1","R2","R1");
+        asr.cmp("R1","#0");
+        asr.stockerValeurSP();
+
         return null;
+    }
+
+    public void comparaison(String left, String right){
+
     }
 
     @Override
@@ -172,7 +194,7 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Plus affect) {
+    public String visit(Plus plus) {
         String left= plus.left.accept(this);
         String right=plus.right.accept(this);
         if (left!=null){
@@ -196,19 +218,26 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Minus minus) {//
         String left= minus.left.accept(this);
         String right=minus.right.accept(this); // STEVEN Il faudrait le faire après car sinon le résultat de left contenu dans R1 sera écrasé
-        if (left!=null){
+        if (left != null){
             asr.incrementerSp(1);
             asr.setVar(Integer.parseInt(left));
             asr.stockerValeurSP();
         }
-        if (right!=null){
+        if (right != null){
             int rightValue = Integer.parseInt(right);
             asr.setVar(rightValue);
+        }
+
+        if (left == null && right == null){
+            asr.lireVarSP();
+            asr.mov("R1","R2");
+            asr.decrementerSp(1);
         }
 
         asr.lireVarSP();
         asr.moins("R1","R2","R1");//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
                                   // où on peut donner une valeur à un stack
+
         asr.stockerValeurSP();  // STEVEN pk on stocke la valeur dans la pile après le SUB ? 
                                 //jcrois on stocke le résultat du membre gauche dans la pile pour faire le SUB mais c tout
 
