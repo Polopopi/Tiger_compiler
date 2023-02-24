@@ -29,6 +29,7 @@
 
         /* Erreurs type d'affectation en déclaration */
         function f2(x : int) : int = ("a")
+        function f3() = (1)
         var z1 : rec1 := "string"
         var test := f1(z1)
         var a := f2("a")
@@ -54,7 +55,7 @@
             /* TDS vide */
         in 
             i := 0;
-            for i := "a" to "b" do()
+            for i := "a" to "b" do() /* TDS créée */
         end;
 
         i := 0;
@@ -90,9 +91,9 @@
         function f1(x : int) = ()
         function f2() : int = (1)
 
-        var x := f1("a", 1)
+        var x := f1("a", 1) /* 1er param vérifié */
         var y := f1()     
-        var z := f2(2)
+        var z := f2(2) /* instancié */ 
     in
     end;
 
@@ -259,7 +260,7 @@
         type x = array of b
         type y = {field : b}
         type a = {}
-        type b = a
+        type b = a /* Gérer en premier */
     in
     end;
 
@@ -283,7 +284,7 @@
         if a<>nil then (print(1));      /* false */
         if nil=a then (print(1));       /* false */
         f1(nil);                        /* false */
-        d.x :=nil;                        /* false */
+        d.x :=nil;                      /* false */
 
         if d = nil then (print(1))    /* true */
     end

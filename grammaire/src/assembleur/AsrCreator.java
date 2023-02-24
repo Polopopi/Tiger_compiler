@@ -3,6 +3,7 @@ package assembleur;
 import ast.*;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ import java.util.Date;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
+    private int labelId;
 
     private int idGenerator;
 
@@ -25,7 +27,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     public AsrCreator(){
         this.asr=new Asr();
-
+        labelId = 0;
     }
     public void asrFichier(String asrFileName) throws IOException {
         ArrayList<String> data=asr.getAsr();
@@ -44,25 +46,97 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Program program) {
-        String texte=program.affect.accept(this);
+        asr.jump("end_functions");
+
+        try {
+            Path path = Path.of("./src/assembleur/div.S");
+            String div_str = Files.readString(path);
+            asr.addFunction(div_str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        asr.label("end_functions");
+
+        String texte = program.affect.accept(this);
+
+        asr.end();
         return null;
     }
 
     @Override
     public String visit(Affect affect) {
+        return null;
+    }
+
+    @Override
+    public String visit(Or or) {
+        String left = or.left.accept(this);
+        if (left!=null){
+            asr.setVar(Integer.parseInt(left));
+        }
+
+        asr.cmp("R1", "#0");
+        asr.setCond("NE");
+        asr.setVar(1);
+        int labelIdCopie = labelId;
+        labelId++;
+        asr.jump("end_or_" + labelIdCopie);
+        asr.resetCond();
+
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
+
+        //asr.empilerFlags();
+        String right = or.right.accept(this);
+        //asr.depilerFlags();
+
+        if (right!=null){
+            asr.setVar(Integer.parseInt(right));
+        }
+
+        asr.lireVarSP();
+        asr.decrementerSp(1);
+        
+        asr.or("R1", "R2", "R1");
+
+        asr.label("end_or_" + labelIdCopie);
 
         return null;
     }
 
     @Override
-    public String visit(Or affect) {
+    public String visit(And and) {
+        String left = and.left.accept(this);
+        if (left!=null){
+            asr.setVar(Integer.parseInt(left));
+        }
 
-        return null;
-    }
+        asr.cmp("R1", "#0");
+        asr.setCond("EQ");
+        asr.setVar(1);
+        int labelIdCopie = labelId;
+        labelId++;
+        asr.jump("end_and_" + labelIdCopie);
+        asr.resetCond();
 
-    @Override
-    public String visit(And affect) {
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
 
+        //asr.empilerFlags();
+        String right = and.right.accept(this);
+        //asr.depilerFlags();
+
+        if (right!=null){
+            asr.setVar(Integer.parseInt(right));
+        }
+
+        asr.lireVarSP();
+        asr.decrementerSp(1);
+        
+        asr.or("R1", "R2", "R1");
+
+        asr.label("end_and_" + labelIdCopie);
         return null;
     }
 
@@ -78,7 +152,7 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Inf affect) {
+    public String visit(Inf inf) {
         return null;
     }
 
@@ -99,13 +173,29 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Plus affect) {
+        String left= plus.left.accept(this);
+        String right=plus.right.accept(this);
+        if (left!=null){
+            asr.incrementerSp(1);
+            asr.setVar(Integer.parseInt(left));
+            asr.stockerValeurSP();
+        }
+        if (right!=null){
+            int rightValue = Integer.parseInt(right);
+            asr.setVar(rightValue);
+        }
+
+        asr.lireVarSP();
+        asr.plus("R1","R2","R1");
+        asr.stockerValeurSP();
+
         return null;
     }
 
     @Override
     public String visit(Minus minus) {//
         String left= minus.left.accept(this);
-        String right=minus.right.accept(this);
+        String right=minus.right.accept(this); // STEVEN Il faudrait le faire après car sinon le résultat de left contenu dans R1 sera écrasé
         if (left!=null){
             asr.incrementerSp(1);
             asr.setVar(Integer.parseInt(left));
@@ -119,7 +209,8 @@ public class AsrCreator implements AstVisitor<String> {
         asr.lireVarSP();
         asr.moins("R1","R2","R1");//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
                                   // où on peut donner une valeur à un stack
-        asr.stockerValeurSP();
+        asr.stockerValeurSP();  // STEVEN pk on stocke la valeur dans la pile après le SUB ? 
+                                //jcrois on stocke le résultat du membre gauche dans la pile pour faire le SUB mais c tout
 
         return null;
     }
@@ -130,13 +221,30 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Divide affect) {
+    public String visit(Divide divide) {
+        String left = divide.left.accept(this);
+        if (left!=null){
+            asr.setVar(Integer.parseInt(left));
+        }
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
+
+        String right = divide.right.accept(this);
+        if (right!=null){
+            asr.setVar(Integer.parseInt(right));
+        }
+
+        asr.lireVarSP();
+        asr.decrementerSp(1);
+        
+        asr.link("div");
+
         return null;
     }
 
     @Override
-    public String visit(MinusExpr affect) {
-        return null;
+    public String visit(MinusExpr minusExpr) {
+        return "-" + String.valueOf(minusExpr.expr.accept(this));
     }
 
     @Override
