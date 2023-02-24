@@ -92,7 +92,9 @@ public class Asr {
     public void or(String regDest, String reg1, String reg2){
         this.asr.add("    ORR" + cond + " " + regDest + ", " + reg1 + ", " + reg2);
     }
-
+    public void multiplie(String regDest, String reg1, String reg2){
+        this.asr.add("    mul " + regDest + ", " + reg1 + ", " + reg2);
+    }
 
 
     public void enregistreValeur(){
