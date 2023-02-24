@@ -1,7 +1,7 @@
-div		;Division de R2 par R1
-		STMFA	SP!, {R3-R5}
+div		;Division de R2 par R1 et res dans R1
+		STMFA	SP!, {R3-R6}
 		
-		MOV		R0, #0		;Registre de res, on fait tendre R0 vers res
+		MOV		R6, #0		;Registre de res, on fait tendre R6 vers res et on mov dans R1 à la fin
 		MOV		R3, #0		;0 pour res positif, 1 pour res négatif
 		
 		CMP		R2, #0
@@ -29,7 +29,7 @@ _div_loop
 		CMP		R4, R2		;Jusqu'à ce que R4(R1) <= R2 DONC 3 <= 12/R5 soit R5 <= 12/3
 		BGT		_div_loop
 		
-		ADD		R0, R0, R5
+		ADD		R6, R6, R5
 		SUB		R2, R2, R4
 		CMP		R2, R1		;Jusqu'à ce que R2 < R1 SOIT R2 n'est plus divisible par R1
 		BGE		_div_loop
@@ -37,12 +37,13 @@ _div_loop
 		CMP		R3, #1		;Si res est négatif
 		BNE		_div_exit
 		CMP		R2, #0		;S'il y a un reste de 1
-		ADDNE	R0, R0, #1	;on arrondi à l'entier sup
-		RSB		R0, R0, #0	;On remet les nombres en négatifs
+		ADDNE	R6, R6, #1	;on arrondi à l'entier sup
+		RSB		R6, R6, #0	;On remet les nombres en négatifs
 		RSB		R2, R2, #0
 		ADDNE	R2, R2, R1	;Différence entre le résultat exacte et approximé car entier
 		
 		
 _div_exit	
-		LDMFA	SP!, {R3-R5}
+		MOV		R1, R6
+		LDMFA	SP!, {R3-R6}
 		MOV		PC, LR

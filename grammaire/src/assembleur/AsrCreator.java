@@ -13,10 +13,11 @@ import java.util.Date;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
+    private int labelId;
 
     public AsrCreator(){
         this.asr=new Asr();
-
+        labelId = 0;
     }
     public void asrFichier(String asrFileName) throws IOException {
         ArrayList<String> data=asr.getAsr();
@@ -47,7 +48,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.label("end_functions");
 
-        String texte=program.affect.accept(this);
+        String texte = program.affect.accept(this);
 
         asr.end();
         return null;
@@ -55,19 +56,77 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Affect affect) {
+        return null;
+    }
+
+    @Override
+    public String visit(Or or) {
+        String left = or.left.accept(this);
+        if (left!=null){
+            asr.setVar(Integer.parseInt(left));
+        }
+
+        asr.cmp("R1", "#0");
+        asr.setCond("NE");
+        asr.setVar(1);
+        int labelIdCopie = labelId;
+        labelId++;
+        asr.jump("end_or_" + labelIdCopie);
+        asr.resetCond();
+
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
+
+        //asr.empilerFlags();
+        String right = or.right.accept(this);
+        //asr.depilerFlags();
+
+        if (right!=null){
+            asr.setVar(Integer.parseInt(right));
+        }
+
+        asr.lireVarSP();
+        asr.decrementerSp(1);
+        
+        asr.or("R1", "R2", "R1");
+
+        asr.label("end_or_" + labelIdCopie);
 
         return null;
     }
 
     @Override
-    public String visit(Or affect) {
+    public String visit(And and) {
+        String left = and.left.accept(this);
+        if (left!=null){
+            asr.setVar(Integer.parseInt(left));
+        }
 
-        return null;
-    }
+        asr.cmp("R1", "#0");
+        asr.setCond("EQ");
+        asr.setVar(1);
+        int labelIdCopie = labelId;
+        labelId++;
+        asr.jump("end_and_" + labelIdCopie);
+        asr.resetCond();
 
-    @Override
-    public String visit(And affect) {
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
 
+        //asr.empilerFlags();
+        String right = and.right.accept(this);
+        //asr.depilerFlags();
+
+        if (right!=null){
+            asr.setVar(Integer.parseInt(right));
+        }
+
+        asr.lireVarSP();
+        asr.decrementerSp(1);
+        
+        asr.or("R1", "R2", "R1");
+
+        asr.label("end_and_" + labelIdCopie);
         return null;
     }
 
@@ -83,7 +142,7 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Inf affect) {
+    public String visit(Inf inf) {
         return null;
     }
 
