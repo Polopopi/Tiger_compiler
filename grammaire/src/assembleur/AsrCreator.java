@@ -17,6 +17,7 @@ public class AsrCreator implements AstVisitor<String> {
     private Tds tds;
 
     private int idGenerator;
+    private String label;
 
     private int generateId(){
         return(idGenerator++);
@@ -28,7 +29,8 @@ public class AsrCreator implements AstVisitor<String> {
 
     public AsrCreator(){
         this.asr=new Asr();
-        idGenerator = 0;
+        this.idGenerator = 0;
+        this.label = "";
     }
 
     public void asrFichier(String asrFileName) throws IOException {
@@ -419,8 +421,9 @@ public class AsrCreator implements AstVisitor<String> {
         asr.flag(whileFlag);
         whileNode.condition.accept(this);
         asr.cmp("r1", "#0");
-        asr.b("EQ",whileEndFlag);
+        asr.b("EQ", whileEndFlag);
 
+        label = whileEndLabel;
         whileNode.bloc.accept(this);
 
         asr.b(whileFlag);
@@ -431,6 +434,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(BreakExpr affect) {
+        asr.b(label);
         return null;
     }
 
@@ -441,6 +445,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(IntExpr intExpr) {
+        asr.
         return String.valueOf(intExpr.value);
     }
 
