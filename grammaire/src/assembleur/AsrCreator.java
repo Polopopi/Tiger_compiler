@@ -1,6 +1,7 @@
 package assembleur;
 
 import ast.*;
+import tds.Tds;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -14,6 +15,7 @@ import java.util.Date;
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
     private int labelId;
+    private Tds tds;
 
     private int idGenerator;
 
@@ -307,24 +309,17 @@ public class AsrCreator implements AstVisitor<String> {
         String left= plus.left.accept(this);
         String right=plus.right.accept(this);
         if (left!=null){
-            asr.incrementerSp(1);
             asr.setVar(Integer.parseInt(left));
-            asr.stockerValeurSP();
         }
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
         if (right!=null){
             int rightValue = Integer.parseInt(right);
             asr.setVar(rightValue);
         }
-
-        if (left == null && right == null){
-            asr.lireVarSP();
-            asr.mov("R1","R2");
-            asr.decrementerSp(1);
-        }
-
         asr.lireVarSP();
         asr.plus("R1","R2","R1");
-        asr.stockerValeurSP();
+        asr.decrementerSp(1);
 
         return null;
     }
@@ -332,29 +327,21 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Minus minus) {// RES DANS R11
         String left= minus.left.accept(this);
-        String right=minus.right.accept(this); // STEVEN Il faudrait le faire après car sinon le résultat de left contenu dans R1 sera écrasé
         if (left != null){
-            asr.incrementerSp(1);
             asr.setVar(Integer.parseInt(left));
-            asr.stockerValeurSP();
         }
+        asr.incrementerSp(1);
+        asr.stockerValeurSP();
+
+        String right=minus.right.accept(this);
         if (right != null){
             int rightValue = Integer.parseInt(right);
             asr.setVar(rightValue);
         }
-
-        if (left == null && right == null){
-            asr.lireVarSP();
-            asr.mov("R1","R2");
-            asr.decrementerSp(1);
-        }
-
         asr.lireVarSP();
-        asr.moins("R1","R2","R1");//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
+        asr.moins("R1","R2","R1");
+        asr.decrementerSp(1);//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
                                   // où on peut donner une valeur à un stack
-
-        asr.stockerValeurSP();  // STEVEN pk on stocke la valeur dans la pile après le SUB ?
-                                //jcrois on stocke le résultat du membre gauche dans la pile pour faire le SUB mais c tout
 
         return null;
     }
