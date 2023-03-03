@@ -14,17 +14,25 @@ import java.util.Date;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
-    private Tds tds;
-
+    private int labelId;
+    private ArrayList<Tds> listTds;
+    private Tds currentTds;
+    private int oldTdsId;
     private int idGenerator;
     private String label;
+
+    private Tds getTds(){
+        return(listTds.get(oldTdsId++));
+    }
+
+    
 
     private int generateId(){
         return(idGenerator++);
     }
 
     private String generateLabel(){
-        return("flag"+generateId());
+        return("label"+generateId());
     }
 
     public AsrCreator(){
@@ -51,9 +59,9 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Program program) {
-        String endFlag = generateLabel();
+        String endLabel = generateLabel();
 
-        asr.b(endFlag);
+        asr.b(endLabel);
 
         try {
             Path path = Path.of("./src/assembleur/fonctions.S");
@@ -63,7 +71,7 @@ public class AsrCreator implements AstVisitor<String> {
             e.printStackTrace();
         }
 
-        asr.label(endFlag);
+        asr.label(endLabel);
 
         String texte = program.affect.accept(this);
 
@@ -82,8 +90,8 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.cmp("R11", "#0");
         asr.setVar("NE", 1);
-        String endFlag = generateLabel();
-        asr.b("NE", endFlag);
+        String endLabel = generateLabel();
+        asr.b("NE", endLabel);
 
         asr.empiler("R11");
 
@@ -95,7 +103,7 @@ public class AsrCreator implements AstVisitor<String> {
         
         asr.or("R11", "R0", "R11");
 
-        asr.label(endFlag);
+        asr.label(endLabel);
 
         return null;
     }
@@ -106,8 +114,8 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.cmp("R11", "#0");
         asr.setVar("EQ", 1);
-        String endFlag = generateLabel();
-        asr.b("EQ", endFlag);
+        String endLabel = generateLabel();
+        asr.b("EQ", endLabel);
 
         asr.empiler("R11");
 
@@ -119,7 +127,7 @@ public class AsrCreator implements AstVisitor<String> {
         
         asr.or("R11", "R0", "R11");
 
-        asr.label(endFlag);
+        asr.label(endLabel);
 
         return null;
     }
@@ -296,28 +304,28 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(IfThen ifThen) {
-        String thenFlag = generateFlag();
-        String elseFlag = generateFlag();
+        String thenLabel = generateLabel();
+        String elseLabel = generateLabel();
 
         ifThen.condition.accept(this);
         asr.cmp("r1","#0");
-        asr.b("NE", thenFlag);
-        asr.b(elseFlag);
-        asr.flag(thenFlag);
+        asr.b("NE", thenLabel);
+        asr.b(elseLabel);
+        asr.label(thenLabel);
         ifThen.thenBlock.accept(this);
         return null;
     }
 
     @Override
     public String visit(IfThenElse ifThenElse) {
-        String thenFlag = generateFlag();
-        String elseFlag = generateFlag();
+        String thenLabel = generateLabel();
+        String elseLabel = generateLabel();
 
         ifThenElse.condition.accept(this);
         asr.cmp("r1","#0");
-        asr.b("NE", thenFlag);
-        asr.b(elseFlag);
-        asr.flag(thenFlag);
+        asr.b("NE", thenLabel);
+        asr.b(elseLabel);
+        asr.label(thenLabel);
         ifThenElse.thenBlock.accept(this);
         return null;
     }
@@ -329,10 +337,11 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(For affect) {
-        String forFlag = generateFlag();
-        String forEndFlag = generateFlag();
+        String forLabel = generateLabel();
+        String forEndLabel = generateLabel();
 
-        asr.flag(forFlag);
+        asr.label(forLabel);
+        asr.empilerValeurs("R11");
 
 
         return null;
@@ -340,19 +349,19 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(While whileNode) {
-        String whileFlag = generateFlag();
-        String whileEndFlag = generateFlag();
+        String whileLabel = generateLabel();
+        String whileEndLabel = generateLabel();
 
-        asr.flag(whileFlag);
+        asr.label(whileLabel);
         whileNode.condition.accept(this);
         asr.cmp("r1", "#0");
-        asr.b("EQ", whileEndFlag);
+        asr.b("EQ", whileEndLabel);
 
         label = whileEndLabel;
         whileNode.bloc.accept(this);
 
-        asr.b(whileFlag);
-        asr.flag(whileEndFlag);
+        asr.b(whileLabel);
+        asr.label(whileEndLabel);
 
         return null;
     }
