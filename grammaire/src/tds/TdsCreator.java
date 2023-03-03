@@ -1206,12 +1206,14 @@ public class TdsCreator implements AstVisitor<String> {
         
         //nouvelle tds
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
+        functionEntry.setTds(tdsFonction);
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
 
         idCurrentTds = tdsFonction.getId();
         Entry oldEntry = currentEntry;
         currentEntry = functionEntry;
+        
         
         affect.typeFields.accept(this);
     
@@ -1262,6 +1264,7 @@ public class TdsCreator implements AstVisitor<String> {
         FunctionEntry procEntry=new FunctionEntry("", id);
 
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
+        procEntry.setTds(tdsFonction);
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
         Entry oldEntry = currentEntry;

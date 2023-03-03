@@ -4,11 +4,20 @@ import java.util.ArrayList;
 
 public class FunctionEntry extends VarFuncEntry{
     private ArrayList<Parameter> parameters;
+    private Tds tds;
     
 
     public FunctionEntry(String type, String symbol){
         super(type, symbol);
         this.parameters=new ArrayList<Parameter>();
+    }
+
+    public void setTds(Tds tds){
+        this.tds = tds;
+    }
+
+    public Tds getTds(){
+        return(tds);
     }
 
     public void addParameter(Parameter parameter){
