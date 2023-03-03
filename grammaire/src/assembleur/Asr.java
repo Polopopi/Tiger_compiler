@@ -113,6 +113,9 @@ public class Asr {
     public void multiplie(String regDest, String reg1, String reg2){
         this.asr.add("    mul " + regDest + ", " + reg1 + ", " + reg2);
     }
+    public void negate(String reg){
+        this.asr.add("    RSB " + reg + ", " + reg + ", #0");
+    }
 
 
     public void enregistreValeur(String registre1,String registre2){

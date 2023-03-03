@@ -79,9 +79,6 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Or or) {
         String left = or.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.cmp("R11", "#0");
         asr.setVar("NE", 1);
@@ -93,10 +90,6 @@ public class AsrCreator implements AstVisitor<String> {
         //asr.empilerFlags();
         String right = or.right.accept(this);
         //asr.depilerFlags();
-
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
         
@@ -110,9 +103,6 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(And and) {
         String left = and.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.cmp("R11", "#0");
         asr.setVar("EQ", 1);
@@ -124,10 +114,6 @@ public class AsrCreator implements AstVisitor<String> {
         //asr.empilerFlags();
         String right = and.right.accept(this);
         //asr.depilerFlags();
-
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
         
@@ -141,16 +127,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Equal equal) {
         String left = equal.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = equal.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
 
@@ -164,16 +144,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Diff diff) {
         String left = diff.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = diff.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
 
@@ -187,16 +161,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Inf inf) {
         String left = inf.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = inf.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
 
@@ -210,16 +178,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Sup sup) {
         String left = sup.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = sup.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
 
@@ -233,16 +195,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(InfEqual infEqual) {
         String left = infEqual.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = infEqual.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
 
@@ -256,16 +212,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(SupEqual supEqual) {
         String left = supEqual.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = supEqual.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
 
@@ -279,17 +229,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Plus plus) {
         String left= plus.left.accept(this);
-        if (left != null){
-            asr.setVar(Integer.parseInt(left));
-        }
         
         asr.empiler("R11");
 
         String right=plus.right.accept(this);
-        if (right != null){
-            int rightValue = Integer.parseInt(right);
-            asr.setVar(rightValue);
-        }
 
         asr.depiler("R0");
 
@@ -301,17 +244,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Minus minus) {
         String left= minus.left.accept(this);
-        if (left != null){
-            asr.setVar(Integer.parseInt(left));
-        }
         
         asr.empiler("R11");
 
         String right=minus.right.accept(this);
-        if (right != null){
-            int rightValue = Integer.parseInt(right);
-            asr.setVar(rightValue);
-        }
 
         asr.depiler("R0");
 
@@ -323,15 +259,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Mult mult) {
         String left = mult.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
+
         asr.empiler ("R11");
 
         String right = mult.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
         
@@ -343,16 +274,10 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Divide divide) {
         String left = divide.left.accept(this);
-        if (left!=null){
-            asr.setVar(Integer.parseInt(left));
-        }
 
         asr.empiler("R11");
 
         String right = divide.right.accept(this);
-        if (right!=null){
-            asr.setVar(Integer.parseInt(right));
-        }
 
         asr.depiler("R0");
         
@@ -364,7 +289,9 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(MinusExpr minusExpr) {
-        return "-" + String.valueOf(minusExpr.expr.accept(this));
+        minusExpr.expr.accept(this);
+        asr.negate("R11");
+        return null;
     }
 
     @Override
@@ -438,13 +365,14 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(NilExpr affect) {
+        asr.setVar(0);
         return null;
     }
 
     @Override
     public String visit(IntExpr intExpr) {
-        asr.
-        return String.valueOf(intExpr.value);
+        asr.setVar(intExpr.value);
+        return null;
     }
 
     @Override
