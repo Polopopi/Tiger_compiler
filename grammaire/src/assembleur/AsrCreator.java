@@ -58,7 +58,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.jump("end_functions");
 
         try {
-            Path path = Path.of("./src/assembleur/div.S");
+            Path path = Path.of("./src/assembleur/fonctions.S");
             String div_str = Files.readString(path);
             asr.addFunction(div_str);
         } catch (IOException e) {
@@ -355,23 +355,20 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Mult mult) {
-        String left= mult.left.accept(this);
-        String right=mult.right.accept(this);
-
+        String left = mult.left.accept(this);
         if (left!=null){
-            asr.incrementerSp(1);
             asr.setVar(Integer.parseInt(left));
-            asr.stockerValeurSP();
         }
+        asr.empiler ("R11");
 
+        String right = mult.right.accept(this);
         if (right!=null){
-            int rightValue = Integer.parseInt(right);
-            asr.setVar(rightValue);
+            asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.multiplie("R1","R2","R1");
-        asr.stockerValeurSP();
+        asr.depiler("R0");
+        
+        asr.link("mult");
 
         return null;
     }
@@ -397,6 +394,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         return null;
     }
+
 
     @Override
     public String visit(MinusExpr minusExpr) {
