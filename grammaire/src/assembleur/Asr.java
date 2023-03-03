@@ -9,54 +9,53 @@ import java.util.ArrayList;
 public class Asr {
 
     private ArrayList<String> asr;
-    private String cond;
 
     public Asr(){
         this.asr=new ArrayList<String>();
-        this.cond = "";
     }
 
     public ArrayList<String> getAsr(){
         return this.asr;
     }
-    
-    public void setCond(String val){
-        this.cond = val;
-    }
-
-    public void resetCond(){
-        this.cond = "";
-    }
 
 
     public void setVar(int valeur) {
-        this.asr.add("    LDR" + cond + " R1, ="+valeur);
+        this.asr.add("    LDR R11, ="+valeur);
+    }
+    public void setVar(String cond, int valeur) {
+        this.asr.add("    LDR" + cond + " R11, ="+valeur);
     }
 
 
 
     public void incrementerSp(int nbr){
-        this.asr.add("    ADD"+cond+" SP, SP, #"+nbr*4);
+        this.asr.add("    ADD SP, SP, #"+nbr*4);
     }
     public void decrementerSp(int nbr) {
-        this.asr.add("    SUB" + cond + " SP, SP, #"+nbr*4);
+        this.asr.add("    SUB SP, SP, #"+nbr*4);
     }
     /**stockerValeurSP est destiné à stocker une valeur dans le stack qui est pointé par SP
      * */
     public void stockerValeurSP(){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
-        this.asr.add("    STR"+cond+" R1, [SP, #0]");
+        this.asr.add("    STR R1, [SP, #0]");
     }
     public void stockerRegistreSP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
-        this.asr.add("    STR"+cond+""+param+ ", [SP, #0]");
+        this.asr.add("    STR "+param+ ", [SP, #0]");
     }
     public void empilerValeurs(String registres){
-        this.asr.add("    STMFA" + cond + " SP!, {"+registres+"}");
+        this.asr.add("    STMFA SP!, {"+registres+"}");
+    }
+    public void empilerValeurs(String cond, String registres){
+        this.asr.add("    STMFA"+cond+" SP!, {"+registres+"}");
     }
     public void lireVarSP(String reg){ //nul, nan je rigole
-        this.asr.add("    LDR" + cond + " R2, [SP, #0]");
+        this.asr.add("    LDR "+reg+", [SP, #0]");
     }
     public void depilerValeurs(String registres){
-        this.asr.add("    LDMFA" + cond + " SP!, {"+registres+"}");
+        this.asr.add("    LDMFA SP!, {"+registres+"}");
+    }
+    public void depilerValeurs(String cond, String registres){
+        this.asr.add("    LDMFA"+cond+" SP!, {"+registres+"}");
     }
     /*
     public void empilerFlags(){
@@ -93,7 +92,7 @@ public class Asr {
         this.asr.add("    SUB "+param1+", "+param2+", "+param3); //R1-R2=>R1
     }
     public void or(String regDest, String reg1, String reg2){
-        this.asr.add("    ORR" + cond + " " + regDest + ", " + reg1 + ", " + reg2);
+        this.asr.add("    ORR " + regDest + ", " + reg1 + ", " + reg2);
     }
     public void multiplie(String regDest, String reg1, String reg2){
         this.asr.add("    mul " + regDest + ", " + reg1 + ", " + reg2);
@@ -115,7 +114,6 @@ public class Asr {
     public void b(String flag){
         this.asr.add("    B " + flag);
     }
-
     public void b(String cond, String flag){
         this.asr.add("    B" + cond + " " + flag);
     }

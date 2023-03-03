@@ -40,7 +40,7 @@ _div_loop
 		ADDNE	R6, R6, #1	;on arrondi à l'entier sup
 		RSB		R6, R6, #0	;On remet les nombres en négatifs
 		RSB		R2, R2, #0
-		ADDNE	R2, R2, R1	;Différence entre le résultat exacte et approximé car entier
+		ADDNE	R2, R2, R1	;Reste entre le résultat exacte et approximé car entier
 		
 		
 _div_exit	

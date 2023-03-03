@@ -14,7 +14,6 @@ import java.util.Date;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
-    private int labelId;
     private Tds tds;
 
     private int idGenerator;
@@ -23,19 +22,21 @@ public class AsrCreator implements AstVisitor<String> {
         return(idGenerator++);
     }
 
-    private String generateFlag(){
+    private String generateLabel(){
         return("flag"+generateId());
     }
 
     public AsrCreator(){
         this.asr=new Asr();
-        labelId = 0;
+        idGenerator = 0;
     }
+
     public void asrFichier(String asrFileName) throws IOException {
         ArrayList<String> data=asr.getAsr();
         Path fichier= Paths.get(asrFileName);
         Files.write(fichier,data, StandardCharsets.UTF_8);
     }
+
     @Override
     public String visit(Idf affect) {
         return null;
@@ -48,7 +49,9 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Program program) {
-        asr.jump("end_functions");
+        String endFlag = generateLabel();
+
+        asr.b(endFlag);
 
         try {
             Path path = Path.of("./src/assembleur/div.S");
@@ -58,7 +61,7 @@ public class AsrCreator implements AstVisitor<String> {
             e.printStackTrace();
         }
 
-        asr.label("end_functions");
+        asr.label(endFlag);
 
         String texte = program.affect.accept(this);
 
@@ -78,16 +81,12 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setVar(Integer.parseInt(left));
         }
 
-        asr.cmp("R1", "#0");
-        asr.setCond("NE");
-        asr.setVar(1);
-        int labelIdCopie = labelId;
-        labelId++;
-        asr.jump("end_or_" + labelIdCopie);
-        asr.resetCond();
+        asr.cmp("R11", "#0");
+        asr.setVar("NE", 1);
+        String endFlag = generateLabel();
+        asr.b("NE", endFlag);
 
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+        asr.empiler("R11");
 
         //asr.empilerFlags();
         String right = or.right.accept(this);
@@ -97,12 +96,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
         
-        asr.or("R1", "R2", "R1");
+        asr.or("R11", "R0", "R11");
 
-        asr.label("end_or_" + labelIdCopie);
+        asr.label(endFlag);
 
         return null;
     }
@@ -114,16 +112,12 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setVar(Integer.parseInt(left));
         }
 
-        asr.cmp("R1", "#0");
-        asr.setCond("EQ");
-        asr.setVar(1);
-        int labelIdCopie = labelId;
-        labelId++;
-        asr.jump("end_and_" + labelIdCopie);
-        asr.resetCond();
+        asr.cmp("R11", "#0");
+        asr.setVar("EQ", 1);
+        String endFlag = generateLabel();
+        asr.b("EQ", endFlag);
 
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+        asr.empiler("R11");
 
         //asr.empilerFlags();
         String right = and.right.accept(this);
@@ -133,12 +127,12 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
         
-        asr.or("R1", "R2", "R1");
+        asr.or("R11", "R0", "R11");
 
-        asr.label("end_and_" + labelIdCopie);
+        asr.label(endFlag);
+
         return null;
     }
 
@@ -148,23 +142,19 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = equal.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
 
-        asr.cmp("R2", "R1");
-        asr.setCond("EQ");
-        asr.setVar(1);
-        asr.setCond("NE");
-        asr.setVar(0);
-        asr.resetCond();
+        asr.cmp("R0", "R11");
+        asr.setVar("EQ", 1);
+        asr.setVar("NE", 0);
 
         return null;
     }
@@ -175,23 +165,19 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = diff.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
 
-        asr.cmp("R2", "R1");
-        asr.setCond("NE");
-        asr.setVar(1);
-        asr.setCond("EQ");
-        asr.setVar(0);
-        asr.resetCond();
+        asr.cmp("R0", "R11");
+        asr.setVar("NE", 1);
+        asr.setVar("QE", 0);
 
         return null;
     }
@@ -202,23 +188,19 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = inf.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
 
-        asr.cmp("R2", "R1");
-        asr.setCond("LT");
-        asr.setVar(1);
-        asr.setCond("GE");
-        asr.setVar(0);
-        asr.resetCond();
+        asr.cmp("R0", "R11");
+        asr.setVar("LT", 1);
+        asr.setVar("GE", 0);
 
         return null;
     }
@@ -229,23 +211,19 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = sup.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
 
-        asr.cmp("R2", "R1");
-        asr.setCond("GT");
-        asr.setVar(1);
-        asr.setCond("LE");
-        asr.setVar(0);
-        asr.resetCond();
+        asr.cmp("R0", "R11");
+        asr.setVar("GT", 1);
+        asr.setVar("LE", 0);
 
         return null;
     }
@@ -256,23 +234,19 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = infEqual.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
 
-        asr.cmp("R2", "R1");
-        asr.setCond("LE");
-        asr.setVar(1);
-        asr.setCond("GT");
-        asr.setVar(0);
-        asr.resetCond();
+        asr.cmp("R0", "R11");
+        asr.setVar("LE", 1);
+        asr.setVar("GT", 0);
 
         return null;
     }
@@ -283,23 +257,19 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = supEqual.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
 
-        asr.cmp("R2", "R1");
-        asr.setCond("GE");
-        asr.setVar(1);
-        asr.setCond("LT");
-        asr.setVar(0);
-        asr.resetCond();
+        asr.cmp("R0", "R11");
+        asr.setVar("GE", 1);
+        asr.setVar("LT", 0);
 
         return null;
     }
@@ -307,41 +277,43 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Plus plus) {
         String left= plus.left.accept(this);
-        String right=plus.right.accept(this);
-        if (left!=null){
+        if (left != null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
-        if (right!=null){
+        
+        asr.empiler("R11");
+
+        String right=plus.right.accept(this);
+        if (right != null){
             int rightValue = Integer.parseInt(right);
             asr.setVar(rightValue);
         }
-        asr.lireVarSP();
-        asr.plus("R1","R2","R1");
-        asr.decrementerSp(1);
+
+        asr.depiler("R0");
+
+        asr.moins("R11","R0","R11");
 
         return null;
     }
 
     @Override
-    public String visit(Minus minus) {// RES DANS R11
+    public String visit(Minus minus) {
         String left= minus.left.accept(this);
         if (left != null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+        
+        asr.empiler("R11");
 
         String right=minus.right.accept(this);
         if (right != null){
             int rightValue = Integer.parseInt(right);
             asr.setVar(rightValue);
         }
-        asr.lireVarSP();
-        asr.moins("R1","R2","R1");
-        asr.decrementerSp(1);//R2 est le registre où on enregistre la valeur lue depuis la pile, R1 est le registre
-                                  // où on peut donner une valeur à un stack
+
+        asr.depiler("R0");
+
+        asr.moins("R11","R0","R11");
 
         return null;
     }
@@ -375,16 +347,15 @@ public class AsrCreator implements AstVisitor<String> {
         if (left!=null){
             asr.setVar(Integer.parseInt(left));
         }
-        asr.incrementerSp(1);
-        asr.stockerValeurSP();
+
+        asr.empiler("R11");
 
         String right = divide.right.accept(this);
         if (right!=null){
             asr.setVar(Integer.parseInt(right));
         }
 
-        asr.lireVarSP();
-        asr.decrementerSp(1);
+        asr.depiler("R0");
         
         asr.link("div");
 
