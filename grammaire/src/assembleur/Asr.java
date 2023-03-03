@@ -19,6 +19,7 @@ public class Asr {
     public ArrayList<String> getAsr(){
         return this.asr;
     }
+    
     public void setCond(String val){
         this.cond = val;
     }
@@ -51,18 +52,20 @@ public class Asr {
     public void empilerValeurs(String registres){
         this.asr.add("    STMFA" + cond + " SP!, {"+registres+"}");
     }
-    public void lireVarSP(){
+    public void lireVarSP(String reg){ //nul, nan je rigole
         this.asr.add("    LDR" + cond + " R2, [SP, #0]");
     }
     public void depilerValeurs(String registres){
         this.asr.add("    LDMFA" + cond + " SP!, {"+registres+"}");
     }
+    /*
     public void empilerFlags(){
         this.asr.add("    PUSHFD");
     }
     public void depilerFlags(){
         this.asr.add("    POPFD");
     }
+    */
 
 
     public void positionnerBP(){
@@ -117,21 +120,9 @@ public class Asr {
         this.asr.add("    B" + cond + " " + flag);
     }
 
-    public void flag(String name){
-        this.asr.add(name);
-    }
-
-
     public void link(String label){
         this.asr.add("    BL " + label);
     }
-
-    
-
-    public void jump(String label){
-        this.asr.add("    B" + cond + " " + label);
-    }
-
     
 
     public void label(String label){
