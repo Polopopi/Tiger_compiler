@@ -21,10 +21,10 @@ public class Asr {
 
 
     public void setVar(int valeur) {
-        this.asr.add("    LDR R11, ="+valeur);
+        this.asr.add("    LDR R0, ="+valeur);
     }
     public void setVar(String cond, int valeur) {
-        this.asr.add("    LDR" + cond + " R11, ="+valeur);
+        this.asr.add("    LDR" + cond + " R0, ="+valeur);
     }
 
 
@@ -70,7 +70,7 @@ public class Asr {
     /**stockerValeurSP est destiné à stocker une valeur dans le stack qui est pointé par SP
      * */
     public void stockerValeurSP(){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
-        this.asr.add("    STR R1, [SP, #0]");
+        this.asr.add("    STR R0, [SP, #0]");
     }
     public void lireVarSP(String reg){ //nul, nan je rigole
         this.asr.add("    LDR "+reg+", [SP, #0]");

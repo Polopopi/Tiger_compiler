@@ -88,20 +88,20 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Or or) {
         String left = or.left.accept(this);
 
-        asr.cmp("R11", "#0");
+        asr.cmp("R0", "#0");
         asr.setVar("NE", 1);
         String endLabel = generateLabel();
         asr.b("NE", endLabel);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         //asr.empilerFlags();
         String right = or.right.accept(this);
         //asr.depilerFlags();
 
-        asr.depiler("R0");
+        asr.depiler("R1");
         
-        asr.or("R11", "R0", "R11");
+        asr.or("R0", "R1", "R0");
 
         asr.label(endLabel);
 
@@ -112,20 +112,20 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(And and) {
         String left = and.left.accept(this);
 
-        asr.cmp("R11", "#0");
+        asr.cmp("R0", "#0");
         asr.setVar("EQ", 1);
         String endLabel = generateLabel();
         asr.b("EQ", endLabel);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         //asr.empilerFlags();
         String right = and.right.accept(this);
         //asr.depilerFlags();
 
-        asr.depiler("R0");
+        asr.depiler("R1");
         
-        asr.or("R11", "R0", "R11");
+        asr.or("R0", "R1", "R0");
 
         asr.label(endLabel);
 
@@ -136,13 +136,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Equal equal) {
         String left = equal.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = equal.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.cmp("R0", "R11");
+        asr.cmp("R1", "R0");
         asr.setVar("EQ", 1);
         asr.setVar("NE", 0);
 
@@ -153,13 +153,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Diff diff) {
         String left = diff.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = diff.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.cmp("R0", "R11");
+        asr.cmp("R1", "R0");
         asr.setVar("NE", 1);
         asr.setVar("QE", 0);
 
@@ -170,13 +170,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Inf inf) {
         String left = inf.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = inf.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.cmp("R0", "R11");
+        asr.cmp("R1", "R0");
         asr.setVar("LT", 1);
         asr.setVar("GE", 0);
 
@@ -187,13 +187,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Sup sup) {
         String left = sup.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = sup.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.cmp("R0", "R11");
+        asr.cmp("R1", "R0");
         asr.setVar("GT", 1);
         asr.setVar("LE", 0);
 
@@ -204,13 +204,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(InfEqual infEqual) {
         String left = infEqual.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = infEqual.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.cmp("R0", "R11");
+        asr.cmp("R1", "R0");
         asr.setVar("LE", 1);
         asr.setVar("GT", 0);
 
@@ -221,13 +221,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(SupEqual supEqual) {
         String left = supEqual.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = supEqual.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.cmp("R0", "R11");
+        asr.cmp("R1", "R0");
         asr.setVar("GE", 1);
         asr.setVar("LT", 0);
 
@@ -238,13 +238,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Plus plus) {
         String left= plus.left.accept(this);
         
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right=plus.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.moins("R11","R0","R11");
+        asr.moins("R0","R1","R0");
 
         return null;
     }
@@ -253,13 +253,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Minus minus) {
         String left= minus.left.accept(this);
         
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right=minus.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
 
-        asr.moins("R11","R0","R11");
+        asr.moins("R0","R1","R0");
 
         return null;
     }
@@ -268,11 +268,11 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Mult mult) {
         String left = mult.left.accept(this);
 
-        asr.empiler ("R11");
+        asr.empiler ("R0");
 
         String right = mult.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
         
         asr.link("mult");
 
@@ -283,11 +283,11 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Divide divide) {
         String left = divide.left.accept(this);
 
-        asr.empiler("R11");
+        asr.empiler("R0");
 
         String right = divide.right.accept(this);
 
-        asr.depiler("R0");
+        asr.depiler("R1");
         
         asr.link("div");
 
@@ -298,7 +298,7 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(MinusExpr minusExpr) {
         minusExpr.expr.accept(this);
-        asr.negate("R11");
+        asr.negate("R0");
         return null;
     }
 
@@ -308,7 +308,7 @@ public class AsrCreator implements AstVisitor<String> {
         String elseLabel = generateLabel();
 
         ifThen.condition.accept(this);
-        asr.cmp("r1","#0");
+        asr.cmp("r0","#0");
         asr.b("NE", thenLabel);
         asr.b(elseLabel);
         asr.label(thenLabel);
@@ -322,7 +322,7 @@ public class AsrCreator implements AstVisitor<String> {
         String elseLabel = generateLabel();
 
         ifThenElse.condition.accept(this);
-        asr.cmp("r1","#0");
+        asr.cmp("r0","#0");
         asr.b("NE", thenLabel);
         asr.b(elseLabel);
         asr.label(thenLabel);
@@ -341,7 +341,7 @@ public class AsrCreator implements AstVisitor<String> {
         String forEndLabel = generateLabel();
 
         asr.label(forLabel);
-        asr.empilerValeurs("R11");
+        asr.empilerValeurs("R0");
 
 
         return null;
@@ -354,7 +354,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.label(whileLabel);
         whileNode.condition.accept(this);
-        asr.cmp("r1", "#0");
+        asr.cmp("r0", "#0");
         asr.b("EQ", whileEndLabel);
 
         label = whileEndLabel;
