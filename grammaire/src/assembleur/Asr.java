@@ -47,17 +47,21 @@ public class Asr {
     public void stockerRegistreSP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR "+param+ ", [SP, #0]");
     }
-    public void empilerValeurs(String registres){
+    public void lireVarSP(String reg){ //nul, nan je rigole
+        this.asr.add("    LDR "+reg+", [SP, #0]");
+    }
+
+    public void empilerSP(String registres){
         this.asr.add("    STMFA SP!, {"+registres+"}");
     }
-    public void empilerValeurs(String cond, String registres){
+    public void empilerSP(String cond, String registres){
         this.asr.add("    STMFA"+cond+" SP!, {"+registres+"}");
     }
     
-    public void depilerValeurs(String registres){
+    public void depilerSP(String registres){
         this.asr.add("    LDMFA SP!, {"+registres+"}");
     }
-    public void depilerValeurs(String cond, String registres){
+    public void depilerSP(String cond, String registres){
         this.asr.add("    LDMFA"+cond+" SP!, {"+registres+"}");
     }
 
@@ -67,14 +71,7 @@ public class Asr {
     public void decrementerSp(int nbr) {
         this.asr.add("    SUB SP, SP, #"+nbr*4);
     }
-    /**stockerValeurSP est destiné à stocker une valeur dans le stack qui est pointé par SP
-     * */
-    public void stockerValeurSP(){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
-        this.asr.add("    STR R0, [SP, #0]");
-    }
-    public void lireVarSP(String reg){ //nul, nan je rigole
-        this.asr.add("    LDR "+reg+", [SP, #0]");
-    }
+    
     
     /*
     public void empilerFlags(){
@@ -95,10 +92,36 @@ public class Asr {
     /**lireVarPile est destiné à lire un stack en référençant BP
      * @param ordrePile :nombre de stack à incrémenter pour atteindre le stack objectif
      * */
-    public void lireVarPile(String registre,int ordrePile){
+    public void lireVarBP(String registre,int ordrePile){
         this.asr.add("    LDR "+registre+", [R12, #"+ordrePile*4+"]");
     }
-    
+
+
+    public void empilerHP(String registre){
+        stockerRegistreHP(registre);
+        decrementerHP(1);
+    }
+    /**
+     * Cette fonction sert à dépiler la pile
+     * @param registre est le registre dans lequel la valeur sera enregistrée */
+    public void depilerHP(String registre){
+        incrementerHP(1);
+        lireVarHP(registre);
+    }
+    public void stockerRegistreHP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
+        this.asr.add("    STR "+param+ ", [R11, #0]");
+    }
+    public void lireVarHP(String reg){ //nul, nan je rigole
+        this.asr.add("    LDR "+reg+", [R11, #0]");
+    }
+
+    public void incrementerHP(int nbr){
+        this.asr.add("    ADD R11, R11, #"+nbr*4);
+    }
+    public void decrementerHP(int nbr) {
+        this.asr.add("    SUB R11, R11, #"+nbr*4);
+    }
+
 
 
     public void  plus(String param1,String param2,String param3){
@@ -124,11 +147,23 @@ public class Asr {
     public void cmp(String reg1, String reg2){
         this.asr.add("    CMP "+reg1+", "+reg2);
     }
+    public void cmp(String cond, String reg1, String reg2){
+        this.asr.add("    CMP"+cond+" "+reg1+", "+reg2);
+    }
 
     public void mov(String op1, String op2){
         this.asr.add("    MOV " + op1 +", " +op2);
     }
 
+    public void charSuivant(String registre){
+        this.asr.add("    SUB "+registre+", "+registre+", #4");
+    }
+    public void charSuivant(String cond, String registre){
+        this.asr.add("    SUB"+cond+ " "+registre+", "+registre+", #4");
+    }
+    public void lireVarReg(String registreRecepteur, String registrePointeur){
+        this.asr.add("    LDR " + registreRecepteur + " , [" + registrePointeur + "]");
+    }
 
     public void b(String flag){
         this.asr.add("    B " + flag);

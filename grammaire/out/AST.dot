@@ -3,36 +3,16 @@ digraph "ast"{
 	nodesep=1;
 	ranksep=1;
 
-	N4 [label="5", shape="box"];
-	N5 [label="5", shape="box"];
-	N3 [label="-", shape="box"];
-	N6 [label="5", shape="box"];
-	N2 [label="-", shape="box"];
-	N10 [label="5", shape="box"];
-	N11 [label="4", shape="box"];
-	N9 [label="-", shape="box"];
-	N13 [label="2", shape="box"];
-	N14 [label="3", shape="box"];
-	N12 [label="-", shape="box"];
-	N8 [label="-", shape="box"];
-	N15 [label="5", shape="box"];
-	N7 [label="-", shape="box"];
-	N1 [label="-", shape="box"];
+	N3 [label="abd", shape="box"];
+	N4 [label="abc", shape="box"];
+	N2 [label="<", shape="box"];
+	N5 [label="seqExpr", shape="box"];
+	N1 [label="IfThen", shape="box"];
 	N0 [label="Program", shape="box"];
 
-	N3 -> N4; 
-	N3 -> N5; 
 	N2 -> N3; 
-	N2 -> N6; 
-	N9 -> N10; 
-	N9 -> N11; 
-	N12 -> N13; 
-	N12 -> N14; 
-	N8 -> N9; 
-	N8 -> N12; 
-	N7 -> N8; 
-	N7 -> N15; 
+	N2 -> N4; 
 	N1 -> N2; 
-	N1 -> N7; 
+	N1 -> N5; 
 	N0 -> N1; 
 }

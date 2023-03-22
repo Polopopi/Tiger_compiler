@@ -1,4 +1,4 @@
-R0  : Travail
+R0  : Retour Tiger
 R1  : Travail
 R2  : Travail 
 R3  : Travail
@@ -9,8 +9,12 @@ R7  :
 R8  :
 R9  :
 R10 : 
-R11 : Retour Tiger
+R11 : Heap Register POINTE SUR LA 1ERE CASE VIDE
 R12 : Base Register 
 R13 : Stack Register 
 LR 
 PC
+
+String : 33-126
+Fin de String : 0 (code ASCII)
+Fin Array : 

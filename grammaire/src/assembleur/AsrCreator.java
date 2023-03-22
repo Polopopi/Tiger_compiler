@@ -73,9 +73,12 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.label(endLabel);
 
+        asr.mov("R11", "SP");
+
         String texte = program.affect.accept(this);
 
         asr.end();
+
         return null;
     }
 
@@ -142,9 +145,38 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.cmp("R1", "R0");
-        asr.setVar("EQ", 1);
-        asr.setVar("NE", 0);
+        if (right.equals("String")){
+
+            String loopLabel = generateLabel();
+            String endLabel = generateLabel();
+
+            asr.label(loopLabel);
+
+            asr.lireVarReg("R3", "R1");
+            asr.lireVarReg("R2", "R0");
+
+            // Si on est à la fin des 2 strings
+            asr.cmp("R3", "#0");
+            asr.cmp("EQ", "R2", "#0");
+            asr.b("EQ", endLabel);
+
+            asr.cmp("R3", "R2");
+
+            //Tant qu'on peut avancer et que tout les char sont égaux
+            asr.b("EQ", loopLabel);
+
+            asr.label(endLabel);
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            asr.setVar("EQ", 1);
+            asr.setVar("NE", 0);
+        }
+        else{
+            asr.cmp("R1", "R0");
+            asr.setVar("EQ", 1);
+            asr.setVar("NE", 0);
+        }
 
         return null;
     }
@@ -159,9 +191,41 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.cmp("R1", "R0");
-        asr.setVar("NE", 1);
-        asr.setVar("QE", 0);
+        if (right.equals("String")){
+
+            String loopLabel = generateLabel();
+            String endLabel = generateLabel();
+
+            asr.label(loopLabel);
+
+            asr.lireVarReg("R3", "R1");
+            asr.lireVarReg("R2", "R0");
+
+            // Si on est à la fin des 2 strings
+            asr.cmp("R3", "#0");
+            asr.cmp("EQ", "R2", "#0");
+            asr.b("EQ", endLabel);
+
+            asr.cmp("R3", "R2");
+
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            //Tant qu'on peut avancer et que tout les char sont égaux
+            asr.b("EQ", loopLabel);
+
+            asr.label(endLabel);
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            asr.setVar("NE", 1);
+            asr.setVar("EQ", 0);
+        }
+        else{
+            asr.cmp("R1", "R0");
+            asr.setVar("NE", 1);
+            asr.setVar("EQ", 0);
+        }
 
         return null;
     }
@@ -176,9 +240,42 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.cmp("R1", "R0");
-        asr.setVar("LT", 1);
-        asr.setVar("GE", 0);
+        if (right.equals("String")){
+            String loopLabel = generateLabel();
+            String endLabel = generateLabel();
+
+            asr.label(loopLabel);
+
+            asr.lireVarReg("R3", "R1");
+            asr.lireVarReg("R2", "R0");
+
+            // Si on est à la fin des 2 strings
+            asr.cmp("R3", "#0");
+            asr.b("EQ", endLabel);
+            asr.cmp("R2", "#0");
+            asr.b("EQ", endLabel);
+
+            asr.cmp("R3", "R2");
+
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            //Tant qu'on peut avancer et que tout les char sont inférieurs
+            asr.b("EQ", loopLabel);
+
+            asr.label(endLabel);
+            asr.cmp("R3", "R2");
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            asr.setVar("LT", 1);
+            asr.setVar("GE", 0);
+        }
+        else{
+            asr.cmp("R1", "R0");
+            asr.setVar("LT", 1);
+            asr.setVar("GE", 0);
+        }
 
         return null;
     }
@@ -193,9 +290,42 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.cmp("R1", "R0");
-        asr.setVar("GT", 1);
-        asr.setVar("LE", 0);
+        if (right.equals("String")){
+            String loopLabel = generateLabel();
+            String endLabel = generateLabel();
+
+            asr.label(loopLabel);
+
+            asr.lireVarReg("R3", "R1");
+            asr.lireVarReg("R2", "R0");
+
+            // Si on est à la fin des 2 strings
+            asr.cmp("R3", "#0");
+            asr.b("EQ", endLabel);
+            asr.cmp("R2", "#0");
+            asr.b("EQ", endLabel);
+
+            asr.cmp("R3", "R2");
+
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            //Tant qu'on peut avancer et que tout les char sont inférieurs
+            asr.b("EQ", loopLabel);
+
+            asr.label(endLabel);
+            asr.cmp("R3", "R2");
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            asr.setVar("GT", 1);
+            asr.setVar("LE", 0);
+        }
+        else{
+            asr.cmp("R1", "R0");
+            asr.setVar("GT", 1);
+            asr.setVar("LE", 0);
+        }
 
         return null;
     }
@@ -210,9 +340,42 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.cmp("R1", "R0");
-        asr.setVar("LE", 1);
-        asr.setVar("GT", 0);
+        if (right.equals("String")){
+            String loopLabel = generateLabel();
+            String endLabel = generateLabel();
+
+            asr.label(loopLabel);
+
+            asr.lireVarReg("R3", "R1");
+            asr.lireVarReg("R2", "R0");
+
+            // Si on est à la fin des 2 strings
+            asr.cmp("R3", "#0");
+            asr.b("EQ", endLabel);
+            asr.cmp("R2", "#0");
+            asr.b("EQ", endLabel);
+
+            asr.cmp("R3", "R2");
+
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            //Tant qu'on peut avancer et que tout les char sont inférieurs
+            asr.b("EQ", loopLabel);
+
+            asr.label(endLabel);
+            asr.cmp("R3", "R2");
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            asr.setVar("LE", 1);
+            asr.setVar("GT", 0);
+        }
+        else{
+            asr.cmp("R1", "R0");
+            asr.setVar("LE", 1);
+            asr.setVar("GT", 0);
+        }
 
         return null;
     }
@@ -227,9 +390,42 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.cmp("R1", "R0");
-        asr.setVar("GE", 1);
-        asr.setVar("LT", 0);
+        if (right.equals("String")){
+            String loopLabel = generateLabel();
+            String endLabel = generateLabel();
+
+            asr.label(loopLabel);
+
+            asr.lireVarReg("R3", "R1");
+            asr.lireVarReg("R2", "R0");
+
+            // Si on est à la fin des 2 strings
+            asr.cmp("R3", "#0");
+            asr.b("EQ", endLabel);
+            asr.cmp("R2", "#0");
+            asr.b("EQ", endLabel);
+
+            asr.cmp("R3", "R2");
+
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            //Tant qu'on peut avancer et que tout les char sont inférieurs
+            asr.b("EQ", loopLabel);
+
+            asr.label(endLabel);
+            asr.cmp("R3", "R2");
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
+
+            asr.setVar("GE", 1);
+            asr.setVar("LT", 0);
+        }
+        else{
+            asr.cmp("R1", "R0");
+            asr.setVar("GE", 1);
+            asr.setVar("LT", 0);
+        }
 
         return null;
     }
@@ -268,7 +464,7 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Mult mult) {
         String left = mult.left.accept(this);
 
-        asr.empiler ("R0");
+        asr.empiler("R0");
 
         String right = mult.right.accept(this);
 
@@ -305,14 +501,15 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(IfThen ifThen) {
         String thenLabel = generateLabel();
-        String elseLabel = generateLabel();
+        String endLabel = generateLabel();
 
         ifThen.condition.accept(this);
         asr.cmp("r0","#0");
         asr.b("NE", thenLabel);
-        asr.b(elseLabel);
+        asr.b(endLabel);
         asr.label(thenLabel);
         ifThen.thenBlock.accept(this);
+        asr.label(endLabel);
         return null;
     }
 
@@ -325,13 +522,18 @@ public class AsrCreator implements AstVisitor<String> {
         asr.cmp("r0","#0");
         asr.b("NE", thenLabel);
         asr.b(elseLabel);
+        
         asr.label(thenLabel);
         ifThenElse.thenBlock.accept(this);
+        asr.label(elseLabel);
+        ifThenElse.elseBlock.accept(this);
         return null;
     }
 
     @Override
-    public String visit(Let affect) {
+    public String visit(Let let) {
+        let.declarationList.accept(this);
+        let.seqExpr.accept(this);
         return null;
     }
 
@@ -341,7 +543,7 @@ public class AsrCreator implements AstVisitor<String> {
         String forEndLabel = generateLabel();
 
         asr.label(forLabel);
-        asr.empilerValeurs("R0");
+        asr.empiler("R0");
 
 
         return null;
@@ -381,13 +583,22 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(IntExpr intExpr) {
         asr.setVar(intExpr.value);
-        return null;
+        return "int";
     }
 
     @Override
-    public String visit(StrExpr affect) {
+    public String visit(StrExpr strExpr) {
+        asr.mov("R0", "R11"); //Adresse pour le pointeur de la string dans R0
 
-        return null;
+        String str = strExpr.value;
+        for (int i = 0; i < str.length(); i++){
+            asr.mov("R1", "#"+(int)str.charAt(i));
+            asr.empilerHP("R1");
+        }
+
+        asr.mov("R1", "#0");
+        asr.empilerHP("R1");
+        return "String";
     }
 
     @Override
@@ -400,7 +611,10 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(DeclarationList affect) {
+    public String visit(DeclarationList declarationList) {
+        for (Ast expr:declarationList.listAst){
+            expr.accept(this);
+        }
         return null;
     }
 
