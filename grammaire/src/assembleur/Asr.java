@@ -20,10 +20,10 @@ public class Asr {
 
 
 
-    public void setVar(int valeur) {
+    public void setRetour(int valeur) {
         this.asr.add("    LDR R0, ="+valeur);
     }
-    public void setVar(String cond, int valeur) {
+    public void setRetour(String cond, int valeur) {
         this.asr.add("    LDR" + cond + " R0, ="+valeur);
     }
 
@@ -110,6 +110,9 @@ public class Asr {
     }
     public void stockerRegistreHP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR "+param+ ", [R11, #0]");
+    }
+    public void stockerRegistreHP(String param, int depl){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
+        this.asr.add("    STR "+param+ ", [R11, #"+ depl +"]");
     }
     public void lireVarHP(String reg){ //nul, nan je rigole
         this.asr.add("    LDR "+reg+", [R11, #0]");

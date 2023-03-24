@@ -19,7 +19,7 @@ public class AsrCreator implements AstVisitor<String> {
     private Tds currentTds;
     private int oldTdsId;
     private int idGenerator;
-    private String label;
+    private ArrayList<String> loopLabel;
 
     private Tds getTds(){
         return(listTds.get(oldTdsId++));
@@ -38,7 +38,7 @@ public class AsrCreator implements AstVisitor<String> {
     public AsrCreator(){
         this.asr=new Asr();
         this.idGenerator = 0;
-        this.label = "";
+        this.loopLabel = new ArrayList<String>();
     }
 
     public void asrFichier(String asrFileName) throws IOException {
@@ -92,7 +92,7 @@ public class AsrCreator implements AstVisitor<String> {
         String left = or.left.accept(this);
 
         asr.cmp("R0", "#0");
-        asr.setVar("NE", 1);
+        asr.setRetour("NE", 1);
         String endLabel = generateLabel();
         asr.b("NE", endLabel);
 
@@ -116,7 +116,7 @@ public class AsrCreator implements AstVisitor<String> {
         String left = and.left.accept(this);
 
         asr.cmp("R0", "#0");
-        asr.setVar("EQ", 1);
+        asr.setRetour("EQ", 0);
         String endLabel = generateLabel();
         asr.b("EQ", endLabel);
 
@@ -169,13 +169,13 @@ public class AsrCreator implements AstVisitor<String> {
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
-            asr.setVar("EQ", 1);
-            asr.setVar("NE", 0);
+            asr.setRetour("EQ", 1);
+            asr.setRetour("NE", 0);
         }
         else{
             asr.cmp("R1", "R0");
-            asr.setVar("EQ", 1);
-            asr.setVar("NE", 0);
+            asr.setRetour("EQ", 1);
+            asr.setRetour("NE", 0);
         }
 
         return null;
@@ -218,13 +218,13 @@ public class AsrCreator implements AstVisitor<String> {
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
-            asr.setVar("NE", 1);
-            asr.setVar("EQ", 0);
+            asr.setRetour("NE", 1);
+            asr.setRetour("EQ", 0);
         }
         else{
             asr.cmp("R1", "R0");
-            asr.setVar("NE", 1);
-            asr.setVar("EQ", 0);
+            asr.setRetour("NE", 1);
+            asr.setRetour("EQ", 0);
         }
 
         return null;
@@ -268,13 +268,13 @@ public class AsrCreator implements AstVisitor<String> {
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
-            asr.setVar("LT", 1);
-            asr.setVar("GE", 0);
+            asr.setRetour("LT", 1);
+            asr.setRetour("GE", 0);
         }
         else{
             asr.cmp("R1", "R0");
-            asr.setVar("LT", 1);
-            asr.setVar("GE", 0);
+            asr.setRetour("LT", 1);
+            asr.setRetour("GE", 0);
         }
 
         return null;
@@ -318,13 +318,13 @@ public class AsrCreator implements AstVisitor<String> {
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
-            asr.setVar("GT", 1);
-            asr.setVar("LE", 0);
+            asr.setRetour("GT", 1);
+            asr.setRetour("LE", 0);
         }
         else{
             asr.cmp("R1", "R0");
-            asr.setVar("GT", 1);
-            asr.setVar("LE", 0);
+            asr.setRetour("GT", 1);
+            asr.setRetour("LE", 0);
         }
 
         return null;
@@ -368,13 +368,13 @@ public class AsrCreator implements AstVisitor<String> {
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
-            asr.setVar("LE", 1);
-            asr.setVar("GT", 0);
+            asr.setRetour("LE", 1);
+            asr.setRetour("GT", 0);
         }
         else{
             asr.cmp("R1", "R0");
-            asr.setVar("LE", 1);
-            asr.setVar("GT", 0);
+            asr.setRetour("LE", 1);
+            asr.setRetour("GT", 0);
         }
 
         return null;
@@ -418,13 +418,13 @@ public class AsrCreator implements AstVisitor<String> {
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
-            asr.setVar("GE", 1);
-            asr.setVar("LT", 0);
+            asr.setRetour("GE", 1);
+            asr.setRetour("LT", 0);
         }
         else{
             asr.cmp("R1", "R0");
-            asr.setVar("GE", 1);
-            asr.setVar("LT", 0);
+            asr.setRetour("GE", 1);
+            asr.setRetour("LT", 0);
         }
 
         return null;
@@ -543,8 +543,12 @@ public class AsrCreator implements AstVisitor<String> {
         String forEndLabel = generateLabel();
 
         asr.label(forLabel);
-        asr.empiler("R0");
 
+        loopLabel.add(forEndLabel);
+        //accept
+        loopLabel.remove(loopLabel.size()-1);
+
+        asr.empiler("R0"); // PK ? Faudrait faire setVar nan ?
 
         return null;
     }
@@ -559,8 +563,9 @@ public class AsrCreator implements AstVisitor<String> {
         asr.cmp("r0", "#0");
         asr.b("EQ", whileEndLabel);
 
-        label = whileEndLabel;
+        loopLabel.add(whileEndLabel);
         whileNode.bloc.accept(this);
+        loopLabel.remove(loopLabel.size()-1);
 
         asr.b(whileLabel);
         asr.label(whileEndLabel);
@@ -570,19 +575,19 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(BreakExpr affect) {
-        asr.b(label);
+        asr.b(loopLabel.get(loopLabel.size()-1));
         return null;
     }
 
     @Override
     public String visit(NilExpr affect) {
-        asr.setVar(0);
+        asr.setRetour(0);
         return null;
     }
 
     @Override
     public String visit(IntExpr intExpr) {
-        asr.setVar(intExpr.value);
+        asr.setRetour(intExpr.value);
         return "int";
     }
 
@@ -618,59 +623,92 @@ public class AsrCreator implements AstVisitor<String> {
         return null;
     }
 
+    // Paramètre d'appel de fonction
     @Override
-    public String visit(ListExpr affect) {
+    public String visit(ListExpr listExpr) {
+        for (Ast expr : listExpr.listExpr){
+            expr.accept(this);
+            // On empile le paramètre
+            // int passage par valeur, sinon pointeur
+            asr.empiler("R0");
+        }
         return null;
     }
 
     @Override
     public String visit(Type_Declaration affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(Type_Fields affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(Type_Field affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(TypeType affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(TypeRecord affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(TypeRecordVoid affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(TypeArray affect) {
-        return null;
-    }
-
-    @Override
-    public String visit(Field affect) {
-        return null;
-    }
-
-    @Override
-    public String visit(FieldList affect) {
-        return null;
+        return null; // rien à faire
     }
 
     @Override
     public String visit(VarDeclaration affect) {
         return null;
+    }
+
+    @Override
+    public String visit(VarDeclarationType affect) {
+        return null;
+    }
+
+    // Appel d'un record avec initialisation des fields pour declaration variable
+    @Override
+    public String visit(LvalueRecord lvalueRecord) {
+        asr.mov("R0", "R11");
+        lvalueRecord.fieldList.accept(this);
+        return null; // Création du record dans le tas
+    }
+
+    // Fields d'appel de record pour déclaration d'une variable
+    @Override
+    public String visit(FieldList fieldList) {
+        int recordSize = 0;
+        // Ajout dans le tas de chaque field (pointeur ou int)
+        for (Ast field : fieldList.listAst){
+            field.accept(this);
+            recordSize++;
+        }
+
+        asr.decrementerHP(recordSize);
+        return null; 
+    }
+
+    @Override
+    public String visit(Field field) {
+        // Ajouter le field dans le tas à l'endroit correspondant à son déplacement
+        field.expr.accept(this);
+        // get depl by record id and field id
+        asr.stockerRegistreHP("R0", depl);
+        return null; 
     }
 
     @Override
@@ -709,17 +747,7 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(LvalueRecord affect) {
-        return null;
-    }
-
-    @Override
     public String visit(Call affect) {
-        return null;
-    }
-
-    @Override
-    public String visit(VarDeclarationType affect) {
         return null;
     }
 }
