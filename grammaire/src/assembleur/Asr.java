@@ -90,16 +90,16 @@ public class Asr {
         this.asr.add("    STR "+registre+", [R12, #"+ordrePile*4+"]");
     }
     /**lireVarPile est destiné à lire un stack en référençant BP
-     * @param ordrePile :nombre de stack à incrémenter pour atteindre le stack objectif
+     * @param ordrePile : nombre de stack à incrémenter pour atteindre le stack objectif
      * */
     public void lireVarBP(String registre,int ordrePile){
         this.asr.add("    LDR "+registre+", [R12, #"+ordrePile*4+"]");
     }
 
 
-    public void empilerHP(String registre){
+    public void empilerHP(String registre, int deplacement){
         stockerRegistreHP(registre);
-        decrementerHP(1);
+        decrementerHP(deplacement);
     }
     /**
      * Cette fonction sert à dépiler la pile
@@ -111,7 +111,7 @@ public class Asr {
     public void stockerRegistreHP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR "+param+ ", [R11, #0]");
     }
-    public void stockerRegistreHP(String param, int depl){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
+    public void stockerRegistreHPDepl(String param, int depl){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR "+param+ ", [R11, #"+ depl +"]");
     }
     public void lireVarHP(String reg){ //nul, nan je rigole
@@ -122,8 +122,8 @@ public class Asr {
         this.asr.add("    ADD R11, R11, #"+nbr*4);
     }
     public void decrementerHP(int nbr) {
-        this.asr.add("    SUB R11, R11, #"+nbr*4);
-    }
+        this.asr.add("    SUB R11, R11, #"+nbr);
+    }//modifié, cf def de déplacement
 
 
 

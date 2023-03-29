@@ -49,7 +49,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Idf affect) {
-        return null;
+        return affect.name;
     }
 
     @Override
@@ -598,11 +598,11 @@ public class AsrCreator implements AstVisitor<String> {
         String str = strExpr.value;
         for (int i = 0; i < str.length(); i++){
             asr.mov("R1", "#"+(int)str.charAt(i));
-            asr.empilerHP("R1");
-        }
+            asr.empilerHP("R1",4);
+        }//problem ?! document p5 string "hello!" a besoin 2 octet
 
         asr.mov("R1", "#0");
-        asr.empilerHP("R1");
+        asr.empilerHP("R1",4);
         return "String";
     }
 
@@ -671,12 +671,17 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(VarDeclaration affect) {
+    public String visit(VarDeclaration varDeclaration) {//pk dans le tas?
+        String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
+        varDeclaration.expr.accept(this);
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
+        asr.empilerHP("R0", deplacement);// c'est pas deplacement à mettre, manque de taille d'une valeur.
+
         return null;
     }
 
     @Override
-    public String visit(VarDeclarationType affect) {
+    public String visit(VarDeclarationType affect) {//rien à faire
         return null;
     }
 
@@ -707,7 +712,7 @@ public class AsrCreator implements AstVisitor<String> {
         // Ajouter le field dans le tas à l'endroit correspondant à son déplacement
         field.expr.accept(this);
         // get depl by record id and field id
-        asr.stockerRegistreHP("R0", depl);
+        asr.stockerRegistreHPDepl("R0", depl);
         return null; 
     }
 
