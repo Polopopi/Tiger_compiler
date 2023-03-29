@@ -97,9 +97,9 @@ public class Asr {
     }
 
 
-    public void empilerHP(String registre, int deplacement){
+    public void empilerHP(String registre, int nbr){
         stockerRegistreHP(registre);
-        decrementerHP(deplacement);
+        decrementerHP(nbr);
     }
     /**
      * Cette fonction sert à dépiler la pile
@@ -122,7 +122,7 @@ public class Asr {
         this.asr.add("    ADD R11, R11, #"+nbr*4);
     }
     public void decrementerHP(int nbr) {
-        this.asr.add("    SUB R11, R11, #"+nbr);
+        this.asr.add("    SUB R11, R11, #"+nbr*4);
     }//modifié, cf def de déplacement
 
 

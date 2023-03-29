@@ -598,11 +598,11 @@ public class AsrCreator implements AstVisitor<String> {
         String str = strExpr.value;
         for (int i = 0; i < str.length(); i++){
             asr.mov("R1", "#"+(int)str.charAt(i));
-            asr.empilerHP("R1",4);
+            asr.empilerHP("R1",1);
         }//problem ?! document p5 string "hello!" a besoin 2 octet
 
         asr.mov("R1", "#0");
-        asr.empilerHP("R1",4);
+        asr.empilerHP("R1",1);
         return "String";
     }
 
@@ -672,10 +672,10 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(VarDeclaration varDeclaration) {//pk dans le tas?
-        String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
+        //String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
-        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
-        asr.empilerHP("R0", deplacement);// c'est pas deplacement à mettre, manque de taille d'une valeur.
+        //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
+        asr.empilerHP("R0", 1);// c'est pas deplacement à mettre, manque de taille d'une valeur.
 
         return null;
     }
