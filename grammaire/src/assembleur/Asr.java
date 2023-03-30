@@ -97,9 +97,9 @@ public class Asr {
     }
 
 
-    public void empilerHP(String registre, int nbr){
+    public void empilerHP(String registre){
         stockerRegistreHP(registre);
-        decrementerHP(nbr);
+        decrementerHP(1);
     }
     /**
      * Cette fonction sert à dépiler la pile
@@ -177,6 +177,13 @@ public class Asr {
 
     public void link(String label){
         this.asr.add("    BL " + label);
+    }
+
+    public void and(String regDest, String reg1, String reg2){
+        this.asr.add("    AND " + regDest + ", " + reg1 + ", " + reg2);
+    }
+    public void and(String cond, String regDest, String reg1, String reg2){
+        this.asr.add("    AND" + cond + " " + regDest + ", " + reg1 + ", " + reg2);
     }
     
 

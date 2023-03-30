@@ -1,7 +1,7 @@
 package assembleur;
 
 import ast.*;
-import tds.Tds;
+import tds.*;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -12,14 +12,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.antlr.v4.parse.ANTLRParser.modeSpec_return;
+
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
-    private int labelId;
     private ArrayList<Tds> listTds;
     private Tds currentTds;
-    private int oldTdsId;
+    private int oldTdsId; //???
     private int idGenerator;
     private ArrayList<String> loopLabel;
+    private TypeEntry currentTypeEntry;
+    private boolean nameIdf = false;
 
     private Tds getTds(){
         return(listTds.get(oldTdsId++));
@@ -49,11 +52,23 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Idf affect) {
+        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
+        // on doit retourner l'adresse de la var qui est dans la pile
+        // on pourrait faire comme pour la tds en mettant des booléens pour savoir 
+        // si on est dans un noeud affect ou pas
+        // si on est dans un noeud lvalueField ou pas
+
+        // Ajouter nameIdf comme pour la tds (besoin pour lvalueRecord)
         return affect.name;
     }
 
     @Override
     public String visit(Print affect) {
+        return null;
+    }
+
+    @Override
+    public String visit(Affect affect) {
         return null;
     }
 
@@ -79,11 +94,6 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.end();
 
-        return null;
-    }
-
-    @Override
-    public String visit(Affect affect) {
         return null;
     }
 
@@ -156,8 +166,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.cmp("R3", "#0");
-            asr.cmp("EQ", "R2", "#0");
+            asr.and("R5", "R3", "#0x00000003");
+            asr.cmp("R5", "#0");
+            asr.b("EQ", endLabel);
+            asr.and("R4", "R2", "#0x00000003");
+            asr.cmp("R4", "#0");
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
@@ -166,6 +179,9 @@ public class AsrCreator implements AstVisitor<String> {
             asr.b("EQ", loopLabel);
 
             asr.label(endLabel);
+            asr.cmp("R3", "R2");
+
+            // Pour passer à la case vide suivante (replacer le HP)
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
@@ -202,8 +218,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.cmp("R3", "#0");
-            asr.cmp("EQ", "R2", "#0");
+            asr.and("R5", "R3", "#0x00000003");
+            asr.cmp("R5", "#0");
+            asr.b("EQ", endLabel);
+            asr.and("R4", "R2", "#0x00000003");
+            asr.cmp("R4", "#0");
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
@@ -215,6 +234,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.b("EQ", loopLabel);
 
             asr.label(endLabel);
+            asr.cmp("R3", "R2");
             asr.charSuivant("R1");
             asr.charSuivant("R0");
 
@@ -250,9 +270,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.cmp("R3", "#0");
+            asr.and("R5", "R3", "#0x00000003");
+            asr.cmp("R5", "#0");
             asr.b("EQ", endLabel);
-            asr.cmp("R2", "#0");
+            asr.and("R4", "R2", "#0x00000003");
+            asr.cmp("R4", "#0");
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
@@ -300,9 +322,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.cmp("R3", "#0");
+            asr.and("R5", "R3", "#0x00000003");
+            asr.cmp("R5", "#0");
             asr.b("EQ", endLabel);
-            asr.cmp("R2", "#0");
+            asr.and("R4", "R2", "#0x00000003");
+            asr.cmp("R4", "#0");
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
@@ -350,9 +374,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.cmp("R3", "#0");
+            asr.and("R5", "R3", "#0x00000003");
+            asr.cmp("R5", "#0");
             asr.b("EQ", endLabel);
-            asr.cmp("R2", "#0");
+            asr.and("R4", "R2", "#0x00000003");
+            asr.cmp("R4", "#0");
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
@@ -400,9 +426,11 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.cmp("R3", "#0");
+            asr.and("R5", "R3", "#0x00000003");
+            asr.cmp("R5", "#0");
             asr.b("EQ", endLabel);
-            asr.cmp("R2", "#0");
+            asr.and("R4", "R2", "#0x00000003");
+            asr.cmp("R4", "#0");
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
@@ -596,13 +624,27 @@ public class AsrCreator implements AstVisitor<String> {
         asr.mov("R0", "R11"); //Adresse pour le pointeur de la string dans R0
 
         String str = strExpr.value;
-        for (int i = 0; i < str.length(); i++){
-            asr.mov("R1", "#"+(int)str.charAt(i));
-            asr.empilerHP("R1",1);
-        }//problem ?! document p5 string "hello!" a besoin 2 octet
+
+        int nbLoop = str.length()/4;
+
+        for (int i = 0; i < nbLoop / 4; i++){
+            asr.mov("R1", "#0");
+            asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,6));
+            asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,4));
+            asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,2));
+            asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,0));
+
+            asr.empilerHP("R1");
+        }
+
+        int remaining = str.length() % 4;
 
         asr.mov("R1", "#0");
-        asr.empilerHP("R1",1);
+        for (int i = 0; i < remaining; i++){
+            asr.mov("R1", "#"+(int)str.charAt(str.length() - remaining + i)*Math.pow(10,6-2*i));
+            asr.empilerHP("R1");
+        }
+
         return "String";
     }
 
@@ -675,7 +717,7 @@ public class AsrCreator implements AstVisitor<String> {
         //String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
         //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
-        asr.empilerHP("R0", 1);// c'est pas deplacement à mettre, manque de taille d'une valeur.
+        asr.empilerHP("R0");// c'est pas deplacement à mettre, manque de taille d'une valeur.
 
         return null;
     }
@@ -688,9 +730,17 @@ public class AsrCreator implements AstVisitor<String> {
     // Appel d'un record avec initialisation des fields pour declaration variable
     @Override
     public String visit(LvalueRecord lvalueRecord) {
-        asr.mov("R0", "R11");
+        asr.empiler("R11");
+
+        // On récupère le nom du record
+        nameIdf = true;
+        currentTypeEntry = this.currentTds.getTypeEntry(lvalueRecord.id.accept(this));
+        nameIdf = false;
+        
         lvalueRecord.fieldList.accept(this);
-        return null; // Création du record dans le tas
+
+        asr.depiler("R0");
+        return null;
     }
 
     // Fields d'appel de record pour déclaration d'une variable
@@ -711,9 +761,36 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Field field) {
         // Ajouter le field dans le tas à l'endroit correspondant à son déplacement
         field.expr.accept(this);
-        // get depl by record id and field id
-        asr.stockerRegistreHPDepl("R0", depl);
+        int depl = ((RecordEntry)currentTypeEntry).getField(field.id.accept(this)).getDeplacement();
+        asr.stockerRegistreHPDepl("R0", depl*4);
         return null; 
+    }
+
+    @Override
+    public String visit(Array array) {
+        asr.empiler("R11");
+
+        nameIdf = true;
+        currentTypeEntry = this.currentTds.getTypeEntry(array.id.accept(this));
+        nameIdf = false;
+
+        array.exprOr1.accept(this);
+        asr.mov("R1", "R0"); // R1 = taille du tableau
+
+        String loopLabel = generateLabel();
+        asr.label(loopLabel);
+
+        // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
+        // Et tout simplement renvoyer le pointeur dans R0
+        array.exprOr2.accept(this); 
+        asr.empilerHP("R0");
+
+        asr.moins("R1", "R1", "#1");
+        asr.cmp("R1", "#0");
+        asr.b("NE", loopLabel);
+
+        asr.depiler("R0");
+        return null;
     }
 
     @Override
@@ -738,16 +815,15 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(LvalueField affect) {
+        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
+        // on doit retourner l'adresse du field qui est dans le tas et non sa valeur pcq si c'est un int ça a pas de sens
         return null;
     }
 
     @Override
     public String visit(LvalueIndex affect) {
-        return null;
-    }
-
-    @Override
-    public String visit(Array affect) {
+        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
+        // on doit retourner l'adresse de l'index qui est dans le tas et non sa valeur pcq si c'est un int ça a pas de sens
         return null;
     }
 
