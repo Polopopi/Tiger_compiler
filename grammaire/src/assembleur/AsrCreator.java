@@ -4,15 +4,11 @@ import ast.*;
 import tds.*;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
-
-import org.antlr.v4.parse.ANTLRParser.modeSpec_return;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
@@ -23,6 +19,8 @@ public class AsrCreator implements AstVisitor<String> {
     private ArrayList<String> loopLabel;
     private TypeEntry currentTypeEntry;
     private boolean nameIdf = false;
+
+
 
     private Tds getTds(){
         return(listTds.get(oldTdsId++));
@@ -50,17 +48,6 @@ public class AsrCreator implements AstVisitor<String> {
         Files.write(fichier,data, StandardCharsets.UTF_8);
     }
 
-    @Override
-    public String visit(Idf affect) {
-        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
-        // on doit retourner l'adresse de la var qui est dans la pile
-        // on pourrait faire comme pour la tds en mettant des booléens pour savoir 
-        // si on est dans un noeud affect ou pas
-        // si on est dans un noeud lvalueField ou pas
-
-        // Ajouter nameIdf comme pour la tds (besoin pour lvalueRecord)
-        return affect.name;
-    }
 
     @Override
     public String visit(Print affect) {
@@ -632,7 +619,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,6));
             asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,4));
             asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,2));
-            asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,0));
+            asr.mov("R1", "#"+(int)str.charAt(i)*Math.pow(10,0)); //???
 
             asr.empilerHP("R1");
         }
@@ -713,11 +700,11 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(VarDeclaration varDeclaration) {//pk dans le tas?
+    public String visit(VarDeclaration varDeclaration) {
         //String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
         //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
-        asr.empilerHP("R0");// c'est pas deplacement à mettre, manque de taille d'une valeur.
+        asr.empilerHP("R0");
 
         return null;
     }
@@ -814,9 +801,53 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
+    public String visit(Idf affect) {
+        if (nameIdf == true){
+            return affect.name;
+        }
+
+        String id = affect.name;
+        Tds tdsCourant = currentTds;
+
+        asr.lireAdrBP("R1");// enregistrer l'adresse de BP dans R1
+
+        while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
+            // se déplacer dans la dernière imbrication
+            asr.lireValBP("R0",0);//lire le chaînage statique et l'enregistre dans R0
+            asr.positionnerBP("R0");//positionne BP vers l'adresse du chaînage statique
+
+            tdsCourant = tdsCourant.getParent();
+
+        }
+        // si var est locale
+        int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
+        asr.decrementerBP(deplacement);
+        asr.lireValBP("R0",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
+        asr.positionnerBP("R1");//remettre l'ancien adr
+        //imaginons que le pointeur est déjà bien pointé
+        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect),
+        // on doit retourner l'adresse de la var qui est dans la pile
+        // on pourrait faire comme pour la tds en mettant des booléens pour savoir
+        // si on est dans un noeud affect ou pas
+        // si on est dans un noeud lvalueField ou pas
+
+        // Ajouter nameIdf comme pour la tds (besoin pour lvalueRecord)
+        return null;
+    }
+    @Override
     public String visit(LvalueField affect) {
-        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
-        // on doit retourner l'adresse du field qui est dans le tas et non sa valeur pcq si c'est un int ça a pas de sens
+        affect.left.accept(this);// on cherche l'adresse lorsque on visite la partie left et on l'enregistre
+                                        //dans R0
+        asr.lireAdrHP("R1");
+        //on pointe R11 vers le lvalue
+        asr.positionneHP("R0");
+        this.nameIdf = true;
+        String idf = affect.id.accept(this);
+        this.nameIdf = false;
+        int deplacement = currentTds.getTypeEntry(idf).getDeplacement();
+        asr.incrementerHP(deplacement);
+        asr.lireVarHP("R0");//On enregistre l'adresse de cet élément dans R0
+        asr.positionneHP("R1");
         return null;
     }
 

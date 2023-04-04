@@ -1,6 +1,5 @@
 package assembleur;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 //Par default, R12 est BP
@@ -82,9 +81,14 @@ public class Asr {
     }
     */
 
-
-    public void positionnerBP(){
-        this.asr.add("    MOV R12,SP");
+    public void incrementerBP(int nbr){
+        this.asr.add("    ADD R12, R12, #"+nbr);
+    }
+    public void decrementerBP(int nbr) {
+        this.asr.add("    SUB R12, R12, #"+nbr);
+    }// nbr présente le déplacement ici
+    public void positionnerBP(String registre){
+        this.asr.add("    MOV R12,"+registre);
     }
     public void stockerValeurBP(String registre,int ordrePile){
         this.asr.add("    STR "+registre+", [R12, #"+ordrePile*4+"]");
@@ -92,8 +96,12 @@ public class Asr {
     /**lireVarPile est destiné à lire un stack en référençant BP
      * @param ordrePile : nombre de stack à incrémenter pour atteindre le stack objectif
      * */
-    public void lireVarBP(String registre,int ordrePile){
+    public void lireValBP(String registre, int ordrePile){
         this.asr.add("    LDR "+registre+", [R12, #"+ordrePile*4+"]");
+    }
+
+    public void lireAdrBP(String registre){
+        this.asr.add("    MOV "+registre+", R12");
     }
 
 
@@ -117,14 +125,20 @@ public class Asr {
     public void lireVarHP(String reg){ //nul, nan je rigole
         this.asr.add("    LDR "+reg+", [R11, #0]");
     }
+    public void lireAdrHP(String registre){ //nul, nan je rigole
+        this.asr.add("    MOV "+registre+", R11");
+    }
 
     public void incrementerHP(int nbr){
         this.asr.add("    ADD R11, R11, #"+nbr*4);
     }
     public void decrementerHP(int nbr) {
         this.asr.add("    SUB R11, R11, #"+nbr*4);
-    }//modifié, cf def de déplacement
+    }
 
+    public void positionneHP(String registreSrc){
+        this.asr.add("    MOV R11,"+registreSrc);
+    }
 
 
     public void  plus(String param1,String param2,String param3){

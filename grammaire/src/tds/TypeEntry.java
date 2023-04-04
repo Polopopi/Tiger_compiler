@@ -26,6 +26,9 @@ public class TypeEntry extends Entry{
     }
 
     public void print(){};
+    public int getDeplacement(){ //to complet
+        return 4;
+    }
 }
 
 
