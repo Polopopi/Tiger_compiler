@@ -863,7 +863,7 @@ public class AsrCreator implements AstVisitor<String> {
         String id = affect.name;
         Tds tdsCourant = currentTds;
 
-        asr.lireAdrBP("R1");// enregistrer l'adresse de BP dans R1
+        asr.lireAdrBP("R9");// enregistrer l'adresse de BP dans R9
 
         while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
             // se déplacer dans la dernière imbrication
@@ -877,7 +877,7 @@ public class AsrCreator implements AstVisitor<String> {
         int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
         asr.decrementerBP(deplacement);
         asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
-        asr.positionnerBP("R1");//remettre l'ancien adr
+        asr.positionnerBP("R9");//remettre l'ancien adr
         //imaginons que le pointeur est déjà bien pointé
         // Attention quand on est dans le membre gauche d'une affectation (noeud Affect),
         // on doit retourner l'adresse de la var qui est dans la pile
@@ -892,20 +892,20 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(LvalueField affect) {
         String type = affect.left.accept(this);// on cherche l'adresse lorsque on visite la partie left et on l'enregistre
                                         //dans R0
-        asr.lireAdrHP("R1");
+        asr.lireAdrHP("R9");
         //on pointe R11 vers le lvalue
         asr.positionneHP("R10");
         this.nameIdf = true;
         String idf = affect.id.accept(this);
         this.nameIdf = false;
         RecordEntry recordEntry = (RecordEntry) currentTds.getTypeEntry(type);
-        String typeRecord = recordEntry.getSymbol();
+        String fieldType = recordEntry.getFieldType(idf);
         int deplacement = recordEntry.getDeplacement();
         asr.incrementerHP(deplacement);
         asr.lireVarHP("R10");//On enregistre l'adresse de cet élément dans R10
         asr.lireVarReg("R0","R10");// enregistre la valeur dans R0
-        asr.positionneHP("R1");
-        return typeRecord;
+        asr.positionneHP("R9");
+        return fieldType;
     }
 
     @Override
