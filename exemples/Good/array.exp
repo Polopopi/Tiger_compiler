@@ -1,0 +1,20 @@
+let
+    var N := 2
+
+    type intArray = array of int
+    type intArrayArray = array of intArray
+
+    var row := intArray[N] of 0
+    var board := intArrayArray[N] of row
+in
+
+    for i := 0 to N-1 do
+    (
+        let
+            var row := intArray[N] of 0
+        in
+            board[i] := row
+        end
+    )
+    
+end

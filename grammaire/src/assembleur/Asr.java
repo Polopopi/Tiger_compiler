@@ -112,7 +112,7 @@ public class Asr {
         this.asr.add("    STR "+param+ ", [R11, #0]");
     }
     public void stockerRegistreHPDepl(String param, int depl){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
-        this.asr.add("    STR "+param+ ", [R11, #"+ depl +"]");
+        this.asr.add("    STR "+param+ ", [R11, #"+ depl*4 +"]");
     }
     public void lireVarHP(String reg){ //nul, nan je rigole
         this.asr.add("    LDR "+reg+", [R11, #0]");
@@ -184,6 +184,13 @@ public class Asr {
     }
     public void and(String cond, String regDest, String reg1, String reg2){
         this.asr.add("    AND" + cond + " " + regDest + ", " + reg1 + ", " + reg2);
+    }
+
+    public void str(String reg, String regDest){
+        this.asr.add("    STR " + reg + ", [" + regDest + ", #0]");
+    }
+    public void str(String reg, String regDest, int depl){
+        this.asr.add("    STR " + reg + ", [" + regDest + ", #" + depl*4 + "]");
     }
     
 
