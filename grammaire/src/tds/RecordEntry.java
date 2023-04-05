@@ -59,6 +59,17 @@ public class RecordEntry extends TypeEntry{
         return null;
     }
 
+    public int getFieldDeplacement(String fieldId){
+        int deplacement = 0;
+        for (FieldEntry field : fields){
+            if (field.getFieldName().equals(fieldId)){
+                return deplacement;
+            }
+            deplacement++;
+        }
+        return -1;
+    }
+
     @Override
     public boolean isRecord(){
         return true;

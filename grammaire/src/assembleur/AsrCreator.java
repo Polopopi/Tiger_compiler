@@ -59,11 +59,12 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Affect affect) {
         affect.idf.accept(this);
 
-        asr.mov("R1", "R0");
+        asr.mov("R1", "R10");
 
         affect.expr.accept(this);
 
         asr.str("R0", "R1");
+
         return null;
     }
 
@@ -782,14 +783,8 @@ public class AsrCreator implements AstVisitor<String> {
         // Ajouter le field dans le tas à l'endroit correspondant à son déplacement
         field.expr.accept(this); // R0 contient la valeur du field
 
-        int depl = 0;
-        for (int i = 0; i < ((RecordEntry)currentTypeEntry).getFields().size(); i++){
-            FieldEntry fieldEntry = ((RecordEntry)currentTypeEntry).getFields().get(i);
-            if (fieldEntry.getFieldName().equals(((Idf)field.id).name)){
-                depl = i;
-                break;
-            }
-        }
+        int depl = ((RecordEntry)currentTypeEntry).getFieldDeplacement(((Idf)field.id).name);
+        
         asr.lireVarReg("R1", "SP"); // R1 contient l'adresse de la 1ère case du record
         asr.str("R0", "R1",  -depl);
         return null; 
@@ -898,7 +893,10 @@ public class AsrCreator implements AstVisitor<String> {
         }
         // si var est locale
         int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
+        // STEVEN Pk décrémenter avant ? Jcrois y a pas besoin avec lireValBP
         asr.decrementerBP(deplacement);
+        // STEVEN Jcrois ici faudrait plutot faire un MOV R10, BP pour avoir l'adresse de la var
+        // Puis faire un lireVarReg de R10 pour avoir la valeur de la var dans R0
         asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
         asr.positionnerBP("R9");//remettre l'ancien adr
         //imaginons que le pointeur est déjà bien pointé
@@ -909,6 +907,8 @@ public class AsrCreator implements AstVisitor<String> {
         // si on est dans un noeud lvalueField ou pas
 
         // Ajouter nameIdf comme pour la tds (besoin pour lvalueRecord)
+
+        //STEVEN Jcrois ici on devrait retourner le type de la var pour pouvoir l'utiliser dans lvalueField
         return null;
     }
     @Override
@@ -923,9 +923,13 @@ public class AsrCreator implements AstVisitor<String> {
         this.nameIdf = false;
         RecordEntry recordEntry = (RecordEntry) currentTds.getTypeEntry(type);
         String fieldType = recordEntry.getFieldType(idf);
-        int deplacement = recordEntry.getDeplacement();
-        asr.incrementerHP(deplacement);
-        asr.lireVarHP("R10");//On enregistre l'adresse de cet élément dans R10
+        int deplacement = recordEntry.getFieldDeplacement(idf);
+
+        asr.incrementerHP(deplacement); // STEVEN Jpense c'est plutôt décrémenter ici nan ?
+
+        // STEVEN Enfaite pour R10 jpense faut plutôt faire un mov R10, R11 pour pouvoir mettre l'adresse du field dans R10
+        asr.lireVarHP("R10");//On enregistre l'adresse de cet élément dans R10 (LDR)
+
         asr.lireVarReg("R0","R10");// enregistre la valeur dans R0
         asr.positionneHP("R9");
         return fieldType;
