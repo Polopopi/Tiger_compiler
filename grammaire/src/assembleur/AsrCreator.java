@@ -538,17 +538,38 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(For affect) {
+    public String visit(For forNode) {
         String forLabel = generateLabel();
         String forEndLabel = generateLabel();
+        Tds oldTds = currentTds;
 
+        currentTds=getTds();
+        forNode.debut.accept(this); 
+        asr.empiler("r0"); //on empile la variable i
+        asr.newBlock(); //on entre dans le bloc (on met le chainage en place)
+        forNode.fin.accept(this); 
+        asr.empiler("rO"); //on stock dans la pile la valeur limite
         asr.label(forLabel);
+        asr.lireVarBP("r1", 1);         // récupère i
+        asr.lireVarBP("r2", -1);                  // récupère valeur limite
+        asr.cmp( "r2","r1");     //compare i et valeur limite
+        asr.b("N",forEndLabel);
 
         loopLabel.add(forEndLabel);
-        //accept
+        forNode.bloc.accept(this);
         loopLabel.remove(loopLabel.size()-1);
 
-        asr.empiler("R0"); // PK ? Faudrait faire setVar nan ?
+        asr.lireVarBP("r1", -1); //on récupère i dans r1
+        asr.plus("r1","r1","#1");  //On ajoute 1 dans i
+        asr.ecrireVarReg("r1", "r11,#4*-1"); // on remet i a jour dans la pile
+        asr.b(forLabel);
+        asr.label(forEndLabel);
+        asr.moins("r13","r13", "#4"); //depile la valeur limite
+        asr.quitBlock();
+        asr.moins("r13","r13", "#4"); // depile la variable i
+        currentTds=oldTds;
+
+        
 
         return null;
     }
@@ -677,6 +698,7 @@ public class AsrCreator implements AstVisitor<String> {
         //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
         asr.empilerHP("R0", 1);// c'est pas deplacement à mettre, manque de taille d'une valeur.
 
+        //La variable il faut juste l'empiler dans la pile
         return null;
     }
 
