@@ -4,15 +4,11 @@ import ast.*;
 import tds.*;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
-
-import org.antlr.v4.parse.ANTLRParser.modeSpec_return;
 
 public class AsrCreator implements AstVisitor<String> {
     private Asr asr;
@@ -23,6 +19,8 @@ public class AsrCreator implements AstVisitor<String> {
     private ArrayList<String> loopLabel;
     private TypeEntry currentTypeEntry;
     private boolean nameIdf = false;
+
+
 
     private Tds getTds(){
         return(listTds.get(oldTdsId++));
@@ -51,17 +49,6 @@ public class AsrCreator implements AstVisitor<String> {
         Files.write(fichier,data, StandardCharsets.UTF_8);
     }
 
-    @Override
-    public String visit(Idf affect) {
-        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
-        // on doit retourner l'adresse de la var qui est dans la pile dans R0
-        // on pourrait faire comme pour la tds en mettant des booléens pour savoir 
-        // si on est dans un noeud affect ou pas
-        // si on est dans un noeud lvalueField ou pas
-
-
-        return affect.name;
-    }
 
     @Override
     public String visit(Print affect) {
@@ -578,19 +565,38 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(For affect) {
-        currentTds = getTds();
-
+    public String visit(For forNode) {
         String forLabel = generateLabel();
         String forEndLabel = generateLabel();
+        Tds oldTds = currentTds;
 
+        currentTds=getTds();
+        forNode.debut.accept(this); 
+        asr.empiler("r0"); //on empile la variable i
+        asr.newBlock(); //on entre dans le bloc (on met le chainage en place)
+        forNode.fin.accept(this); 
+        asr.empiler("rO"); //on stock dans la pile la valeur limite
         asr.label(forLabel);
+        asr.lireValBP("r1", 1);         // récupère i
+        asr.lireValBP("r2", -1);                  // récupère valeur limite
+        asr.cmp( "r2","r1");     //compare i et valeur limite
+        asr.b("N",forEndLabel);
 
         loopLabel.add(forEndLabel);
-        //accept
+        forNode.bloc.accept(this);
         loopLabel.remove(loopLabel.size()-1);
 
-        asr.empiler("R0"); // PK ? Faudrait faire setVar nan ?
+        asr.lireValBP("r1", -1); //on récupère i dans r1
+        asr.plus("r1","r1","#1");  //On ajoute 1 dans i
+        asr.ecrireVarReg("r1", "r11,#4*-1"); // on remet i a jour dans la pile
+        asr.b(forLabel);
+        asr.label(forEndLabel);
+        asr.moins("r13","r13", "#4"); //depile la valeur limite
+        asr.quitBlock();
+        asr.moins("r13","r13", "#4"); // depile la variable i
+        currentTds=oldTds;
+
+        
 
         return null;
     }
@@ -727,12 +733,13 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(VarDeclaration varDeclaration) {//pk dans le tas?
+    public String visit(VarDeclaration varDeclaration) {
         //String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
         //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
-        asr.empilerHP("R0");// c'est pas deplacement à mettre, manque de taille d'une valeur.
+        asr.empilerHP("R0");
 
+        //La variable il faut juste l'empiler dans la pile
         return null;
     }
 
@@ -815,17 +822,49 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(FctDeclaration affect) {
+    public String visit(FctDeclaration fctDeclaration) {
         currentTds = getTds();
 
-        return null;
+        String beginLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.mov("r1","PC");
+        asr.plus("r1", "r1", "#8");
+        asr.empiler("r1");
+        asr.b(endLabel);
+
+        asr.label(beginLabel);
+        asr.empiler("CS,r12,LR");
+        
+        fctDeclaration.exprAffect.accept(this);
+
+        asr.depiler("r12,PC");
+        asr.label(endLabel);
+
+        return(null);
     }
 
     @Override
-    public String visit(ProcDeclaration affect) {
+    public String visit(ProcDeclaration procDeclaration) {
         currentTds = getTds();
 
-        return null;
+        String beginLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.mov("r1","PC");
+        asr.plus("r1", "r1", "#8");
+        asr.empiler("r1");
+        asr.b(endLabel);
+
+        asr.label(beginLabel);
+        asr.empiler("CS,r12,LR");
+        
+        procDeclaration.exprAffect.accept(this);
+
+        asr.depiler("r12,PC");
+        asr.label(endLabel);
+
+        return(null);
     }
 
     @Override
@@ -839,13 +878,57 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(LvalueField affect) {
-        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
-        // on doit retourner l'adresse du field qui est dans le tas et non sa valeur pcq si c'est un int ça a pas de sens
+    public String visit(Idf affect) {
+        if (nameIdf == true){
+            return affect.name;
+        }
 
-        // Si membre gauche d'une affectation (affected), on doit retourner l'adresse du field 
-        // Donc nameIdf = true pour récupérer le nom du field et son déplacement
+        String id = affect.name;
+        Tds tdsCourant = currentTds;
+
+        asr.lireAdrBP("R9");// enregistrer l'adresse de BP dans R9
+
+        while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
+            // se déplacer dans la dernière imbrication
+            asr.lireValBP("R10",0);//lire le chaînage statique et l'enregistre dans R0
+            asr.positionnerBP("R10");//positionne BP vers l'adresse du chaînage statique
+
+            tdsCourant = tdsCourant.getParent();
+
+        }
+        // si var est locale
+        int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
+        asr.decrementerBP(deplacement);
+        asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
+        asr.positionnerBP("R9");//remettre l'ancien adr
+        //imaginons que le pointeur est déjà bien pointé
+        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect),
+        // on doit retourner l'adresse de la var qui est dans la pile
+        // on pourrait faire comme pour la tds en mettant des booléens pour savoir
+        // si on est dans un noeud affect ou pas
+        // si on est dans un noeud lvalueField ou pas
+
+        // Ajouter nameIdf comme pour la tds (besoin pour lvalueRecord)
         return null;
+    }
+    @Override
+    public String visit(LvalueField affect) {
+        String type = affect.left.accept(this);// on cherche l'adresse lorsque on visite la partie left et on l'enregistre
+                                        //dans R0
+        asr.lireAdrHP("R9");
+        //on pointe R11 vers le lvalue
+        asr.positionneHP("R10");
+        this.nameIdf = true;
+        String idf = affect.id.accept(this);
+        this.nameIdf = false;
+        RecordEntry recordEntry = (RecordEntry) currentTds.getTypeEntry(type);
+        String fieldType = recordEntry.getFieldType(idf);
+        int deplacement = recordEntry.getDeplacement();
+        asr.incrementerHP(deplacement);
+        asr.lireVarHP("R10");//On enregistre l'adresse de cet élément dans R10
+        asr.lireVarReg("R0","R10");// enregistre la valeur dans R0
+        asr.positionneHP("R9");
+        return fieldType;
     }
 
     @Override

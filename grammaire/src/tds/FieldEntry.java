@@ -21,5 +21,8 @@ public class FieldEntry {
     public String getFieldName(){
         return fieldName;
     }
+    public int getDeplacement(){//to do
+        return 4;
+    }
 
 }

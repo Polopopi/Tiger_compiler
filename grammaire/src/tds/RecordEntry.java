@@ -71,4 +71,5 @@ public class RecordEntry extends TypeEntry{
         }
         System.out.printf(" |\n");
     }
+
 }
