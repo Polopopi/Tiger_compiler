@@ -43,6 +43,15 @@ public class Asr {
         decrementerSp(1);
     }
 
+    public void newBlock(){
+        empiler("r12");
+        mov("r12","sp");
+    }
+
+    public void quitBlock(){
+        depiler("r12");
+    }
+
     public void stockerRegistreSP(String param){ // C'est un peu restrictif d'utiliser que R1 pour ça nan ?
         this.asr.add("    STR "+param+ ", [SP, #0]");
     }
@@ -180,6 +189,9 @@ public class Asr {
     }
     public void lireVarReg(String registreRecepteur, String registrePointeur){
         this.asr.add("    LDR " + registreRecepteur + " , [" + registrePointeur + "]");
+    }
+    public void ecrireVarReg(String registreSource, String registreReceveur){
+        this.asr.add("    STR " + registreSource + " , [" + registreReceveur+ "]");
     }
 
     public void b(String flag){

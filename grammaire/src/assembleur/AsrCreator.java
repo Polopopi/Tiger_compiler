@@ -553,17 +553,38 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(For affect) {
+    public String visit(For forNode) {
         String forLabel = generateLabel();
         String forEndLabel = generateLabel();
+        Tds oldTds = currentTds;
 
+        currentTds=getTds();
+        forNode.debut.accept(this); 
+        asr.empiler("r0"); //on empile la variable i
+        asr.newBlock(); //on entre dans le bloc (on met le chainage en place)
+        forNode.fin.accept(this); 
+        asr.empiler("rO"); //on stock dans la pile la valeur limite
         asr.label(forLabel);
+        asr.lireValBP("r1", 1);         // récupère i
+        asr.lireValBP("r2", -1);                  // récupère valeur limite
+        asr.cmp( "r2","r1");     //compare i et valeur limite
+        asr.b("N",forEndLabel);
 
         loopLabel.add(forEndLabel);
-        //accept
+        forNode.bloc.accept(this);
         loopLabel.remove(loopLabel.size()-1);
 
-        asr.empiler("R0"); // PK ? Faudrait faire setVar nan ?
+        asr.lireValBP("r1", -1); //on récupère i dans r1
+        asr.plus("r1","r1","#1");  //On ajoute 1 dans i
+        asr.ecrireVarReg("r1", "r11,#4*-1"); // on remet i a jour dans la pile
+        asr.b(forLabel);
+        asr.label(forEndLabel);
+        asr.moins("r13","r13", "#4"); //depile la valeur limite
+        asr.quitBlock();
+        asr.moins("r13","r13", "#4"); // depile la variable i
+        currentTds=oldTds;
+
+        
 
         return null;
     }
@@ -706,6 +727,7 @@ public class AsrCreator implements AstVisitor<String> {
         //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
         asr.empilerHP("R0");
 
+        //La variable il faut juste l'empiler dans la pile
         return null;
     }
 
@@ -781,13 +803,45 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(FctDeclaration affect) {
-        return null;
+    public String visit(FctDeclaration fctDeclaration) {
+        String beginLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.mov("r1","PC");
+        asr.plus("r1", "r1", "#8");
+        asr.empiler("r1");
+        asr.b(endLabel);
+
+        asr.label(beginLabel);
+        asr.empiler("CS,r12,LR");
+        
+        fctDeclaration.exprAffect.accept(this);
+
+        asr.depiler("r12,PC");
+        asr.label(endLabel);
+
+        return(null);
     }
 
     @Override
-    public String visit(ProcDeclaration affect) {
-        return null;
+    public String visit(ProcDeclaration procDeclaration) {
+        String beginLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.mov("r1","PC");
+        asr.plus("r1", "r1", "#8");
+        asr.empiler("r1");
+        asr.b(endLabel);
+
+        asr.label(beginLabel);
+        asr.empiler("CS,r12,LR");
+        
+        procDeclaration.exprAffect.accept(this);
+
+        asr.depiler("r12,PC");
+        asr.label(endLabel);
+
+        return(null);
     }
 
     @Override
