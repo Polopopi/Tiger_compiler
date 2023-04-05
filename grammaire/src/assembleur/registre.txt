@@ -1,6 +1,6 @@
 R0  : Retour Tiger
 R1  : Travail
-R2  : Travail 
+R2  : Travail
 R3  : Travail
 R4  : Travail
 R5  : Travail
