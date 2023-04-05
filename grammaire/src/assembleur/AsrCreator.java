@@ -565,8 +565,8 @@ public class AsrCreator implements AstVisitor<String> {
         forNode.fin.accept(this); 
         asr.empiler("rO"); //on stock dans la pile la valeur limite
         asr.label(forLabel);
-        asr.lireVarBP("r1", 1);         // récupère i
-        asr.lireVarBP("r2", -1);                  // récupère valeur limite
+        asr.lireValBP("r1", 1);         // récupère i
+        asr.lireValBP("r2", -1);                  // récupère valeur limite
         asr.cmp( "r2","r1");     //compare i et valeur limite
         asr.b("N",forEndLabel);
 
@@ -574,7 +574,7 @@ public class AsrCreator implements AstVisitor<String> {
         forNode.bloc.accept(this);
         loopLabel.remove(loopLabel.size()-1);
 
-        asr.lireVarBP("r1", -1); //on récupère i dans r1
+        asr.lireValBP("r1", -1); //on récupère i dans r1
         asr.plus("r1","r1","#1");  //On ajoute 1 dans i
         asr.ecrireVarReg("r1", "r11,#4*-1"); // on remet i a jour dans la pile
         asr.b(forLabel);
@@ -803,13 +803,45 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(FctDeclaration affect) {
-        return null;
+    public String visit(FctDeclaration fctDeclaration) {
+        String beginLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.mov("r1","PC");
+        asr.plus("r1", "r1", "#8");
+        asr.empiler("r1");
+        asr.b(endLabel);
+
+        asr.label(beginLabel);
+        asr.empiler("CS,r12,LR");
+        
+        fctDeclaration.exprAffect.accept(this);
+
+        asr.depiler("r12,PC");
+        asr.label(endLabel);
+
+        return(null);
     }
 
     @Override
-    public String visit(ProcDeclaration affect) {
-        return null;
+    public String visit(ProcDeclaration procDeclaration) {
+        String beginLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.mov("r1","PC");
+        asr.plus("r1", "r1", "#8");
+        asr.empiler("r1");
+        asr.b(endLabel);
+
+        asr.label(beginLabel);
+        asr.empiler("CS,r12,LR");
+        
+        procDeclaration.exprAffect.accept(this);
+
+        asr.depiler("r12,PC");
+        asr.label(endLabel);
+
+        return(null);
     }
 
     @Override
