@@ -874,9 +874,6 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Idf affect) {
-        if (nameIdf == true){
-            return affect.name;
-        }
 
         String id = affect.name;
         Tds tdsCourant = currentTds;
@@ -893,23 +890,12 @@ public class AsrCreator implements AstVisitor<String> {
         }
         // si var est locale
         int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
-        // STEVEN Pk décrémenter avant ? Jcrois y a pas besoin avec lireValBP
-        asr.decrementerBP(deplacement);
-        // STEVEN Jcrois ici faudrait plutot faire un MOV R10, BP pour avoir l'adresse de la var
+       
         // Puis faire un lireVarReg de R10 pour avoir la valeur de la var dans R0
         asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
         asr.positionnerBP("R9");//remettre l'ancien adr
-        //imaginons que le pointeur est déjà bien pointé
-        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect),
-        // on doit retourner l'adresse de la var qui est dans la pile
-        // on pourrait faire comme pour la tds en mettant des booléens pour savoir
-        // si on est dans un noeud affect ou pas
-        // si on est dans un noeud lvalueField ou pas
 
-        // Ajouter nameIdf comme pour la tds (besoin pour lvalueRecord)
-
-        //STEVEN Jcrois ici on devrait retourner le type de la var pour pouvoir l'utiliser dans lvalueField
-        return null;
+        return affect.name;
     }
     @Override
     public String visit(LvalueField affect) {
@@ -925,10 +911,9 @@ public class AsrCreator implements AstVisitor<String> {
         String fieldType = recordEntry.getFieldType(idf);
         int deplacement = recordEntry.getFieldDeplacement(idf);
 
-        asr.incrementerHP(deplacement); // STEVEN Jpense c'est plutôt décrémenter ici nan ?
+        asr.decrementerHP(deplacement);
 
-        // STEVEN Enfaite pour R10 jpense faut plutôt faire un mov R10, R11 pour pouvoir mettre l'adresse du field dans R10
-        asr.lireVarHP("R10");//On enregistre l'adresse de cet élément dans R10 (LDR)
+        asr.lireVarHP("R10");
 
         asr.lireVarReg("R0","R10");// enregistre la valeur dans R0
         asr.positionneHP("R9");
