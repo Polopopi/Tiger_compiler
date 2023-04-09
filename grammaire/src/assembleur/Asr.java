@@ -96,13 +96,12 @@ public class Asr {
     */
 
     public void incrementerBP(int nbr){
-        this.asr.add("    ADD R12, R12, #"+nbr);
+        this.asr.add("    ADD R12, R12, #"+nbr*4);
     }
     public void decrementerBP(int nbr) {
-        this.asr.add("    SUB R12, R12, #"+nbr);
+        this.asr.add("    SUB R12, R12, #"+nbr*4);
     }// nbr présente le déplacement ici
     public void positionnerBP(String registre){
-        comment("POSITIONNEMENT BP");
         this.asr.add("    MOV R12,"+registre);
     }
     public void stockerValeurBP(String registre,int ordrePile){

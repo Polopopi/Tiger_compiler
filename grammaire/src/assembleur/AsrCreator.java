@@ -562,9 +562,12 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(Let let) {
         currentTds = getTds();
 
-        let.declarationList.accept(this);
+        int nbVar = currentTds.getVarFuncEntries().size();
+        asr.incrementerSp(nbVar);
 
         asr.newBlock();
+        let.declarationList.accept(this);
+
         let.seqExpr.accept(this);
         asr.quitBlock();
 
@@ -741,10 +744,10 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(VarDeclaration varDeclaration) {
-        //String id = varDeclaration.idf.accept(this); //c'est pour trouver la valeur de déplacement.
+        String id = ((Idf)varDeclaration.idf).name; //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
-        //int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
-        asr.empilerHP("R0");
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
+        asr.stockerValeurBP("R0", deplacement);
 
         //La variable il faut juste l'empiler dans la pile
         return null;
@@ -898,14 +901,17 @@ public class AsrCreator implements AstVisitor<String> {
         // si var est locale
         int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
        
+        asr.incrementerBP(deplacement); //pcq depl est négatif
         // Puis faire un lireVarReg de R10 pour avoir la valeur de la var dans R0
-        asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
+        asr.mov("R10","R12");// lire l'adresse de var cherché et l'enregistrer dans R0
+        asr.lireVarReg("R0","R10");
         asr.positionnerBP("R9");//remettre l'ancien adr
 
         asr.comment("FIN IDF " + affect.name);
 
         return currentTds.getVarFuncEntry(id).getType();
     }
+
     @Override
     public String visit(LvalueField affect) {
         String type = affect.left.accept(this);// on cherche l'adresse lorsque on visite la partie left et on l'enregistre
