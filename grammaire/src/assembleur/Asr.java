@@ -27,6 +27,11 @@ public class Asr {
     }
 
 
+    public void comment(String commentaire){
+        this.asr.add("    ;"+commentaire);
+    }
+
+
 
     /**
      * Cette fonction sert à empiler la valeur enregistrée dans le registre.
@@ -45,7 +50,7 @@ public class Asr {
 
     public void newBlock(){
         empiler("r12");
-        mov("r12","sp");
+        positionnerBP("SP");
     }
 
     public void quitBlock(){
@@ -97,6 +102,7 @@ public class Asr {
         this.asr.add("    SUB R12, R12, #"+nbr);
     }// nbr présente le déplacement ici
     public void positionnerBP(String registre){
+        comment("POSITIONNEMENT BP");
         this.asr.add("    MOV R12,"+registre);
     }
     public void stockerValeurBP(String registre,int ordrePile){

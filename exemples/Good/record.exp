@@ -2,4 +2,6 @@ let
     type person = {name : string, age : int}
     var steven := person{age = 21, name = "Steven"}
 in
+    steven.age := 22;
+    steven.age
 end

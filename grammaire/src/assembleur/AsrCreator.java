@@ -57,6 +57,8 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Affect affect) {
+        asr.comment("AFFECTATION");
+
         affect.idf.accept(this);
 
         asr.mov("R1", "R10");
@@ -561,7 +563,19 @@ public class AsrCreator implements AstVisitor<String> {
         currentTds = getTds();
 
         let.declarationList.accept(this);
+
+        asr.newBlock();
         let.seqExpr.accept(this);
+        asr.quitBlock();
+
+        return null;
+    }
+
+    @Override
+    public String visit(DeclarationList declarationList) {
+        for (Ast expr:declarationList.listAst){
+            expr.accept(this);
+        }
         return null;
     }
 
@@ -675,14 +689,6 @@ public class AsrCreator implements AstVisitor<String> {
             expr.accept(this);
         }
 
-        return null;
-    }
-
-    @Override
-    public String visit(DeclarationList declarationList) {
-        for (Ast expr:declarationList.listAst){
-            expr.accept(this);
-        }
         return null;
     }
 
@@ -875,6 +881,8 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Idf affect) {
 
+        asr.comment("IDF " + affect.name);
+
         String id = affect.name;
         Tds tdsCourant = currentTds;
 
@@ -886,7 +894,6 @@ public class AsrCreator implements AstVisitor<String> {
             asr.positionnerBP("R10");//positionne BP vers l'adresse du chaînage statique
 
             tdsCourant = tdsCourant.getParent();
-
         }
         // si var est locale
         int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
@@ -895,7 +902,9 @@ public class AsrCreator implements AstVisitor<String> {
         asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
         asr.positionnerBP("R9");//remettre l'ancien adr
 
-        return affect.name;
+        asr.comment("FIN IDF " + affect.name);
+
+        return currentTds.getVarFuncEntry(id).getType();
     }
     @Override
     public String visit(LvalueField affect) {
@@ -904,9 +913,9 @@ public class AsrCreator implements AstVisitor<String> {
         asr.lireAdrHP("R9");
         //on pointe R11 vers le lvalue
         asr.positionneHP("R10");
-        this.nameIdf = true;
-        String idf = affect.id.accept(this);
-        this.nameIdf = false;
+        
+        String idf = ((Idf)affect.id).name;
+
         RecordEntry recordEntry = (RecordEntry) currentTds.getTypeEntry(type);
         String fieldType = recordEntry.getFieldType(idf);
         int deplacement = recordEntry.getFieldDeplacement(idf);
