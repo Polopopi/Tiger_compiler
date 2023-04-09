@@ -153,7 +153,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
 
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
@@ -205,7 +205,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
 
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
@@ -258,7 +258,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -310,7 +310,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -362,7 +362,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -414,7 +414,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -666,7 +666,7 @@ public class AsrCreator implements AstVisitor<String> {
         }
         asr.empilerHP("R1");
 
-        return "String";
+        return "string";
     }
 
     @Override
@@ -790,28 +790,121 @@ public class AsrCreator implements AstVisitor<String> {
         return null; 
     }
 
-    @Override
-    public String visit(Array array) {
+    public void copyType(String typeComposite){
+        if (typeComposite.equals("string")){
+            copyString();
+        }
+        else if (!typeComposite.equals("int")){
+            TypeEntry typeCompositeEntry = this.currentTds.getTypeEntry(typeComposite);
+
+            if (typeCompositeEntry.isArray()){ //ARRAY
+                //ArrayEntry arrayCompositeEntry = (ArrayEntry)typeCompositeEntry;
+                //String typeCompositeComposite = arrayCompositeEntry.getTypeComposite();
+                copyArray(typeComposite);
+            }
+            else{ //RECORD
+               
+            }   
+        }
+    }
+
+    public void copyArray(String type){
+        asr.depiler("R3"); // On dépile le pointeur (R0) vers l'array à copier 
+        CONTINUER ICI
+
         asr.empiler("R11");
+        asr.mov("R2", "R11"); // R2 va pointer sur chaque élément de l'array
 
-        currentTypeEntry = this.currentTds.getTypeEntry(((Idf)array.id).name);
+        currentTypeEntry = this.currentTds.getTypeEntry(type);
 
-        array.exprOr1.accept(this);
+        //TAILLE
+        //asr.lireVarSP("R3");//Contient l'adresse dans le tas où est stocké l'élément de l'array parent
+        //asr.lireVarReg("R3", "R3"); // Contient 
+        // Conecter un registre à l'array à copier
         asr.mov("R1", "R0"); // R1 = taille du tableau
         asr.empilerHP("R1");
+        // On décrémente le HP pour pouvoir faire les copies
+        // C'est temporaire mdr
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
 
+
+        //INIT en mode int de base
         String loopLabel = generateLabel();
         asr.label(loopLabel);
 
         // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
         // Et tout simplement renvoyer le pointeur dans R0
         array.exprOr2.accept(this);
-        asr.empilerHP("R0");
+
+        asr.empiler("R2");
+        copyType(((ArrayEntry)currentTypeEntry).getTypeComposite());
+        asr.depiler("R2");
+
+        //asr.empilerHP("R0");
+        asr.str("R0", "R2");
+        asr.moins("R2", "R2", "#4");
 
         asr.moins("R1", "R1", "#1");
         asr.cmp("R1", "#0");
         asr.b("NE", loopLabel);
 
+
+        //RETOUR
+        asr.depiler("R0");
+    }
+
+    public void copyInt(){
+
+    }
+
+    public void copyString(){
+
+    }
+
+    @Override
+    public String visit(Array array) {
+        asr.empiler("R11");
+        asr.mov("R2", "R11"); // R2 va pointer sur chaque élément de l'array
+
+        currentTypeEntry = this.currentTds.getTypeEntry(((Idf)array.id).name);
+
+        //TAILLE
+        array.exprOr1.accept(this);
+        asr.mov("R1", "R0"); // R1 = taille du tableau
+        asr.empilerHP("R1");
+        // On décrémente le HP pour pouvoir faire les copies
+        // C'est temporaire mdr
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+
+
+        //INIT en mode int de base
+        String loopLabel = generateLabel();
+        asr.label(loopLabel);
+
+        // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
+        // Et tout simplement renvoyer le pointeur dans R0
+        array.exprOr2.accept(this);
+        asr.empiler("R2");
+        asr.empiler("R0"); // On empile le pointeur vers l'élément de l'array à copier
+        copyType(((ArrayEntry)currentTypeEntry).getTypeComposite());
+        asr.depiler("R2");
+
+        //asr.empilerHP("R0");
+        asr.str("R0", "R2");
+        asr.moins("R2", "R2", "#4");
+
+        asr.moins("R1", "R1", "#1");
+        asr.cmp("R1", "#0");
+        asr.b("NE", loopLabel);
+
+
+        //RETOUR
         asr.depiler("R0");
         return null;
     }
