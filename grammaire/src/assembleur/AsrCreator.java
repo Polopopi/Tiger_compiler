@@ -1011,7 +1011,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         int depl = this.currentTds.getVarFuncEntry(id).getDeplacement();
 
-        asr.lireVarBP("r1", depl);
+        asr.lireValBP("r1", depl);
         asr.mov("R2", "R0");
         asr.lireVarReg("R3", "R1");
         asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3

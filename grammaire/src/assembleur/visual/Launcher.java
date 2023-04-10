@@ -2,12 +2,9 @@ package assembleur.visual;
 
 import java.util.List;
 import java.util.stream.Stream;
-import BloodCompiler.assembly.InstructionWriter;
-import BloodCompiler.assembly.visual.security.ExitTrappedException;
-import BloodCompiler.assembly.visual.security.ExitTrapper;
-import assembleur.visual.ExitTrappedException;
-import assembleur.visual.ExitTrapper;
-import assembleur.visual.OutputParser;
+
+
+import assembleur.Asr;
 import visual.EmulatorLogFile;
 import visual.HeadlessController;
 public class Launcher {
@@ -20,7 +17,7 @@ public class Launcher {
     /* array of all word addresses in the output buffer */
     private static String[] getOutputRange() {
         return Stream.iterate(outputBufferAddress, n -> n + 4)
-                .limit(InstructionWriter.outputBufferLength / 4)
+                .limit(Asr.outputBufferLength / 4)
                 .map(n -> String.format("0x%X", n))
                 .toArray(String[]::new);
     }

@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import java.io.IOException;
 
 import assembleur.AsrCreator;
+import assembleur.visual.Launcher;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -83,10 +84,11 @@ public class Main {
             // Visiteur de création de la TDS + création de la TDS
             TdsCreator tdsCreator = new TdsCreator();
             ast.accept(tdsCreator);
-            String asrFileName = "./out/asr.txt";
+            String asrFileName = "./out/asr.S";
             AsrCreator asrCreator=new AsrCreator(tdsCreator.getTds());
             ast.accept(asrCreator);
             asrCreator.asrFichier(asrFileName);
+            Launcher.run("./out/asr.S");
 
 
         } 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 //valeur à donner à une variable est par convention enregistrée dans R1
 //pour lire une variable dans la pile, sa valeur est lue et enregistrée dans R2
 public class Asr {
+    public static final int outputBufferLength = 0x1000;
 
     private ArrayList<String> asr;
 
