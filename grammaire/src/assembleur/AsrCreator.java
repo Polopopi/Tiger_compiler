@@ -608,6 +608,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
+
         asr.comment("END LET");
         return null;
     }
@@ -979,7 +980,7 @@ public class AsrCreator implements AstVisitor<String> {
                                         //dans R0
         asr.lireAdrHP("R9");
         //on pointe R11 vers le lvalue
-        asr.positionneHP("R10");
+        asr.positionneHP("R0");
         
         String idf = ((Idf)affect.id).name;
 
@@ -989,7 +990,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.decrementerHP(deplacement);
 
-        asr.lireVarHP("R10");
+        asr.mov("R10", "R11");
 
         asr.lireVarReg("R0","R10");// enregistre la valeur dans R0
         asr.positionneHP("R9");
