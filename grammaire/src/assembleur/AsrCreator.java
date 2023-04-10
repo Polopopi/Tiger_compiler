@@ -1264,19 +1264,26 @@ public class AsrCreator implements AstVisitor<String> {
         return typeComposite;
     }
 
-    @Override
+    @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         call.listExpr.accept(this); // on empile les parametres
         
         String id = call.id.accept(this); //on cherche ID de la fct
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();
+        
+        //Trouver le Chainage Statique
+        int nb_imbri_actuel = this.currentTds.getImbrication();
+        int nb_imbri_def = this.currentTds.get_FonctionDefImbrication(id);
+        for (int i=0;i<(nb_imbri_actuel-nb_imbri_def);i++){
+            asr.lireVarReg("R12","R2");
+        }
+        asr.empiler("R2"); // on empile le chainage statique
+
 
         asr.lireVarReg("PC","R0");              // code à générer
 
-        asr.depilerSP("R0");        // pour adresse de retour
-        asr.depilerSP("R1");
-        asr.depilerSP("R1");
+        asr.depilerSP("R1"); // on depile le CS
 
         for (int i=0;i<nb_param;i++) {
             asr.depilerSP("R1"); // depiler les parametres

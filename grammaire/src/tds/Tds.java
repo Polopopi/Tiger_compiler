@@ -34,6 +34,24 @@ public class Tds {
         typeEntries.add(entry);
     }
 
+    public int get_FonctionDefImbrication (String id){
+        int imbri =0;
+        Boolean found = false;
+        Tds tdss = this;
+        while (!found){
+            for(int i=1; i<=varFuncEntries.size();i++){
+                if (varFuncEntries.get(i).getSymbol() == id) {
+                    found = true;
+                    imbri = tdss.getImbrication();
+                }
+                else {
+                    tdss = tdss.getParent();
+                }
+            } 
+        } 
+        return imbri;
+    }
+
     public boolean existVarFunc(String symbol){
         //V2RIF TABLES PR2C2DANTES
         Tds tds = this;
