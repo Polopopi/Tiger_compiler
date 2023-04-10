@@ -28,6 +28,10 @@ public class FunctionEntry extends VarFuncEntry{
         return parameters;
     }
 
+    public int getNumberOfParameters(){
+        return this.parameters.size();
+    }
+
     public boolean existParam(String paramId){
         for (Parameter param : parameters){
             if (param.getSymbole().equals(paramId)){

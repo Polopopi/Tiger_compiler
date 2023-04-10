@@ -155,6 +155,10 @@ public class Tds {
         return null;
     }
 
+    public ArrayList<VarFuncEntry> getVarFuncEntries(){
+        return varFuncEntries;
+    }
+
     public void removeTypeEntry(TypeEntry typeEntry){
         this.typeEntries.remove(typeEntry);
     }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 //valeur à donner à une variable est par convention enregistrée dans R1
 //pour lire une variable dans la pile, sa valeur est lue et enregistrée dans R2
 public class Asr {
+    public static final int outputBufferLength = 0x1000;
 
     private ArrayList<String> asr;
 
@@ -27,6 +28,11 @@ public class Asr {
     }
 
 
+    public void comment(String commentaire){
+        this.asr.add("    ;"+commentaire);
+    }
+
+
 
     /**
      * Cette fonction sert à empiler la valeur enregistrée dans le registre.
@@ -45,7 +51,7 @@ public class Asr {
 
     public void newBlock(){
         empiler("r12");
-        mov("r12","sp");
+        positionnerBP("SP");
     }
 
     public void quitBlock(){
@@ -91,10 +97,10 @@ public class Asr {
     */
 
     public void incrementerBP(int nbr){
-        this.asr.add("    ADD R12, R12, #"+nbr);
+        this.asr.add("    ADD R12, R12, #"+nbr*4);
     }
     public void decrementerBP(int nbr) {
-        this.asr.add("    SUB R12, R12, #"+nbr);
+        this.asr.add("    SUB R12, R12, #"+nbr*4);
     }// nbr présente le déplacement ici
     public void positionnerBP(String registre){
         this.asr.add("    MOV R12,"+registre);
@@ -145,7 +151,7 @@ public class Asr {
         this.asr.add("    SUB R11, R11, #"+nbr*4);
     }
     public void decrementerHP(String reg) {
-        this.asr.add("    SUB R11, R11, "+reg);
+        this.asr.add("    SUB R11, R11, " + reg);
     }
 
     public void positionneHP(String registreSrc){
@@ -156,14 +162,23 @@ public class Asr {
     public void  plus(String param1,String param2,String param3){
         this.asr.add("    ADD "+param1+", "+param2+", "+param3); //R1-R2=>R1
     }
+    public void  plus(String condition,String dest, String param1,String param2){       // Add mais avec une condition
+        this.asr.add("    ADD"+condition+" "+dest+", "+param1+", "+param2);
+    }
     public void  moins(String param1,String param2,String param3){
         this.asr.add("    SUB "+param1+", "+param2+", "+param3); //R1-R2=>R1
+    }
+    public void  moins(String condition,String dest, String param1,String param2){
+        this.asr.add("    SUB"+condition+" "+dest+", "+param1+", "+param2);
     }
     public void or(String regDest, String reg1, String reg2){
         this.asr.add("    ORR " + regDest + ", " + reg1 + ", " + reg2);
     }
     public void multiplie(String regDest, String reg1, String reg2){
         this.asr.add("    mul " + regDest + ", " + reg1 + ", " + reg2);
+    }
+    public void multby4(String condition,String register){
+        this.asr.add("    LSL"+condition+" "+register+", "+register+", #2"); // pour transformer un indice en deplacement
     }
     public void negate(String reg){
         this.asr.add("    RSB " + reg + ", " + reg + ", #0");
@@ -183,6 +198,9 @@ public class Asr {
     public void mov(String op1, String op2){
         this.asr.add("    MOV " + op1 +", " +op2);
     }
+    public void mov(String cond, String op1, String op2){
+        this.asr.add("    MOV" + cond+ " " + op1 +", " +op2);
+    }
 
     public void charSuivant(String registre){
         this.asr.add("    SUB "+registre+", "+registre+", #4");
@@ -192,6 +210,9 @@ public class Asr {
     }
     public void lireVarReg(String registreRecepteur, String registrePointeur){
         this.asr.add("    LDR " + registreRecepteur + " , [" + registrePointeur + "]");
+    }
+    public void lireVarReg(String cond, String registreRecepteur, String registrePointeur){
+        this.asr.add("    LDR" + cond + " " + registreRecepteur + " , [" + registrePointeur + "]");
     }
     public void ecrireVarReg(String registreSource, String registreReceveur){
         this.asr.add("    STR " + registreSource + " , [" + registreReceveur+ "]");
