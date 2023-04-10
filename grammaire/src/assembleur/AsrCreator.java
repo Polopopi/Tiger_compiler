@@ -52,7 +52,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Print affect) {
-        asr.comment("START PRINT")
+        asr.comment("START PRINT");
 
         asr.comment("END PRINT");
         return null;
@@ -66,7 +66,9 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.mov("R1", "R10");
 
+        asr.empiler("R1");
         affect.expr.accept(this);
+        asr.depiler("R1");
 
         asr.str("R0", "R1");
 
@@ -165,7 +167,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
 
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
@@ -220,7 +222,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
 
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
@@ -276,7 +278,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -331,7 +333,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -384,7 +386,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -438,7 +440,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -606,7 +608,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
-        asr.comment()"END LET";
+        asr.comment("END LET");
         return null;
     }
 
