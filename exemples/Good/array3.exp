@@ -1,0 +1,14 @@
+let
+    var N := 2
+
+    type student = {name : string, age : int}
+    type class = array of student
+    type school = {A : class, B : class}
+
+    var steven := student{name = "Steven", age = 21}
+    var crew := class[N] of steven /* crew[1] et crew[2] sont indépendants */
+    var TN := school{A = crew, B = crew} /* 1A et 2A sont identiques */
+in
+    TN.A[1].age := 22;
+    TN.B[1].age /* On devrait obtenir 22 */
+end
