@@ -52,7 +52,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Print affect) {
-        asr.comment("START PRINT")
+        asr.comment("START PRINT");
 
         asr.comment("END PRINT");
         return null;
@@ -606,7 +606,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
-        asr.comment()"END LET";
+        asr.comment("END LET");
         return null;
     }
 
@@ -627,15 +627,15 @@ public class AsrCreator implements AstVisitor<String> {
 
         currentTds=getTds();
         forNode.debut.accept(this); 
-        asr.empiler("r0"); //on empile la variable i
+        asr.empilerSP("r0"); //on empile la variable i
         asr.newBlock(); //on entre dans le bloc (on met le chainage en place)
         forNode.fin.accept(this); 
-        asr.empiler("rO"); //on stock dans la pile la valeur limite
+        asr.empilerSP("r0"); //on stock dans la pile la valeur limite
         asr.label(forLabel);
-        asr.lireValBP("r1", 1);         // récupère i
-        asr.lireValBP("r2", -1);                  // récupère valeur limite
+        asr.lireValBP("r1", -1);         // récupère i
+        asr.lireValBP("r2", 1);                  // récupère valeur limite
         asr.cmp( "r2","r1");     //compare i et valeur limite
-        asr.b("N",forEndLabel);
+        asr.b("MI",forEndLabel);
 
         loopLabel.add(forEndLabel);
         forNode.bloc.accept(this);
@@ -643,7 +643,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.lireValBP("r1", -1); //on récupère i dans r1
         asr.plus("r1","r1","#1");  //On ajoute 1 dans i
-        asr.ecrireVarReg("r1", "r11,#4*-1"); // on remet i a jour dans la pile
+        asr.ecrireVarReg("r1", "r11,#-4*1"); // on remet i a jour dans la pile
         asr.b(forLabel);
         asr.label(forEndLabel);
         asr.moins("r13","r13", "#4"); //depile la valeur limite
