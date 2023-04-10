@@ -648,7 +648,8 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.lireValBP("r1", -1); //on récupère i dans r1
         asr.plus("r1","r1","#1");  //On ajoute 1 dans i
-        asr.ecrireVarReg("r1", "r11,#-4*1"); // on remet i a jour dans la pile
+        asr.stockerValeurBP("R1", -1);
+        //asr.ecrireVarReg("r1", "r11,#-4*1"); // on remet i a jour dans la pile /!\ R11 n'est pas le BP
         asr.b(forLabel);
         asr.label(forEndLabel);
         asr.moins("r13","r13", "#4"); //depile la valeur limite
@@ -893,7 +894,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        asr.empiler("r1");
+        asr.empiler("r1"); // On empile l'adresse de retour du code (ligne pour reprendre là où on en était)
         asr.b(endLabel);
 
         asr.label(beginLabel);
@@ -901,7 +902,7 @@ public class AsrCreator implements AstVisitor<String> {
         
         fctDeclaration.exprAffect.accept(this);
 
-        asr.depiler("r12,PC");
+        asr.depiler("r12,PC"); // On dépile l'adresse de retour du code et le BP (chainage dynamique)
         asr.label(endLabel);
 
         asr.comment("END FCTN DECLARATION");
@@ -1006,12 +1007,11 @@ public class AsrCreator implements AstVisitor<String> {
         // Si membre gauche d'une affectation (affected), on doit retourner l'adresse de l'array à l'indice i
         // Donc nameIdf = true pour récupérer le nom de l'array et son déplacement
 
-        String id = lvalueindex.left.accept(this);
+        String type = lvalueindex.left.accept(this);
+        ArrayEntry arrayEntry = (ArrayEntry) currentTds.getTypeEntry(type);
+        String typeComposite = arrayEntry.getTypeComposite();
         lvalueindex.exprOr.accept(this);
-
-        int depl = this.currentTds.getVarFuncEntry(id).getDeplacement();
-
-        asr.lireVarBP("r1", depl);
+        
         asr.mov("R2", "R0");
         asr.lireVarReg("R3", "R1");
         asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
@@ -1022,7 +1022,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.moins("GT","R3","R3","R2"); // on descend dans le tas
         asr.lireVarReg("R0", "R3");
 
-        return null;
+        return typeComposite;
     }
 
     @Override

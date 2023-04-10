@@ -1,6 +1,10 @@
-let function printboard() =
-        (for i := 0 to 1 do 
-            (for j := 0 to 1 do
-                print(2));
-        print(0))
+let 
+    function printboard() = (
+        for i := 0 to 1 do (
+            for j := 0 to 1 do (
+                print(2)
+            );
+            print(0)
+        )
+    )
 in  end
