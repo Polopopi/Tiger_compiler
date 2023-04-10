@@ -1,0 +1,27 @@
+/* Déclaration de variable array se fait par valeur (copie) */
+/* string */
+
+let
+    var N := 2
+
+    type stringArray = array of string
+
+    var row := stringArray[N] of "Steven"
+
+    var a := 1
+in
+    if (row[1] = "Steven") then (
+        a := 0
+    );
+
+    row[1] := "John";
+
+    if (row[2] = "John") then (
+        a := 2
+    );
+    if (row[2] = "Steven") then (
+        a := 3
+    );
+
+    a
+end

@@ -874,9 +874,12 @@ public class AsrCreator implements AstVisitor<String> {
                 //String typeCompositeComposite = arrayCompositeEntry.getTypeComposite();
                 copyArray(typeComposite);
             }
-            else{ //RECORD
-               
+            else if (typeCompositeEntry.isRecord()){ // RECORD
+                copyRecord(typeComposite);
             }   
+            else{
+                System.out.println("Type non reconnu");
+            }
         }
         // Si 1er appel de copyType dans Array, alors
             // SI c'est un int, simplement mettre dans la case du tas la valeur contenue dans R0 suffit (pris en charge par intExpr)
@@ -923,7 +926,8 @@ public class AsrCreator implements AstVisitor<String> {
         String typeComposite = ((ArrayEntry)currentTypeEntry).getTypeComposite();
         // Si l'array est composé de int, on a juste à copier sans empiler ou quoi
         if (typeComposite.equals("int")){
-            asr.lireVarReg("R2", "R3");
+            asr.lireVarReg("R4", "R3");
+            asr.str("R4", "R2");
         }
         else{
             asr.empilerSP("R1, R2, R3");
@@ -953,12 +957,91 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("END COPY ARRAY");
     }
 
-    public void copyInt(){
-        
+    public void copyRecord(String type){
+        asr.comment("START COPY RECORD");
+
+        TypeEntry oldTypeEntry = currentTypeEntry;
+        // R2 pointe sur chaque élément de l'array à copier
+
+        asr.lireVarSP("R2"); // On récupère le pointeur vers le record à copier (R4)
+
+        asr.empiler("R11"); // Pour le retour
+        asr.mov("R1", "R11"); // R1 va pointer sur chaque élément du record
+
+        currentTypeEntry = this.currentTds.getTypeEntry(type);
+
+        //TAILLE
+        //asr.lireVarSP("R3");//Contient l'adresse dans le tas où est stocké l'élément de l'array parent
+        //asr.lireVarReg("R3", "R3"); // Contient 
+        // Conecter un registre à l'array à copier
+        int tailleRecord = ((RecordEntry)currentTypeEntry).getFields().size();
+        // On décrémente le HP pour pouvoir faire les copies
+        asr.decrementerHP(tailleRecord);
+
+
+        //INIT en mode int de base
+
+        // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
+        // Et tout simplement renvoyer le pointeur dans R0
+
+        for (FieldEntry field : ((RecordEntry)currentTypeEntry).getFields()){
+            String typeField = field.getType();
+            // Si l'array est composé de int, on a juste à copier sans empiler ou quoi
+            if (typeField.equals("int")){
+                asr.lireVarReg("R3", "R2");
+                asr.str("R3", "R1");
+            }
+            else{
+                asr.empilerSP("R1, R2");
+                asr.lireVarReg("R3", "R2"); // Pointe vers le field
+                asr.empiler("R3");
+                copyType(typeField);
+                asr.decrementerSp(1); // On décrémente car plus besoin de R3
+                asr.depilerSP("R1, R2");
+
+                asr.str("R0", "R1");
+            }
+
+            //asr.empilerHP("R0");
+            asr.moins("R1", "R1", "#4");
+            asr.moins("R2", "R2", "#4");            
+        }
+
+        //RETOUR
+        asr.depiler("R0");
+
+        currentTypeEntry = oldTypeEntry;
+
+        asr.comment("END COPY RECORD");
     }
 
     public void copyString(){
+        asr.comment("START COPY STRING");
+        asr.mov("R0", "R11"); //Adresse pour le pointeur de la string dans R0
 
+        asr.lireVarSP("R1"); // R1 = pointeur vers le string à copier (R4)
+
+        String loopLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.label(loopLabel);
+
+        asr.lireVarReg("R2", "R1"); // R2 = char courant de la string à copier
+
+        asr.empilerHP("R2");
+
+        // Si on est à la fin de la string
+        asr.and("R3", "R2", "#0x00000003");
+        asr.cmp("R3", "#0");
+        asr.b("EQ", endLabel);
+
+        asr.charSuivant("R1");
+
+        asr.b(loopLabel);
+
+        asr.label(endLabel);
+
+        asr.comment("END COPY STRING");
     }
 
     @Override
@@ -988,9 +1071,12 @@ public class AsrCreator implements AstVisitor<String> {
         //INIT en mode int de base
         String loopLabel = generateLabel();
 
+
         // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
         // Et tout simplement renvoyer le pointeur dans R0
+        asr.empilerSP("R1, R2");
         array.exprOr2.accept(this);
+        asr.depilerSP("R1, R2");
         asr.mov("R3", "R0"); // R3 = pointeur vers chaque élément de l'array à copier (dans le tas) OU int à copier
 
         asr.label(loopLabel);
