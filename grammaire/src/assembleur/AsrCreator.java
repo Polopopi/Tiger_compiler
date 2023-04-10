@@ -893,16 +893,16 @@ public class AsrCreator implements AstVisitor<String> {
         String endLabel = generateLabel();
 
         asr.mov("r1","PC");
-        asr.plus("r1", "r1", "#8");
-        asr.empiler("r1"); // On empile l'adresse de retour du code (ligne pour reprendre là où on en était)
+        asr.moins("r1", "r1", "#8");
+        asr.empilerSP("r1");
         asr.b(endLabel);
 
         asr.label(beginLabel);
-        asr.empiler("CS,r12,LR");
+        asr.empilerSP("r12,LR");
         
         fctDeclaration.exprAffect.accept(this);
 
-        asr.depiler("r12,PC"); // On dépile l'adresse de retour du code et le BP (chainage dynamique)
+        asr.depilerSP("r12,PC");
         asr.label(endLabel);
 
         asr.comment("END FCTN DECLARATION");
