@@ -821,14 +821,44 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(LvalueIndex affect) {
-        // Attention quand on est dans le membre gauche d'une affectation (noeud Affect), 
-        // on doit retourner l'adresse de l'index qui est dans le tas et non sa valeur pcq si c'est un int ça a pas de sens
+    public String visit(LvalueIndex lvalueindex) {
+        String id = lvalueindex.left.accept(this);
+        lvalueindex.exprOr.accept(this);
+
+        int depl = this.currentTds.getVarFuncEntry(id).getDeplacement();
+
+        asr.lireVarBP("r1", depl);
+        asr.mov("R2", "R0");
+        asr.lireVarReg("R3", "R1");
+        asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
+        asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
+
+        asr.multby4("GT", "R2"); // index *4  en rai je sais pas si c'est *4 ou *4*la taille dusuivant je sais pas tropp
+
+        asr.moins("GT","R3","R3","R2"); // on descend dans le tas
+        asr.lireVarReg("R0", "R3");
+
         return null;
     }
 
     @Override
-    public String visit(Call affect) {
+    public String visit(Call call) {
+        call.listExpr.accept(this); // on empile les parametres
+        
+        String id = call.id.accept(this); //on cherche ID de la fct
+        FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
+        int nb_param = fct.getNumberOfParameters();
+
+        asr.lireVarReg("PC","R0");              // code à générer
+
+        asr.depilerSP("R0");        // pour adresse de retour
+        asr.depilerSP("R1");
+        asr.depilerSP("R1");
+
+        for (int i=0;i<nb_param;i++) {
+            asr.depilerSP("R1"); // depiler les parametres
+        }
+
         return null;
     }
 }
