@@ -178,7 +178,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.lireVarReg("R2", "R0");
 
             // Si on est à la fin des 2 strings
-            asr.and("R5", "R3", "#0x00000003");
+            asr.and("R5", "R3", "#0x00000003"); //Masque pour récupérer les 2 derniers bits
             asr.cmp("R5", "#0");
             asr.b("EQ", endLabel);
             asr.and("R4", "R2", "#0x00000003");
@@ -186,6 +186,9 @@ public class AsrCreator implements AstVisitor<String> {
             asr.b("EQ", endLabel);
 
             asr.cmp("R3", "R2");
+
+            asr.charSuivant("R1");
+            asr.charSuivant("R0");
 
             //Tant qu'on peut avancer et que tout les char sont égaux
             asr.b("EQ", loopLabel);
@@ -729,7 +732,7 @@ public class AsrCreator implements AstVisitor<String> {
         }
         asr.empilerHP("R1");
         asr.comment("END STRING");
-        return "String";
+        return "string";
     }
 
     @Override

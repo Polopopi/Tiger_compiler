@@ -4,5 +4,8 @@ let
     var adrien := person{age = 21, name = "Adrien"}
 in
     steven.name := adrien.name;
-    steven.name
+    if (steven.name = "Adrien") then (
+        steven.age := 22
+    );
+    steven.age
 end
