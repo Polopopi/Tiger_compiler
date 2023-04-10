@@ -1,7 +1,8 @@
 let
     type person = {name : string, age : int}
     var steven := person{age = 21, name = "Steven"}
+    var adrien := person{age = 21, name = "Adrien"}
 in
-    steven.age := 22;
-    steven.age
+    steven.name := adrien.name;
+    steven.name
 end

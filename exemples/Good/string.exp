@@ -1,3 +1,8 @@
-(
-    if "abc" < "abd" then()
-)
+let
+    type person = {name : string, age : int}
+    var steven := person{age = 21, name = "Steven"}
+    var adrien := person{age = 21, name = "Adrien"}
+in
+    if (steven.name >= adrien.name) then (steven.age := 1);
+    steven.age
+end

@@ -66,7 +66,9 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.mov("R1", "R10");
 
+        asr.empiler("R1");
         affect.expr.accept(this);
+        asr.depiler("R1");
 
         asr.str("R0", "R1");
 
@@ -165,7 +167,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
 
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
@@ -220,7 +222,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
 
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
@@ -276,7 +278,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -331,7 +333,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -384,7 +386,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -438,7 +440,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        if (right.equals("String")){
+        if (right.equals("string")){
             String loopLabel = generateLabel();
             String endLabel = generateLabel();
 
@@ -606,6 +608,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
+<<<<<<< HEAD
+=======
+
+>>>>>>> bb5ab8ff913c317f8b63a3b7566f054814cd956a
         asr.comment("END LET");
         return null;
     }
@@ -977,7 +983,7 @@ public class AsrCreator implements AstVisitor<String> {
                                         //dans R0
         asr.lireAdrHP("R9");
         //on pointe R11 vers le lvalue
-        asr.positionneHP("R10");
+        asr.positionneHP("R0");
         
         String idf = ((Idf)affect.id).name;
 
@@ -987,7 +993,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.decrementerHP(deplacement);
 
-        asr.lireVarHP("R10");
+        asr.mov("R10", "R11");
 
         asr.lireVarReg("R0","R10");// enregistre la valeur dans R0
         asr.positionneHP("R9");
