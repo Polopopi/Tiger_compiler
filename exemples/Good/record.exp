@@ -1,5 +1,11 @@
 let
     type person = {name : string, age : int}
     var steven := person{age = 21, name = "Steven"}
+    var adrien := person{age = 21, name = "Adrien"}
 in
+    steven.name := adrien.name;
+    if (steven.name = "Adrien") then (
+        steven.age := 22
+    );
+    steven.age
 end
