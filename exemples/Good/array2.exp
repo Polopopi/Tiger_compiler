@@ -7,6 +7,13 @@ let
     var row := intArray[N] of 0
     var board := intArrayArray[N] of row
 in
+    for i := 1 to N do(
+        let 
+            var row := intArray[N] of 0
+        in
+            board[i] := row
+        end
+    );
     board[1][1] := 1;
     board[2][1]
 end

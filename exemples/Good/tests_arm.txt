@@ -1,0 +1,6 @@
+array
+array2
+let_for
+record
+string
+while

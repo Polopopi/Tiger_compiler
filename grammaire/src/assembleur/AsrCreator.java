@@ -603,6 +603,8 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START LET");
         currentTds = getTds();
 
+        Tds oldTds = currentTds;
+
         int nbVar = currentTds.getVarFuncEntries().size();
         asr.incrementerSp(nbVar);
 
@@ -611,6 +613,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
+
+        asr.decrementerSp(nbVar);
+
+        currentTds = oldTds;
         asr.comment("END LET");
         return null;
     }
@@ -796,7 +802,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START VAR DECLARATION");
         String id = ((Idf)varDeclaration.idf).name; //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
-        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
         asr.stockerValeurBP("R0", deplacement);
         asr.comment("END DECLARATION");
 
@@ -1016,10 +1022,10 @@ public class AsrCreator implements AstVisitor<String> {
         lvalueindex.exprOr.accept(this);
 
         asr.depiler("R1"); // on récupère l'adresse de l'array (la 1ère case)
-        asr.lireVarReg("R3", "R1");
-        asr.lireVarReg("R2", "R0"); // R2 contient la taille de l'array
+        asr.lireVarReg("R3", "R1"); // R3 contient la taille de l'array
+        asr.mov("R2", "R0"); // R2 contient l'indice
         
-        asr.cmp( "r2",  "r3"); // j'ai un doute la dessus entre r2 et r3
+        asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
         //Pas besoin pcq les array commencent à l'indice 1
         //asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
 
