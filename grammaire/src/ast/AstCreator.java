@@ -449,36 +449,7 @@ public class AstCreator extends tigerBaseVisitor<Ast>{
 		}
 		return noeudCourant; 
 	}
-	/*
-	@Override public Ast visitArray(tigerParser.ArrayContext ctx) { 
-		///    '[' expr_or ']' 'of'  expr_or 
-		Ast exprOr1=ctx.getChild(1).accept(this);
-		Ast exprOr2=ctx.getChild(4).accept(this);
-		return new Array(exprOr1,exprOr2);
-	}
-	
-	@Override public Ast visitRecord(tigerParser.RecordContext ctx) { 
-		if (ctx.getChildCount() == 4){
-			Ast id = ctx.getChild(1).accept(this);
-			Ast exprOr=ctx.getChild(3).accept(this);
-			return new LvalueRecord(id, exprOr);
-		}
 
-		///   '{' id '=' expr_or (',' id '=' expr_or)*  '}'//4+4i+2-1=5+4i  4+4i+4-1=7+4i
-		Ast id = ctx.getChild(1).accept(this);
-		Ast exprOr=ctx.getChild(3).accept(this);
-		LvalueRecord record=new LvalueRecord(id, exprOr);
-		RecordList recordList=new RecordList();
-		recordList.addRecord(record);
-		
-		for (int i = 0; 4*i < ctx.getChildCount()-6; i++) {
-			recordList.addRecord(new LvalueRecord(ctx.getChild(4*i+5).accept(this), ctx.getChild(4*i+7).accept(this)));
-		}
-		return recordList; }
-	
-	@Override public Ast visitCall(tigerParser.CallContext ctx) { 
-		return ctx.getChild(1).accept(this); }
-	*/
 	@Override public Ast visitId(tigerParser.IdContext ctx) { return new Idf(ctx.start.getLine(),ctx.getChild(0).toString()); }
 	
 	@Override public Ast visitType_id(tigerParser.Type_idContext ctx) { return new Idf(ctx.start.getLine(),ctx.getChild(0).toString()); }

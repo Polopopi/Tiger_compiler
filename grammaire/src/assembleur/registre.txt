@@ -1,4 +1,4 @@
-R0  : Retour Tiger
+R0  : Retour Tiger --> Valeur, le résultat (ex : pointeur vers le 1er élément d'un array)
 R1  : Travail
 R2  : Travail
 R3  : Travail
@@ -8,7 +8,7 @@ R6  : Travail
 R7  : 
 R8  :
 R9  :
-R10 : 
+R10 : Retour Tiger --> Adresse, là où est stocké le résultat (ex : pointeur vers là où est stocké l'array)
 R11 : Heap Register POINTE SUR LA 1ERE CASE VIDE
 R12 : Base Register 
 R13 : Stack Register 

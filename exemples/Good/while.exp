@@ -1,1 +1,11 @@
-while i>0 do i-1
+let
+    var n := 5
+in
+    while (n > 0) do (
+        if (n = 3) then (
+            break
+        );
+        n := n - 1
+    );
+    n
+end

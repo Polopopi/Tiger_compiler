@@ -24,7 +24,10 @@ public class Tds {
 
     public void addVarFunc(VarFuncEntry entry){
         //System.out.println(entry.getSymbol()+" ok");
-        entry.setDeplacement(varFuncEntries.size());
+        for (VarFuncEntry varFuncEntry : varFuncEntries){
+            varFuncEntry.setDeplacement(varFuncEntry.getDeplacement()-1);
+        }
+        entry.setDeplacement(-1);
         varFuncEntries.add(entry);
     }
     public void addType(TypeEntry entry){
@@ -155,6 +158,9 @@ public class Tds {
         return null;
     }
 
+    public ArrayList<VarFuncEntry> getVarFuncEntries(){
+        return varFuncEntries;
+    }
 
     public void removeTypeEntry(TypeEntry typeEntry){
         this.typeEntries.remove(typeEntry);
