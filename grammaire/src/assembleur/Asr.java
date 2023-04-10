@@ -6,6 +6,7 @@ import java.util.ArrayList;
 //valeur à donner à une variable est par convention enregistrée dans R1
 //pour lire une variable dans la pile, sa valeur est lue et enregistrée dans R2
 public class Asr {
+    public static final int outputBufferLength = 0x1000;
 
     private ArrayList<String> asr;
 
@@ -194,6 +195,9 @@ public class Asr {
     public void mov(String op1, String op2){
         this.asr.add("    MOV " + op1 +", " +op2);
     }
+    public void mov(String cond, String op1, String op2){
+        this.asr.add("    MOV" + cond+ " " + op1 +", " +op2);
+    }
 
     public void charSuivant(String registre){
         this.asr.add("    SUB "+registre+", "+registre+", #4");
@@ -203,6 +207,9 @@ public class Asr {
     }
     public void lireVarReg(String registreRecepteur, String registrePointeur){
         this.asr.add("    LDR " + registreRecepteur + " , [" + registrePointeur + "]");
+    }
+    public void lireVarReg(String cond, String registreRecepteur, String registrePointeur){
+        this.asr.add("    LDR" + cond + " " + registreRecepteur + " , [" + registrePointeur + "]");
     }
     public void ecrireVarReg(String registreSource, String registreReceveur){
         this.asr.add("    STR " + registreSource + " , [" + registreReceveur+ "]");

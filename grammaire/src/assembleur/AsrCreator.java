@@ -1010,17 +1010,25 @@ public class AsrCreator implements AstVisitor<String> {
         String type = lvalueindex.left.accept(this);
         ArrayEntry arrayEntry = (ArrayEntry) currentTds.getTypeEntry(type);
         String typeComposite = arrayEntry.getTypeComposite();
-        lvalueindex.exprOr.accept(this);
         
-        asr.mov("R2", "R0");
+        asr.empiler("R0"); // on sauvegarde l'adresse de l'array (la 1ère case)
+
+        lvalueindex.exprOr.accept(this);
+
+        asr.depiler("R1"); // on récupère l'adresse de l'array (la 1ère case)
         asr.lireVarReg("R3", "R1");
-        asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
-        asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
+        asr.lireVarReg("R2", "R0"); // R2 contient la taille de l'array
+        
+        asr.cmp( "r2",  "r3"); // j'ai un doute la dessus entre r2 et r3
+        //Pas besoin pcq les array commencent à l'indice 1
+        //asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
 
-        asr.multby4("GT", "R2"); // index *4  en rai je sais pas si c'est *4 ou *4*la taille dusuivant je sais pas tropp
+        // GE pcq pcq l'array commence à l'indice 1
+        asr.multby4("GE", "R2"); // index *4  en rai je sais pas si c'est *4 ou *4*la taille dusuivant je sais pas tropp
 
-        asr.moins("GT","R3","R3","R2"); // on descend dans le tas
-        asr.lireVarReg("R0", "R3");
+        asr.moins("GE","R1","R1","R2"); // on descend dans le tas
+        asr.mov("GE","R10","R1"); // on met l'adresse de l'array dans R10
+        asr.lireVarReg("GE", "R0", "R10");
 
         return typeComposite;
     }

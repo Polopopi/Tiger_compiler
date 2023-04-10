@@ -1,11 +1,9 @@
 package assembleur.visual;
 
-import assembleur.visual.ExitTrappedException;
-
 import java.security.Permission;
 public class ExitTrapper {
     public static void forbidSystemExitCall() {
-        final SecurityManager securityManager = new SecurityManager() {
+         SecurityManager securityManager = new SecurityManager() {
             public void checkPermission( Permission permission ) {
                 if( permission.getName().startsWith("exitVM") ) {
                     int code = Integer.parseInt(permission.getName().split("\\.")[1]);
