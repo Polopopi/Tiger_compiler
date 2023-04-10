@@ -493,7 +493,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R1");
 
-        asr.moins("R0","R1","R0");
+        asr.plus("R0","R1","R0");
         asr.comment("END PLUS");
 
         return null;
@@ -608,10 +608,6 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
-<<<<<<< HEAD
-=======
-
->>>>>>> bb5ab8ff913c317f8b63a3b7566f054814cd956a
         asr.comment("END LET");
         return null;
     }
