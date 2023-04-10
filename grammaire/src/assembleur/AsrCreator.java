@@ -693,7 +693,7 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(NilExpr affect) {
         asr.comment("NIL");
-        asr.setRetour(0);
+        asr.setRetour(0); // 0 == nil ?
         return null;
     }
 
