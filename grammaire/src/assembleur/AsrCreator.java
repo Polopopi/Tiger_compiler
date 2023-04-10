@@ -890,7 +890,7 @@ public class AsrCreator implements AstVisitor<String> {
         }
         // si var est locale
         int deplacement = currentTds.getVarFuncEntry(id).getDeplacement();
-       
+
         // Puis faire un lireVarReg de R10 pour avoir la valeur de la var dans R0
         asr.lireValBP("R10",deplacement);// lire l'adresse de var cherché et l'enregistrer dans R0
         asr.positionnerBP("R9");//remettre l'ancien adr
