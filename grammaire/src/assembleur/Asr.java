@@ -21,7 +21,7 @@ public class Asr {
     }
 
     public void getAddrOut(){
-        this.asr.add("    LDR R1, =_print_out");
+        this.asr.add("    LDR R9, =_print_out");
     }
 
     public void setRetour(int valeur) {
@@ -243,6 +243,10 @@ public class Asr {
     public void str(String reg, String regDest){
         this.asr.add("    STR " + reg + ", [" + regDest + ", #0]");
     }
+    public void strPost(String reg, String regDest){
+        this.asr.add("    STR " + reg + ", [" + regDest + "], #4");
+    }
+
     public void str(String reg, String regDest, int depl){
         this.asr.add("    STR " + reg + ", [" + regDest + ", #" + depl*4 + "]");
     }

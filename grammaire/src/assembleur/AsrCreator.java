@@ -53,11 +53,14 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Print print) {
+        print.value.accept(this);// trouver la val dans R0
         asr.comment("START PRINT");
 
         asr.getAddrOut();// load @ de print_out
-        print.value.accept(this);// trouver la val dans R0
-        asr.link("print");
+
+        asr.mov("R1","R0");
+        asr.strPost("PC","SP");
+        asr.b("print");
         //asr.ecrireValPrint("R0", "R1"); // mettre la val dans le label, faut se brancher vers fct print
 
         asr.comment("END PRINT");
@@ -529,13 +532,15 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Mult mult) {
         asr.comment("START MULT");
+        asr.comment("-----------------------left");
         String left = mult.left.accept(this);
 
-        asr.empilerSP("R0");
+        asr.empiler("R0");
+        asr.comment("-----------------------right");
 
         String right = mult.right.accept(this);
 
-        asr.depilerSP("R1");
+        asr.depiler("R1");
         
         asr.link("mult");
         asr.mov("r0","r3");
