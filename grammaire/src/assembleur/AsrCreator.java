@@ -571,14 +571,11 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(IfThen ifThen) {
         asr.comment("START IF THEN");
-        String thenLabel = generateLabel();
         String endLabel = generateLabel();
 
         ifThen.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("NE", thenLabel);
-        asr.b(endLabel);
-        asr.label(thenLabel);
+        asr.b("E",endLabel);
         ifThen.thenBlock.accept(this);
         asr.label(endLabel);
         asr.comment("END IF THEN");
@@ -588,18 +585,17 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(IfThenElse ifThenElse) {
         asr.comment("START IF THEN ELSE");
-        String thenLabel = generateLabel();
         String elseLabel = generateLabel();
+        String endLabel = generateLabel();
 
         ifThenElse.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("NE", thenLabel);
-        asr.b(elseLabel);
-        
-        asr.label(thenLabel);
+        asr.b("E", elseLabel);
         ifThenElse.thenBlock.accept(this);
+        asr.b(endLabel);
         asr.label(elseLabel);
         ifThenElse.elseBlock.accept(this);
+        asr.label(endLabel);
         asr.comment("END IF THEN ELSE");
         return null;
     }
@@ -607,9 +603,9 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Let let) {
         asr.comment("START LET");
-        currentTds = getTds();
 
         Tds oldTds = currentTds;
+        currentTds = getTds();
 
         int nbVar = currentTds.getVarFuncEntries().size();
         asr.incrementerSp(nbVar);
@@ -1130,18 +1126,17 @@ public class AsrCreator implements AstVisitor<String> {
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
 
+        String fctId =((Idf) fctDeclaration.fonctionID).name;
+        int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        //asr.empilerSP("r1"); // On empile
-
-        String id = ((Idf)fctDeclaration.fonctionID).name; //c'est pour trouver la valeur de déplacement.
-        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
-        asr.stockerValeurBP("R1", deplacement);
-
+        asr.stockerValeurBP("r1", dep);
         asr.b(endLabel);
 
         asr.label(beginLabel);
+        asr.mov("r1","SP");
         asr.empilerSP("r12,LR");
+        asr.mov("r12","r1");
         
         fctDeclaration.exprAffect.accept(this);
 
@@ -1157,28 +1152,30 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(ProcDeclaration procDeclaration) {
         asr.comment("START PROC DECLARATION");
+        Tds oldTds = currentTds;
         currentTds = getTds();
 
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
 
+        String fctId =((Idf) procDeclaration.fonctionID).name;
+        int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        //asr.empilerSP("r1");
-
-        String id = ((Idf)procDeclaration.fonctionID).name; //c'est pour trouver la valeur de déplacement.
-        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
-        asr.stockerValeurBP("R1", deplacement);
-
+        asr.stockerValeurBP("r1", dep);
         asr.b(endLabel);
 
         asr.label(beginLabel);
+        asr.mov("r1","SP");
         asr.empilerSP("r12,LR");
+        asr.mov("r12","r1");
         
         procDeclaration.exprAffect.accept(this);
 
         asr.depilerSP("r12,PC");
         asr.label(endLabel);
+
+        currentTds=oldTds;
 
         asr.comment("END PROC DECLARATION");
         return(null);
@@ -1301,7 +1298,6 @@ public class AsrCreator implements AstVisitor<String> {
         asr.empiler("R2"); // on empile le chainage statique
 
         asr.mov("LR", "PC");
-        asr.plus("LR", "LR", "#12");
         asr.mov("PC","R0");              // code à générer
 
         asr.depilerSP("R1"); // on depile le CS
