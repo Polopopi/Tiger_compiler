@@ -1,6 +1,10 @@
 package assembleur.visual;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 
@@ -12,7 +16,7 @@ public class Launcher {
     /* we make sure that the output buffer is always the first symbol in memory */
     private static final int outputBufferAddress = instMemSize;
     /* VisUAL offsets line numbers by one for some reason */
-    private static final List<Integer> breakpoints = List.of(11 - 1, 25 - 1);
+    private static final List<Integer> breakpoints = List.of(6 );
     private Launcher() {}
     /* array of all word addresses in the output buffer */
     private static String[] getOutputRange() {
@@ -31,22 +35,51 @@ public class Launcher {
         ExitTrapper.forbidSystemExitCall();
         int code = -1;
         try {
+            System.out.println("----------------------------------------------");
+
             HeadlessController.runFile(assemblyFile, logFile);
         } catch (ExitTrappedException e) {
             code = e.getCode();
         } finally {
+
             ExitTrapper.enableSystemExitCall();
             if (code != 0) {
                 System.err.println("VisUAL emulator exited with error code " + code);
                 System.exit(code);
             }
         }
+        System.out.println("----------------------------------------------");
+        System.out.println(OutputParser.parseOutput(logFile));
+        System.out.println("----------------------------------------------");
+
+
         return OutputParser.parseOutput(logFile);
     }
     public static void run(String assemblyFile) {
         List<String> output = executeAndParseOutput(assemblyFile);
         System.out.println("---- PROGRAM OUTPUT ----");
-        output.forEach(System.out::print);
+        output.forEach(System.out::println);
         System.out.println("---- END PROGRAM OUTPUT ----");
     }
+    public static void lireF(String name){
+        try
+        {
+            // Le fichier d'entrée
+            FileInputStream file = new FileInputStream(name);
+            Scanner scanner = new Scanner(file);
+
+            //renvoie true s'il y a une autre ligne à lire
+            while(scanner.hasNextLine())
+            {
+                System.out.println(scanner.nextLine());
+            }
+            scanner.close();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
 }

@@ -1,4 +1,10 @@
 
+
+print
+        STMFA	SP!, {R0-R2}
+        STR		R0 , [R1],#0
+        LDMFA	SP!, {R0-R2}
+
 ; LA DIVISION
 
 div		;Division de R1 par R0 et res dans R0
