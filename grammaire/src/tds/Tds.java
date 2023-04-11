@@ -39,15 +39,15 @@ public class Tds {
         Boolean found = false;
         Tds tdss = this;
         while (!found){
-            for(int i=1; i<=varFuncEntries.size();i++){
-                if (varFuncEntries.get(i).getSymbol() == id) {
+            for(int i=0; i<varFuncEntries.size();i++){
+                if (tdss.getVarFuncEntries().get(i).getSymbol().equals(id)) {
                     found = true;
                     imbri = tdss.getImbrication();
                 }
-                else {
-                    tdss = tdss.getParent();
-                }
             } 
+            if (!found){
+                tdss = tdss.getParent();
+            }
         } 
         return imbri;
     }

@@ -1123,13 +1123,14 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(FctDeclaration fctDeclaration) {
         asr.comment("START FCTN DECLARATION");
+        Tds oldTds = currentTds;
         currentTds = getTds();
 
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
 
         asr.mov("r1","PC");
-        asr.moins("r1", "r1", "#8");
+        asr.plus("r1", "r1", "#8");
         asr.empilerSP("r1");
         asr.b(endLabel);
 
@@ -1142,6 +1143,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END FCTN DECLARATION");
+        currentTds=oldTds;
 
         return(null);
     }
@@ -1271,9 +1273,11 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
+        asr.comment("START CALL");
         call.listExpr.accept(this); // on empile les parametres
-        
-        String id = call.id.accept(this); //on cherche ID de la fct
+
+        call.id.accept(this); //on cherche ID de la fct
+        String id = ((Idf) call.id).name;
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();
         
@@ -1294,6 +1298,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.depilerSP("R1"); // depiler les parametres
         }
 
+        asr.comment("END CALL");
         return null;
     }
 }
