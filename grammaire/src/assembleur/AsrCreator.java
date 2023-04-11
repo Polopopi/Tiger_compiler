@@ -1282,21 +1282,22 @@ public class AsrCreator implements AstVisitor<String> {
     @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         asr.comment("START CALL");
+
         call.listExpr.accept(this); // on empile les parametres
 
-        call.id.accept(this); //on cherche ID de la fct
+        call.id.accept(this); //R0 contient l'adresse du PC de la déclaration de la fonction
         String id = ((Idf) call.id).name;
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();
         
         //Trouver le Chainage Statique
+        asr.mov("R9", "R12");
         int nb_imbri_actuel = this.currentTds.getImbrication();
         int nb_imbri_def = this.currentTds.get_FonctionDefImbrication(id);
-        asr.mov("r9","r12");
         for (int i=0;i<(nb_imbri_actuel-nb_imbri_def);i++){
-            asr.lireVarReg("R9","R12");
+            asr.lireVarReg("R9","R9");
         }
-        asr.empilerSP("R12"); // on empile le chainage statique
+        asr.empiler("R9"); // on empile le chainage statique
 
         asr.mov("LR", "PC");
         asr.mov("PC","R0");              // code à générer
@@ -1307,6 +1308,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.depilerSP("R1"); // depiler les parametres
         }
 
+    
         asr.comment("END CALL");
         return null;
     }

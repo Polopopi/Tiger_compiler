@@ -1,4 +1,4 @@
-/* Déclaration de variable record se fait par référence */
+/* Déclaration de variable record se fait par référence pour ses fields */
 
 let
     var N := 2

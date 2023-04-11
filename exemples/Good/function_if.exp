@@ -1,9 +1,11 @@
 let
   function not (i : int) : int =
     if i = 0 then(
-      1)
+      1
+    )
     else(
-      0)
+      0
+    )
 in
   not(0)
 end
