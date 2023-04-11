@@ -60,9 +60,9 @@ _div_exit
 
 ; LA MULTIPLICATION
 
-mult						; On multiplie r0 et r11, et le resultat sort en r1
+mult						; On multiplie r0 et r1, et le resultat sort en r3
 		MOV		r2,#0
-		MOV		r1,#0
+		MOV		r3,#0
 
 
 _mult_loop		
@@ -70,7 +70,7 @@ _mult_loop
 		LSL		r4,r4,#1
 		CMP		r0,r4
 		BEQ		_mult_zero	; si le dernier bit est un zero
-		ADD		r1,r1,r11,LSL r2
+		ADD		r3,r3,r1,LSL r2
 
 
 _mult_zero	
@@ -78,5 +78,6 @@ _mult_zero
 		LSR		r0,r0,#1
 		CMP		r0,#0
 		BNE		_mult_loop	; Si r0 n'est pas égale à zéro on continue la loop sinon FIN
-		MOV   	PC, LR
+		MOV 	PC,LR
+
 		

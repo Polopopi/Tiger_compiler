@@ -530,13 +530,14 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START MULT");
         String left = mult.left.accept(this);
 
-        asr.empiler("R0");
+        asr.empilerSP("R0");
 
         String right = mult.right.accept(this);
 
-        asr.depiler("R1");
+        asr.depilerSP("R1");
         
         asr.link("mult");
+        asr.mov("r0","r3");
         asr.comment("END MULT");
         return null;
     }
