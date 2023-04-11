@@ -38,8 +38,10 @@ public class Tds {
         int imbri =0;
         Boolean found = false;
         Tds tdss = this;
+        System.out.println(id);
         while (!found){
-            for(int i=0; i<varFuncEntries.size();i++){
+            for(int i=0; i<tdss.getVarFuncEntries().size();i++){
+                tdss.printTds();
                 if (tdss.getVarFuncEntries().get(i).getSymbol().equals(id)) {
                     found = true;
                     imbri = tdss.getImbrication();

@@ -575,7 +575,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         ifThen.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("E",endLabel);
+        asr.b("EQ",endLabel);
         ifThen.thenBlock.accept(this);
         asr.label(endLabel);
         asr.comment("END IF THEN");
@@ -590,7 +590,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         ifThenElse.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("E", elseLabel);
+        asr.b("EQ", elseLabel);
         ifThenElse.thenBlock.accept(this);
         asr.b(endLabel);
         asr.label(elseLabel);
@@ -1292,10 +1292,11 @@ public class AsrCreator implements AstVisitor<String> {
         //Trouver le Chainage Statique
         int nb_imbri_actuel = this.currentTds.getImbrication();
         int nb_imbri_def = this.currentTds.get_FonctionDefImbrication(id);
+        asr.mov("r9","r12");
         for (int i=0;i<(nb_imbri_actuel-nb_imbri_def);i++){
-            asr.lireVarReg("R12","R2");
+            asr.lireVarReg("R9","R12");
         }
-        asr.empiler("R2"); // on empile le chainage statique
+        asr.empilerSP("R12"); // on empile le chainage statique
 
         asr.mov("LR", "PC");
         asr.mov("PC","R0");              // code à générer
