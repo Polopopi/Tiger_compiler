@@ -1213,7 +1213,7 @@ public class AsrCreator implements AstVisitor<String> {
         System.out.println(id);
 
         while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
-            System.out.println(tdsCourant.getId());
+            System.out.println("BP " + tdsCourant.getId());
             // se déplacer dans la dernière imbrication
             asr.lireValBP("R10",0);//lire le chaînage statique et l'enregistre dans R0
             asr.positionnerBP("R10");//positionne BP vers l'adresse du chaînage statique
@@ -1294,10 +1294,12 @@ public class AsrCreator implements AstVisitor<String> {
     @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         asr.comment("START CALL");
+        System.out.println("CALL");
 
         call.listExpr.accept(this); // on empile les parametres
 
         call.id.accept(this); //R0 contient l'adresse du PC de la déclaration de la fonction
+
         String id = ((Idf) call.id).name;
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();

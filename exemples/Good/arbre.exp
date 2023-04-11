@@ -1,11 +1,11 @@
 let 
     type arbre = {g: arbre, d : arbre}
     function node(a : arbre):int =
-        if a = nil then(0)
+        if a = nil then(1)
         else(
-            node(a.g) + node(a.d)
+            node(a.g) + node(a.d) + 1
         )
-    var tree := arbre{g = arbre{g=nil,d=nil},d = arbre{g = arbre{g=nil,d=nil},d=nil}}
+    var tree := arbre{g = nil,d = nil}
 in
     node(tree)
 end

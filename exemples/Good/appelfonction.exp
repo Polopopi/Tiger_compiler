@@ -1,6 +1,11 @@
 let
     function f(i : int) :int =
-        i+1
+        if i = 0 then (
+            i
+        )
+        else (
+            f(i-1) + f(i-1)
+        )
 in
-    f(0)
+    f(1)
 end
