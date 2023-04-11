@@ -1,9 +1,43 @@
-
-
 print
-        STMFA	SP!, {R0-R2}
-        STR		R0 , [R1],#0
-        LDMFA	SP!, {R0-R2}
+			STMFA	SP!, {R0-R2}
+
+			MOV		R0,#10
+			MOV		R3,#0
+			MOV		R2,#0
+			CMP		R1,#0
+			RSBLT	R1,R1,#0 ;<0?
+			ADDLT	R2,R2,#0x2D ;oui
+			STRLT	R2,[R9,R3] ;oui
+			ADDLT	R3,R3,#4  ;oui
+_print_loop_
+			CMP		R1,#0 ;si =0?
+			ADDEQ	R2,R2,#0x30 ;oui
+			STREQ	R2,[R9,R3]  ;oui
+			BEQ		_exit_print
+
+			CMP		R1,#10 ;si <10?
+			MOVCC	R2,R1 ;oui
+			ADDCC	R2,R2,#0x30 ;oui
+			STRCC	R2,[R9,R3] ;oui
+			BCC		_exit_print ;oui
+
+			BL		div ;sinon >=10
+
+			ADD		R2,R2,#0x30 ;R2 = RESTE
+			STR		R2,[R9,R3]
+			MOV		R1,R0 ; LA PARTIE ENTIÈRE
+			ADD		R3,R3,#4
+			MOV		R0,#10
+
+
+
+			BNE		_print_loop_
+
+
+
+_exit_print	LDMFA	SP!,{R0-R2}
+            LDR		PC,[SP,#-4]!
+
 
 ; LA DIVISION
 
@@ -54,6 +88,7 @@ _div_loop
 		
 _div_exit	
 		MOV		R0, R6
+		MOV     R2,R1
 		LDMFA	SP!, {R1, R3-R6}
 		MOV		PC, LR
 
