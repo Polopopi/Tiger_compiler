@@ -1,0 +1,15 @@
+/* Déclaration de variable array se fait par valeur (copie) */
+/* Record */
+
+let
+    var N := 2
+
+    type student = {name : string, age : int}
+    type class = array of student
+
+    var steven := student{name = "Steven", age = 21}
+    var crew := class[N] of steven /* crew[1] et crew[2] sont indépendants */
+in
+    crew[1].age := 22;
+    crew[2].age /* On devrait obtenir 21 */
+end

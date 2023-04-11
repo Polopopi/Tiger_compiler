@@ -1,0 +1,16 @@
+/* Déclaration de variable record se fait par référence */
+
+let
+    var N := 2
+
+    type intArray = array of int
+    type intArrayArray = array of intArray
+    type intArrayArrayRec = {A : intArrayArray, B : intArrayArray}
+
+    var row := intArray[N] of 0
+    var board := intArrayArray[N] of row                /* board[1] et board[2] sont indépendants */
+    var game := intArrayArrayRec{A = board, B = board}  /* game.A et game.B sont identiques */
+in
+    game.A[1][1] := 22;
+    game.B[1][1] /* On devrait obtenir 22 */
+end

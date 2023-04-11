@@ -152,6 +152,9 @@ public class Asr {
     public void decrementerHP(int nbr) {
         this.asr.add("    SUB R11, R11, #"+nbr*4);
     }
+    public void decrementerHP(String reg) {
+        this.asr.add("    SUB R11, R11, " + reg);
+    }
 
     public void positionneHP(String registreSrc){
         this.asr.add("    MOV R11,"+registreSrc);

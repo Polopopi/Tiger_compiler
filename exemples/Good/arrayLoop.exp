@@ -1,6 +1,3 @@
-/* Déclaration de variable array se fait par valeur (copie) */
-/* int */
-
 let
     var N := 2
 
@@ -9,15 +6,14 @@ let
 
     var row := intArray[N] of 0
     var board := intArrayArray[N] of row
-
-    var a := 1
 in
-    if (board[1][1] = 0) then
-        a := 0
-    end
-
+    for i := 1 to N do(
+        let 
+            var row := intArray[N] of 0
+        in
+            board[i] := row
+        end
+    );
     board[1][1] := 1;
     board[2][1]
-    
-    /* a */
 end

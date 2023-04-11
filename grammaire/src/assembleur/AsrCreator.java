@@ -608,6 +608,8 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START LET");
         currentTds = getTds();
 
+        Tds oldTds = currentTds;
+
         int nbVar = currentTds.getVarFuncEntries().size();
         asr.incrementerSp(nbVar);
 
@@ -616,6 +618,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         let.seqExpr.accept(this);
         asr.quitBlock();
+
+        asr.decrementerSp(nbVar);
+
+        currentTds = oldTds;
         asr.comment("END LET");
         return null;
     }
@@ -801,7 +807,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START VAR DECLARATION");
         String id = ((Idf)varDeclaration.idf).name; //c'est pour trouver la valeur de déplacement.
         varDeclaration.expr.accept(this);
-        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement();
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
         asr.stockerValeurBP("R0", deplacement);
         asr.comment("END DECLARATION");
 
@@ -861,30 +867,255 @@ public class AsrCreator implements AstVisitor<String> {
         return null; 
     }
 
-    @Override
-    public String visit(Array array) {
-        asr.comment("START ARRAY");
-        asr.empiler("R11");
+    public void copyType(String typeComposite){
+        if (typeComposite.equals("string")){
+            copyString();
+        }
+        else { // Cas du int traité en amont
+            TypeEntry typeCompositeEntry = this.currentTds.getTypeEntry(typeComposite);
 
-        currentTypeEntry = this.currentTds.getTypeEntry(((Idf)array.id).name);
+            if (typeCompositeEntry.isArray()){ //ARRAY
+                //ArrayEntry arrayCompositeEntry = (ArrayEntry)typeCompositeEntry;
+                //String typeCompositeComposite = arrayCompositeEntry.getTypeComposite();
+                copyArray(typeComposite);
+            }
+            else if (typeCompositeEntry.isRecord()){ // RECORD
+                copyRecord(typeComposite);
+            }   
+            else{
+                System.out.println("Type non reconnu");
+            }
+        }
+        // Si 1er appel de copyType dans Array, alors
+            // SI c'est un int, simplement mettre dans la case du tas la valeur contenue dans R0 suffit (pris en charge par intExpr)
+        // Sinon (appel dans copyArray ou copyRecord)
+            // Si c'est un int, il faut renvoyer le int dans R0
+    }
 
-        array.exprOr1.accept(this);
-        asr.mov("R1", "R0"); // R1 = taille du tableau
+    public void copyArray(String type){
+        asr.comment("START COPY ARRAY");
+
+        TypeEntry oldTypeEntry = currentTypeEntry;
+        // R3 pointe sur chaque élément de l'array à copier
+
+        asr.lireVarSP("R3"); // On récupère le pointeur vers l'array à copier (R4)
+
+        asr.empiler("R11"); // Pour le retour
+        asr.mov("R2", "R11"); // R2 va pointer sur chaque élément de l'array
+
+        currentTypeEntry = this.currentTds.getTypeEntry(type);
+
+        //TAILLE
+        //asr.lireVarSP("R3");//Contient l'adresse dans le tas où est stocké l'élément de l'array parent
+        //asr.lireVarReg("R3", "R3"); // Contient 
+        // Conecter un registre à l'array à copier
+        asr.lireVarReg("R1", "R3"); // R1 = taille du tableau
+        asr.moins("R3", "R3", "#4"); // R3 = adresse du premier élément du tableau à copier
+        asr.moins("R2", "R2", "#4"); // R2 = adresse du premier élément du tableau
         asr.empilerHP("R1");
+        // On décrémente le HP pour pouvoir faire les copies
+        // C'est temporaire mdr
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
 
+
+        //INIT en mode int de base
         String loopLabel = generateLabel();
         asr.label(loopLabel);
 
         // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
         // Et tout simplement renvoyer le pointeur dans R0
-        array.exprOr2.accept(this);
-        asr.empilerHP("R0");
+        //array.exprOr2.accept(this);
+        String typeComposite = ((ArrayEntry)currentTypeEntry).getTypeComposite();
+        // Si l'array est composé de int, on a juste à copier sans empiler ou quoi
+        if (typeComposite.equals("int")){
+            asr.lireVarReg("R4", "R3");
+            asr.str("R4", "R2");
+        }
+        else{
+            asr.empilerSP("R1, R2, R3");
+            asr.lireVarReg("R4", "R3"); // Pointe vers l'array composite
+            asr.empiler("R4");
+            copyType(typeComposite);
+            asr.decrementerSp(1); // On décrémente car plus besoin de R4
+            asr.depilerSP("R1, R2, R3");
+
+            asr.str("R0", "R2");
+        }
+
+        //asr.empilerHP("R0");
+        asr.moins("R2", "R2", "#4");
+        asr.moins("R3", "R3", "#4");
 
         asr.moins("R1", "R1", "#1");
         asr.cmp("R1", "#0");
         asr.b("NE", loopLabel);
 
+
+        //RETOUR
         asr.depiler("R0");
+
+        currentTypeEntry = oldTypeEntry;
+
+        asr.comment("END COPY ARRAY");
+    }
+
+    public void copyRecord(String type){
+        asr.comment("START COPY RECORD");
+
+        TypeEntry oldTypeEntry = currentTypeEntry;
+        // R2 pointe sur chaque élément de l'array à copier
+
+        asr.lireVarSP("R2"); // On récupère le pointeur vers le record à copier (R4)
+
+        asr.empiler("R11"); // Pour le retour
+        asr.mov("R1", "R11"); // R1 va pointer sur chaque élément du record
+
+        currentTypeEntry = this.currentTds.getTypeEntry(type);
+
+        //TAILLE
+        //asr.lireVarSP("R3");//Contient l'adresse dans le tas où est stocké l'élément de l'array parent
+        //asr.lireVarReg("R3", "R3"); // Contient 
+        // Conecter un registre à l'array à copier
+        int tailleRecord = ((RecordEntry)currentTypeEntry).getFields().size();
+        // On décrémente le HP pour pouvoir faire les copies
+        asr.decrementerHP(tailleRecord);
+
+
+        //INIT en mode int de base
+
+        // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
+        // Et tout simplement renvoyer le pointeur dans R0
+
+        for (FieldEntry field : ((RecordEntry)currentTypeEntry).getFields()){
+            String typeField = field.getType();
+            // Si l'array est composé de int, on a juste à copier sans empiler ou quoi
+            if (typeField.equals("int")){
+                asr.lireVarReg("R3", "R2");
+                asr.str("R3", "R1");
+            }
+            else{
+                asr.empilerSP("R1, R2");
+                asr.lireVarReg("R3", "R2"); // Pointe vers le field
+                asr.empiler("R3");
+                copyType(typeField);
+                asr.decrementerSp(1); // On décrémente car plus besoin de R3
+                asr.depilerSP("R1, R2");
+
+                asr.str("R0", "R1");
+            }
+
+            //asr.empilerHP("R0");
+            asr.moins("R1", "R1", "#4");
+            asr.moins("R2", "R2", "#4");            
+        }
+
+        //RETOUR
+        asr.depiler("R0");
+
+        currentTypeEntry = oldTypeEntry;
+
+        asr.comment("END COPY RECORD");
+    }
+
+    public void copyString(){
+        asr.comment("START COPY STRING");
+        asr.mov("R0", "R11"); //Adresse pour le pointeur de la string dans R0
+
+        asr.lireVarSP("R1"); // R1 = pointeur vers le string à copier (R4)
+
+        String loopLabel = generateLabel();
+        String endLabel = generateLabel();
+
+        asr.label(loopLabel);
+
+        asr.lireVarReg("R2", "R1"); // R2 = char courant de la string à copier
+
+        asr.empilerHP("R2");
+
+        // Si on est à la fin de la string
+        asr.and("R3", "R2", "#0x00000003");
+        asr.cmp("R3", "#0");
+        asr.b("EQ", endLabel);
+
+        asr.charSuivant("R1");
+
+        asr.b(loopLabel);
+
+        asr.label(endLabel);
+
+        asr.comment("END COPY STRING");
+    }
+
+    @Override
+    public String visit(Array array) {
+        asr.comment("START ARRAY");
+        
+        asr.empiler("R11");
+        asr.mov("R2", "R11"); // R2 va pointer sur chaque élément de l'array
+        
+        TypeEntry oldTypeEntry = currentTypeEntry;
+
+        currentTypeEntry = this.currentTds.getTypeEntry(((Idf)array.id).name);
+
+        //TAILLE
+        array.exprOr1.accept(this);
+        asr.mov("R1", "R0"); // R1 = taille du tableau
+        asr.moins("R2", "R2", "#4"); // R2 = adresse du premier élément du tableau
+        asr.empilerHP("R1");
+        // On décrémente le HP pour pouvoir faire les copies
+        // C'est temporaire mdr
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+        asr.decrementerHP("R1");
+
+
+        //INIT en mode int de base
+        String loopLabel = generateLabel();
+
+
+        // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
+        // Et tout simplement renvoyer le pointeur dans R0
+        asr.empilerSP("R1, R2");
+        array.exprOr2.accept(this);
+        asr.depilerSP("R1, R2");
+        asr.mov("R3", "R0"); // R3 = pointeur vers chaque élément de l'array à copier (dans le tas) OU int à copier
+
+        asr.label(loopLabel);
+
+        String typeComposite = ((ArrayEntry)currentTypeEntry).getTypeComposite();
+        // Si l'array est composé de int, on a juste à copier sans empiler ou quoi
+        if (typeComposite.equals("int")){
+            asr.str("R3", "R2");
+        }
+        else{
+            asr.empilerSP("R1, R2, R3");
+            //asr.lireVarReg("R4", "R3");
+            //asr.empiler("R4"); // On empile le pointeur vers le 1er élément de l'array composite à copier
+            copyType(typeComposite);
+            //asr.decrementerSp(1); // On décrémente car plus besoin de R4
+            asr.depilerSP("R1, R2, R3");
+
+            asr.str("R0", "R2");
+        }
+
+        //asr.empilerHP("R0");
+        asr.moins("R2", "R2", "#4");
+        // Ne pas décrémenter R3 car on veut toujours pointer sur l'array à copier (racine de l'arborescence)
+
+        asr.moins("R1", "R1", "#1");
+        asr.cmp("R1", "#0");
+        asr.b("NE", loopLabel);
+
+
+        //RETOUR
+        asr.depiler("R0");
+
+        currentTypeEntry = oldTypeEntry;
+
         asr.comment("END ARRAY");
         return null;
     }
@@ -1021,10 +1252,10 @@ public class AsrCreator implements AstVisitor<String> {
         lvalueindex.exprOr.accept(this);
 
         asr.depiler("R1"); // on récupère l'adresse de l'array (la 1ère case)
-        asr.lireVarReg("R3", "R1");
-        asr.lireVarReg("R2", "R0"); // R2 contient la taille de l'array
+        asr.lireVarReg("R3", "R1"); // R3 contient la taille de l'array
+        asr.mov("R2", "R0"); // R2 contient l'indice
         
-        asr.cmp( "r2",  "r3"); // j'ai un doute la dessus entre r2 et r3
+        asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
         //Pas besoin pcq les array commencent à l'indice 1
         //asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
 
@@ -1038,19 +1269,26 @@ public class AsrCreator implements AstVisitor<String> {
         return typeComposite;
     }
 
-    @Override
+    @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         call.listExpr.accept(this); // on empile les parametres
         
         String id = call.id.accept(this); //on cherche ID de la fct
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();
+        
+        //Trouver le Chainage Statique
+        int nb_imbri_actuel = this.currentTds.getImbrication();
+        int nb_imbri_def = this.currentTds.get_FonctionDefImbrication(id);
+        for (int i=0;i<(nb_imbri_actuel-nb_imbri_def);i++){
+            asr.lireVarReg("R12","R2");
+        }
+        asr.empiler("R2"); // on empile le chainage statique
+
 
         asr.lireVarReg("PC","R0");              // code à générer
 
-        asr.depilerSP("R0");        // pour adresse de retour
-        asr.depilerSP("R1");
-        asr.depilerSP("R1");
+        asr.depilerSP("R1"); // on depile le CS
 
         for (int i=0;i<nb_param;i++) {
             asr.depilerSP("R1"); // depiler les parametres
