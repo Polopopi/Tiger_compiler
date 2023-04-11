@@ -3,7 +3,7 @@ let
     function node(a : arbre):int =
         if a = nil then(0)
         else(
-            node(a.g) + node(a.d)
+            node(a.g) + node(a.d) + 1
         )
     var tree := arbre{g = arbre{g=nil,d=nil},d = arbre{g = arbre{g=nil,d=nil},d=nil}}
 in

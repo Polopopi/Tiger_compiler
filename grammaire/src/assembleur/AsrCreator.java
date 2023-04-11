@@ -1203,6 +1203,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.lireAdrBP("R9");// enregistrer l'adresse de BP dans R9
 
+        System.out.println(affect.name);
+        System.out.println(currentTds.getId());
+        currentTds.printTds();
+
         while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
             // se déplacer dans la dernière imbrication
             asr.lireValBP("R10",0);//lire le chaînage statique et l'enregistre dans R0
