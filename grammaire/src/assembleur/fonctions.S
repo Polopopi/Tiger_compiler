@@ -78,5 +78,5 @@ _mult_zero
 		LSR		r0,r0,#1
 		CMP		r0,#0
 		BNE		_mult_loop	; Si r0 n'est pas égale à zéro on continue la loop sinon FIN
-
+		MOV   	PC, LR
 		
