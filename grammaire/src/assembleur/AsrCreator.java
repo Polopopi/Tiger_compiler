@@ -136,7 +136,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END OR");
-        return null;
+        return "int";
     }
 
     @Override
@@ -162,7 +162,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END AND");
-        return null;
+        return "int";
     }
 
     @Override
@@ -220,7 +220,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.comment("END START");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -276,7 +276,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.comment("END DIFF");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -331,7 +331,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.comment("END INF");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -384,7 +384,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setRetour("LE", 0);
         }
         asr.comment("END SUP");
-        return null;
+        return "int";
     }
 
     @Override
@@ -438,7 +438,7 @@ public class AsrCreator implements AstVisitor<String> {
         }
         asr.comment("END INFEQUAL");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -491,7 +491,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setRetour("LT", 0);
         }
         asr.comment("END SUPEQUAL");
-        return null;
+        return "int";
     }
 
     @Override
@@ -508,7 +508,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.plus("R0","R1","R0");
         asr.comment("END PLUS");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -525,7 +525,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.moins("R0","R1","R0");
         asr.comment("END MINUS");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -533,15 +533,16 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START MULT");
         String left = mult.left.accept(this);
 
-        asr.empiler("R0");
+        asr.empilerSP("R0");
 
         String right = mult.right.accept(this);
 
-        asr.depiler("R1");
+        asr.depilerSP("R1");
         
         asr.link("mult");
+        asr.mov("r0","r3");
         asr.comment("END MULT");
-        return null;
+        return "int";
     }
 
     @Override
@@ -558,7 +559,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.link("div");
         asr.comment("END DIVIDE");
 
-        return null;
+        return "int";
     }
 
 
@@ -568,20 +569,17 @@ public class AsrCreator implements AstVisitor<String> {
         minusExpr.expr.accept(this);
         asr.negate("R0");
         asr.comment("END UNARY MINUS");
-        return null;
+        return "int";
     }
 
     @Override
     public String visit(IfThen ifThen) {
         asr.comment("START IF THEN");
-        String thenLabel = generateLabel();
         String endLabel = generateLabel();
 
         ifThen.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("NE", thenLabel);
-        asr.b(endLabel);
-        asr.label(thenLabel);
+        asr.b("EQ",endLabel);
         ifThen.thenBlock.accept(this);
         asr.label(endLabel);
         asr.comment("END IF THEN");
@@ -591,28 +589,27 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(IfThenElse ifThenElse) {
         asr.comment("START IF THEN ELSE");
-        String thenLabel = generateLabel();
         String elseLabel = generateLabel();
+        String endLabel = generateLabel();
 
         ifThenElse.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("NE", thenLabel);
-        asr.b(elseLabel);
-        
-        asr.label(thenLabel);
-        ifThenElse.thenBlock.accept(this);
+        asr.b("EQ", elseLabel);
+        String type = ifThenElse.thenBlock.accept(this);
+        asr.b(endLabel);
         asr.label(elseLabel);
         ifThenElse.elseBlock.accept(this);
+        asr.label(endLabel);
         asr.comment("END IF THEN ELSE");
-        return null;
+        return type;
     }
 
     @Override
     public String visit(Let let) {
         asr.comment("START LET");
-        currentTds = getTds();
 
         Tds oldTds = currentTds;
+        currentTds = getTds();
 
         int nbVar = currentTds.getVarFuncEntries().size();
         asr.incrementerSp(nbVar);
@@ -620,14 +617,14 @@ public class AsrCreator implements AstVisitor<String> {
         asr.newBlock();
         let.declarationList.accept(this);
 
-        let.seqExpr.accept(this);
+        String type = let.seqExpr.accept(this);
         asr.quitBlock();
 
         asr.decrementerSp(nbVar);
 
         currentTds = oldTds;
         asr.comment("END LET");
-        return null;
+        return type;
     }
 
     @Override
@@ -710,7 +707,7 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(NilExpr affect) {
         asr.comment("NIL");
         asr.setRetour(0); // 0 == nil ?
-        return null;
+        return "int";
     }
 
     @Override
@@ -752,11 +749,12 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(SeqExpr seqExpr) {
+        String type = null;
         for (Ast expr:seqExpr.listExpr){
-            expr.accept(this);
+            type = expr.accept(this);
         }
 
-        return null;
+        return type;
     }
 
     // Paramètre d'appel de fonction
@@ -1133,13 +1131,17 @@ public class AsrCreator implements AstVisitor<String> {
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
 
+        String fctId =((Idf) fctDeclaration.fonctionID).name;
+        int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        asr.empilerSP("r1");
+        asr.stockerValeurBP("r1", dep);
         asr.b(endLabel);
 
         asr.label(beginLabel);
+        asr.mov("r1","SP");
         asr.empilerSP("r12,LR");
+        asr.mov("r12","r1");
         
         fctDeclaration.exprAffect.accept(this);
 
@@ -1155,23 +1157,30 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(ProcDeclaration procDeclaration) {
         asr.comment("START PROC DECLARATION");
+        Tds oldTds = currentTds;
         currentTds = getTds();
 
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
 
+        String fctId =((Idf) procDeclaration.fonctionID).name;
+        int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        asr.empilerSP("r1");
+        asr.stockerValeurBP("r1", dep);
         asr.b(endLabel);
 
         asr.label(beginLabel);
+        asr.mov("r1","SP");
         asr.empilerSP("r12,LR");
+        asr.mov("r12","r1");
         
         procDeclaration.exprAffect.accept(this);
 
         asr.depilerSP("r12,PC");
         asr.label(endLabel);
+
+        currentTds=oldTds;
 
         asr.comment("END PROC DECLARATION");
         return(null);
@@ -1196,6 +1205,10 @@ public class AsrCreator implements AstVisitor<String> {
         Tds tdsCourant = currentTds;
 
         asr.lireAdrBP("R9");// enregistrer l'adresse de BP dans R9
+
+        System.out.println(affect.name);
+        System.out.println(currentTds.getId());
+        currentTds.printTds();
 
         while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
             // se déplacer dans la dernière imbrication
@@ -1278,23 +1291,25 @@ public class AsrCreator implements AstVisitor<String> {
     @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         asr.comment("START CALL");
+
         call.listExpr.accept(this); // on empile les parametres
 
-        call.id.accept(this); //on cherche ID de la fct
+        call.id.accept(this); //R0 contient l'adresse du PC de la déclaration de la fonction
         String id = ((Idf) call.id).name;
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();
         
         //Trouver le Chainage Statique
+        asr.mov("R9", "R12");
         int nb_imbri_actuel = this.currentTds.getImbrication();
         int nb_imbri_def = this.currentTds.get_FonctionDefImbrication(id);
         for (int i=0;i<(nb_imbri_actuel-nb_imbri_def);i++){
-            asr.lireVarReg("R12","R2");
+            asr.lireVarReg("R9","R9");
         }
-        asr.empiler("R2"); // on empile le chainage statique
+        asr.empiler("R9"); // on empile le chainage statique
 
-
-        asr.lireVarReg("PC","R0");              // code à générer
+        asr.mov("LR", "PC");
+        asr.mov("PC","R0");              // code à générer
 
         asr.depilerSP("R1"); // on depile le CS
 
@@ -1302,7 +1317,8 @@ public class AsrCreator implements AstVisitor<String> {
             asr.depilerSP("R1"); // depiler les parametres
         }
 
+    
         asr.comment("END CALL");
-        return null;
+        return fct.getType();
     }
 }
