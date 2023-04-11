@@ -1132,7 +1132,12 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        asr.empilerSP("r1");
+        //asr.empilerSP("r1"); // On empile
+
+        String id = ((Idf)fctDeclaration.fonctionID).name; //c'est pour trouver la valeur de déplacement.
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
+        asr.stockerValeurBP("R1", deplacement);
+
         asr.b(endLabel);
 
         asr.label(beginLabel);
@@ -1159,7 +1164,12 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        asr.empilerSP("r1");
+        //asr.empilerSP("r1");
+
+        String id = ((Idf)procDeclaration.fonctionID).name; //c'est pour trouver la valeur de déplacement.
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
+        asr.stockerValeurBP("R1", deplacement);
+
         asr.b(endLabel);
 
         asr.label(beginLabel);
@@ -1277,7 +1287,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START CALL");
         call.listExpr.accept(this); // on empile les parametres
 
-        call.id.accept(this); //on cherche ID de la fct
+        call.id.accept(this); //R0 contient l'adresse du PC de la déclaration de la fonction
         String id = ((Idf) call.id).name;
         FunctionEntry fct = (FunctionEntry)this.currentTds.getVarFuncEntry(id);
         int nb_param = fct.getNumberOfParameters();
@@ -1290,8 +1300,9 @@ public class AsrCreator implements AstVisitor<String> {
         }
         asr.empiler("R2"); // on empile le chainage statique
 
-
-        asr.lireVarReg("PC","R0");              // code à générer
+        asr.mov("LR", "PC");
+        asr.plus("LR", "LR", "#12");
+        asr.mov("PC","R0");              // code à générer
 
         asr.depilerSP("R1"); // on depile le CS
 

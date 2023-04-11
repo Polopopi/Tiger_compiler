@@ -1,11 +1,15 @@
 let 
-    var n := 5
+    var n := 1
     function fact(k : int) : int =
         let var res := 1 in
             (
-                for i := 1 to k do res := i * res ;
+                for i := 1 to k do (
+                    res := i * res
+                );
                 res
             )
         end
-in fact(n) end
+in 
+    fact(n) 
+end
     
