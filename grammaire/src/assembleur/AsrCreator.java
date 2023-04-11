@@ -53,10 +53,11 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Print print) {
         asr.comment("START PRINT");
-        print.value.accept(this);
-        asr.getStdOut();
-        asr.ecrireVarReg("r0", "r1");
-        //asr.plus( r, null, null);
+
+        asr.getAddrOut();// load @ de print_out
+        print.value.accept(this);// trouver la val dans R0
+        asr.link("print");
+        //asr.ecrireValPrint("R0", "R1"); // mettre la val dans le label, faut se brancher vers fct print
 
         asr.comment("END PRINT");
         return null;
@@ -86,7 +87,7 @@ public class AsrCreator implements AstVisitor<String> {
         currentTds = getTds();
 
         String endLabel = generateLabel();
-        asr.getAsr().add("_std_out FILL 0x1000");
+        //asr.getAsr().add("_std_out FILL 0x1000");
 
         asr.b(endLabel);
 

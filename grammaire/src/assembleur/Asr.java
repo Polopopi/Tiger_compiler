@@ -12,14 +12,16 @@ public class Asr {
 
     public Asr(){
         this.asr=new ArrayList<String>();
+        this.asr.add("_print_out FILL 0x1000");
     }
+
 
     public ArrayList<String> getAsr(){
         return this.asr;
     }
 
-    public void getStdOut(){
-        this.asr.add("    LDR R1, =_str_out");
+    public void getAddrOut(){
+        this.asr.add("    LDR R1, =_print_out");
     }
 
     public void setRetour(int valeur) {
@@ -216,8 +218,8 @@ public class Asr {
     public void lireVarReg(String cond, String registreRecepteur, String registrePointeur){
         this.asr.add("    LDR" + cond + " " + registreRecepteur + " , [" + registrePointeur + "]");
     }
-    public void ecrireVarReg(String registreSource, String registreReceveur){
-        this.asr.add("    STR " + registreSource + " , [" + registreReceveur+ "]");
+    public void ecrireValPrint(String registreSource, String registreReceveur){
+        this.asr.add("    STR " + registreSource + " , [" + registreReceveur+ "],#0");
     }
 
     public void b(String flag){
