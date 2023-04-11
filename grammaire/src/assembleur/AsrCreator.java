@@ -133,7 +133,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END OR");
-        return null;
+        return "int";
     }
 
     @Override
@@ -159,7 +159,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END AND");
-        return null;
+        return "int";
     }
 
     @Override
@@ -217,7 +217,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.comment("END START");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -273,7 +273,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.comment("END DIFF");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -328,7 +328,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.comment("END INF");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -381,7 +381,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setRetour("LE", 0);
         }
         asr.comment("END SUP");
-        return null;
+        return "int";
     }
 
     @Override
@@ -435,7 +435,7 @@ public class AsrCreator implements AstVisitor<String> {
         }
         asr.comment("END INFEQUAL");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -488,7 +488,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.setRetour("LT", 0);
         }
         asr.comment("END SUPEQUAL");
-        return null;
+        return "int";
     }
 
     @Override
@@ -505,7 +505,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.plus("R0","R1","R0");
         asr.comment("END PLUS");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -522,7 +522,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.moins("R0","R1","R0");
         asr.comment("END MINUS");
 
-        return null;
+        return "int";
     }
 
     @Override
@@ -539,7 +539,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.link("mult");
         asr.mov("r0","r3");
         asr.comment("END MULT");
-        return null;
+        return "int";
     }
 
     @Override
@@ -556,7 +556,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.link("div");
         asr.comment("END DIVIDE");
 
-        return null;
+        return "int";
     }
 
 
@@ -566,7 +566,7 @@ public class AsrCreator implements AstVisitor<String> {
         minusExpr.expr.accept(this);
         asr.negate("R0");
         asr.comment("END UNARY MINUS");
-        return null;
+        return "int";
     }
 
     @Override
@@ -592,13 +592,13 @@ public class AsrCreator implements AstVisitor<String> {
         ifThenElse.condition.accept(this);
         asr.cmp("r0","#0");
         asr.b("EQ", elseLabel);
-        ifThenElse.thenBlock.accept(this);
+        String type = ifThenElse.thenBlock.accept(this);
         asr.b(endLabel);
         asr.label(elseLabel);
         ifThenElse.elseBlock.accept(this);
         asr.label(endLabel);
         asr.comment("END IF THEN ELSE");
-        return null;
+        return type;
     }
 
     @Override
@@ -614,14 +614,14 @@ public class AsrCreator implements AstVisitor<String> {
         asr.newBlock();
         let.declarationList.accept(this);
 
-        let.seqExpr.accept(this);
+        String type = let.seqExpr.accept(this);
         asr.quitBlock();
 
         asr.decrementerSp(nbVar);
 
         currentTds = oldTds;
         asr.comment("END LET");
-        return null;
+        return type;
     }
 
     @Override
@@ -704,7 +704,7 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(NilExpr affect) {
         asr.comment("NIL");
         asr.setRetour(0); // 0 == nil ?
-        return null;
+        return "int";
     }
 
     @Override
@@ -746,11 +746,12 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(SeqExpr seqExpr) {
+        String type = null;
         for (Ast expr:seqExpr.listExpr){
-            expr.accept(this);
+            type = expr.accept(this);
         }
 
-        return null;
+        return type;
     }
 
     // Paramètre d'appel de fonction
@@ -1311,6 +1312,6 @@ public class AsrCreator implements AstVisitor<String> {
 
     
         asr.comment("END CALL");
-        return null;
+        return fct.getType();
     }
 }
