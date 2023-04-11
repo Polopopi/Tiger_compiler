@@ -575,7 +575,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         ifThen.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("E",endLabel);
+        asr.b("EQ",endLabel);
         ifThen.thenBlock.accept(this);
         asr.label(endLabel);
         asr.comment("END IF THEN");
@@ -590,7 +590,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         ifThenElse.condition.accept(this);
         asr.cmp("r0","#0");
-        asr.b("E", elseLabel);
+        asr.b("EQ", elseLabel);
         ifThenElse.thenBlock.accept(this);
         asr.b(endLabel);
         asr.label(elseLabel);
@@ -1282,6 +1282,7 @@ public class AsrCreator implements AstVisitor<String> {
     @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         asr.comment("START CALL");
+
         call.listExpr.accept(this); // on empile les parametres
 
         call.id.accept(this); //R0 contient l'adresse du PC de la déclaration de la fonction
@@ -1290,12 +1291,13 @@ public class AsrCreator implements AstVisitor<String> {
         int nb_param = fct.getNumberOfParameters();
         
         //Trouver le Chainage Statique
+        asr.mov("R9", "R12");
         int nb_imbri_actuel = this.currentTds.getImbrication();
         int nb_imbri_def = this.currentTds.get_FonctionDefImbrication(id);
         for (int i=0;i<(nb_imbri_actuel-nb_imbri_def);i++){
-            asr.lireVarReg("R12","R2");
+            asr.lireVarReg("R9","R9");
         }
-        asr.empiler("R2"); // on empile le chainage statique
+        asr.empiler("R9"); // on empile le chainage statique
 
         asr.mov("LR", "PC");
         asr.mov("PC","R0");              // code à générer
@@ -1306,6 +1308,7 @@ public class AsrCreator implements AstVisitor<String> {
             asr.depilerSP("R1"); // depiler les parametres
         }
 
+    
         asr.comment("END CALL");
         return null;
     }

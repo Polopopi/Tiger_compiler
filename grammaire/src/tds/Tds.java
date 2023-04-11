@@ -39,7 +39,7 @@ public class Tds {
         Boolean found = false;
         Tds tdss = this;
         while (!found){
-            for(int i=0; i<varFuncEntries.size();i++){
+            for(int i=0; i<tdss.getVarFuncEntries().size();i++){
                 if (tdss.getVarFuncEntries().get(i).getSymbol().equals(id)) {
                     found = true;
                     imbri = tdss.getImbrication();
