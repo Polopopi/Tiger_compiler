@@ -38,7 +38,6 @@ public class Tds {
         int imbri =0;
         Boolean found = false;
         Tds tdss = this;
-        System.out.println(id);
         while (!found){
             for(int i=0; i<tdss.getVarFuncEntries().size();i++){
                 if (tdss.getVarFuncEntries().get(i).getSymbol().equals(id)) {

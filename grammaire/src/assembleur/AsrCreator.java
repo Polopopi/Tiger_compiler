@@ -23,6 +23,7 @@ public class AsrCreator implements AstVisitor<String> {
 
 
     private Tds getTds(){
+        System.out.println("TDS ++ : " + (listTds.get(oldTdsId).getId()));
         return(listTds.get(oldTdsId++));
     }
 
@@ -604,6 +605,7 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Let let) {
         asr.comment("START LET");
+        System.out.println("LET");
 
         Tds oldTds = currentTds;
         currentTds = getTds();
@@ -619,6 +621,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.decrementerSp(nbVar);
 
+        System.out.println("TDS : " + oldTds.getId());
         currentTds = oldTds;
         asr.comment("END LET");
         return type;
@@ -664,6 +667,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.moins("r13","r13", "#4"); //depile la valeur limite
         asr.quitBlock();
         asr.moins("r13","r13", "#4"); // depile la variable i
+        System.out.println("TDS : " + oldTds.getId());
         currentTds=oldTds;
 
         asr.comment("END FOR");
@@ -1129,6 +1133,7 @@ public class AsrCreator implements AstVisitor<String> {
         String endLabel = generateLabel();
 
         String fctId =((Idf) fctDeclaration.fonctionID).name;
+        System.out.println("FCT " + fctId);
         int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
@@ -1146,7 +1151,8 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END FCTN DECLARATION");
-        currentTds=oldTds;
+        System.out.println("TDS : " + oldTds.getId());
+        currentTds = oldTds;
 
         return(null);
     }
@@ -1176,6 +1182,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depilerSP("r12,PC");
         asr.label(endLabel);
+        System.out.println("TDS : " + oldTds.getId());
 
         currentTds=oldTds;
 
@@ -1203,7 +1210,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.lireAdrBP("R9");// enregistrer l'adresse de BP dans R9
 
+        System.out.println(id);
+
         while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
+            System.out.println(tdsCourant.getId());
             // se déplacer dans la dernière imbrication
             asr.lireValBP("R10",0);//lire le chaînage statique et l'enregistre dans R0
             asr.positionnerBP("R10");//positionne BP vers l'adresse du chaînage statique
