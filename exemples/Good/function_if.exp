@@ -5,7 +5,7 @@ let
     else(
       0)
 in
-
+  not(0)
 end
 /*syntaxique : ok
 sémantique : ok*/
