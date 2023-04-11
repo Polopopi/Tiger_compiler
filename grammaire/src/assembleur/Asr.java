@@ -18,7 +18,9 @@ public class Asr {
         return this.asr;
     }
 
-
+    public void getStdOut(){
+        this.asr.add("    LDR R1, =_str_out");
+    }
 
     public void setRetour(int valeur) {
         this.asr.add("    LDR R0, ="+valeur);
@@ -195,6 +197,9 @@ public class Asr {
     public void mov(String op1, String op2){
         this.asr.add("    MOV " + op1 +", " +op2);
     }
+    public void mov(String cond, String op1, String op2){
+        this.asr.add("    MOV" + cond+ " " + op1 +", " +op2);
+    }
 
     public void charSuivant(String registre){
         this.asr.add("    SUB "+registre+", "+registre+", #4");
@@ -204,6 +209,9 @@ public class Asr {
     }
     public void lireVarReg(String registreRecepteur, String registrePointeur){
         this.asr.add("    LDR " + registreRecepteur + " , [" + registrePointeur + "]");
+    }
+    public void lireVarReg(String cond, String registreRecepteur, String registrePointeur){
+        this.asr.add("    LDR" + cond + " " + registreRecepteur + " , [" + registrePointeur + "]");
     }
     public void ecrireVarReg(String registreSource, String registreReceveur){
         this.asr.add("    STR " + registreSource + " , [" + registreReceveur+ "]");

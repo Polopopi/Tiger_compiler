@@ -7,5 +7,6 @@ let
     var row := intArray[N] of 0
     var board := intArrayArray[N] of row
 in
-    
+    board[1][1] := 1;
+    board[2][0]
 end

@@ -51,8 +51,12 @@ public class AsrCreator implements AstVisitor<String> {
 
 
     @Override
-    public String visit(Print affect) {
+    public String visit(Print print) {
         asr.comment("START PRINT");
+        print.value.accept(this);
+        asr.getStdOut();
+        asr.ecrireVarReg("r0", "r1");
+        //asr.plus( r, null, null);
 
         asr.comment("END PRINT");
         return null;
@@ -82,6 +86,7 @@ public class AsrCreator implements AstVisitor<String> {
         currentTds = getTds();
 
         String endLabel = generateLabel();
+        asr.getAsr().add("_std_out FILL 0x1000");
 
         asr.b(endLabel);
 
@@ -648,7 +653,8 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.lireValBP("r1", -1); //on récupère i dans r1
         asr.plus("r1","r1","#1");  //On ajoute 1 dans i
-        asr.ecrireVarReg("r1", "r11,#-4*1"); // on remet i a jour dans la pile
+        asr.stockerValeurBP("R1", -1);
+        //asr.ecrireVarReg("r1", "r11,#-4*1"); // on remet i a jour dans la pile /!\ R11 n'est pas le BP
         asr.b(forLabel);
         asr.label(forEndLabel);
         asr.moins("r13","r13", "#4"); //depile la valeur limite
@@ -693,7 +699,7 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(NilExpr affect) {
         asr.comment("NIL");
-        asr.setRetour(0);
+        asr.setRetour(0); // 0 == nil ?
         return null;
     }
 
@@ -1006,23 +1012,30 @@ public class AsrCreator implements AstVisitor<String> {
         // Si membre gauche d'une affectation (affected), on doit retourner l'adresse de l'array à l'indice i
         // Donc nameIdf = true pour récupérer le nom de l'array et son déplacement
 
-        String id = lvalueindex.left.accept(this);
+        String type = lvalueindex.left.accept(this);
+        ArrayEntry arrayEntry = (ArrayEntry) currentTds.getTypeEntry(type);
+        String typeComposite = arrayEntry.getTypeComposite();
+        
+        asr.empiler("R0"); // on sauvegarde l'adresse de l'array (la 1ère case)
+
         lvalueindex.exprOr.accept(this);
 
-        int depl = this.currentTds.getVarFuncEntry(id).getDeplacement();
-
-        asr.lireValBP("r1", depl);
-        asr.mov("R2", "R0");
+        asr.depiler("R1"); // on récupère l'adresse de l'array (la 1ère case)
         asr.lireVarReg("R3", "R1");
-        asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
-        asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
+        asr.lireVarReg("R2", "R0"); // R2 contient la taille de l'array
+        
+        asr.cmp( "r2",  "r3"); // j'ai un doute la dessus entre r2 et r3
+        //Pas besoin pcq les array commencent à l'indice 1
+        //asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
 
-        asr.multby4("GT", "R2"); // index *4  en rai je sais pas si c'est *4 ou *4*la taille dusuivant je sais pas tropp
+        // GE pcq pcq l'array commence à l'indice 1
+        asr.multby4("GE", "R2"); // index *4  en rai je sais pas si c'est *4 ou *4*la taille dusuivant je sais pas tropp
 
-        asr.moins("GT","R3","R3","R2"); // on descend dans le tas
-        asr.lireVarReg("R0", "R3");
+        asr.moins("GE","R1","R1","R2"); // on descend dans le tas
+        asr.mov("GE","R10","R1"); // on met l'adresse de l'array dans R10
+        asr.lireVarReg("GE", "R0", "R10");
 
-        return null;
+        return typeComposite;
     }
 
     @Override
