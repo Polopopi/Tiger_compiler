@@ -603,9 +603,9 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Let let) {
         asr.comment("START LET");
-        currentTds = getTds();
 
         Tds oldTds = currentTds;
+        currentTds = getTds();
 
         int nbVar = currentTds.getVarFuncEntries().size();
         asr.incrementerSp(nbVar);
@@ -1152,23 +1152,30 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(ProcDeclaration procDeclaration) {
         asr.comment("START PROC DECLARATION");
+        Tds oldTds = currentTds;
         currentTds = getTds();
 
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
 
+        String fctId =((Idf) procDeclaration.fonctionID).name;
+        int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
-        asr.empilerSP("r1");
+        asr.stockerValeurBP("r1", dep);
         asr.b(endLabel);
 
         asr.label(beginLabel);
+        asr.mov("r1","SP");
         asr.empilerSP("r12,LR");
+        asr.mov("r12","r1");
         
         procDeclaration.exprAffect.accept(this);
 
         asr.depilerSP("r12,PC");
         asr.label(endLabel);
+
+        currentTds=oldTds;
 
         asr.comment("END PROC DECLARATION");
         return(null);
