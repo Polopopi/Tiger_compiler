@@ -9,5 +9,5 @@ let
         )
     var n := 5
 in
-    fibo(n)
+    print(fibo(n))
 end
