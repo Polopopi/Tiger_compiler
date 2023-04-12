@@ -1,0 +1,11 @@
+let
+    var N := 2
+
+    type intArray = array of int
+
+    var row := intArray[N] of 0
+in
+    print(row[0]);
+    print(row[1]);
+    print(row[-1])
+end
