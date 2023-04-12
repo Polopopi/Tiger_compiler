@@ -2,9 +2,8 @@ let
     type list = {head : int, tail : list}
     type coupleList = {L1 : list, L2: list}
     var L := list{head = 5, tail = list{head = 2, tail = list{head = 3, tail = list{head = 1, tail = list{head = 4,tail = list{head = 6, tail = nil}}}}}}
-
-    var sortedList : list := list{head = 0, tail = nil}
-    var list_ptr : list := list{head = 0, tail = nil}
+    var sortedList : list := nil
+    var list_ptr : list := nil
 
     function separe(L : list) : coupleList =
         if L = nil then(
