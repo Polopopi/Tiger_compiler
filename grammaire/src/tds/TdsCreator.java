@@ -1171,7 +1171,7 @@ public class TdsCreator implements AstVisitor<String> {
                 isError ++;
             }
 
-            else if (exprType != null && !typeAlias.equals(exprType)){
+            else if (exprType != null && !typeAlias.equals(exprType) && !exprType.equals("nil")){
                 System.out.println("Erreur ligne " + affect.lineNumber + " : affectation du type " + exprType + " vers la variable " + id + " de type " + typeAlias);
                 isError ++;
             }
