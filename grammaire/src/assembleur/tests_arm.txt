@@ -11,3 +11,11 @@ record2
 
 string
 while
+
+print_for
+
+tri_fusion
+factoriel_iter
+factoriel_rec
+appelfonction
+arbre

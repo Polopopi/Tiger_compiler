@@ -23,5 +23,6 @@ in
     if (board[2][1] = "Steven") then (
         a := 3
     );
+    
     a
 end
