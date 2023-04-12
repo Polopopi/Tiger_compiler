@@ -829,7 +829,15 @@ public class AsrCreator implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(VarDeclarationType affect) {//rien à faire
+    public String visit(VarDeclarationType varDeclaration) {//rien à faire
+        asr.comment("START VAR DECLARATION");
+        String id = ((Idf)varDeclaration.idf).name; //c'est pour trouver la valeur de déplacement.
+        varDeclaration.expr.accept(this);
+        int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
+        asr.stockerValeurBP("R0", deplacement);
+        asr.comment("END DECLARATION");
+
+        //La variable il faut juste l'empiler dans la pile
         return null;
     }
 
@@ -838,9 +846,13 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(LvalueRecord lvalueRecord) {
         asr.comment("START LVALUE RECORD " + ((Idf)lvalueRecord.id).name);
         asr.empiler("R11"); // On empile l'adresse de la 1ère case du record
+<<<<<<< HEAD
 
         TypeEntry oldTypeEntry = currentTypeEntry;
 
+=======
+        TypeEntry oldTypeEntry = currentTypeEntry;
+>>>>>>> 881d0b24fd85184a43524f0e4abd743d14cf3f25
         currentTypeEntry = this.currentTds.getTypeEntry(((Idf)lvalueRecord.id).name);
         if (currentTypeEntry == null){
             System.out.println("Type non déclaré");
