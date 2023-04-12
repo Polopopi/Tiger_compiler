@@ -3,9 +3,11 @@ package assembleur.visual;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
+import java.util.Collections;
 
 
 import assembleur.Asr;
@@ -16,7 +18,7 @@ public class Launcher {
     /* we make sure that the output buffer is always the first symbol in memory */
     private static final int outputBufferAddress = instMemSize;
     /* VisUAL offsets line numbers by one for some reason */
-    private static final List<Integer> breakpoints = List.of(6 );
+    private static final List<Integer> breakpoints = List.of(12-1,17-1,23-1,29-1);//6
     private Launcher() {}
     /* array of all word addresses in the output buffer */
     private static String[] getOutputRange() {
@@ -35,7 +37,6 @@ public class Launcher {
         ExitTrapper.forbidSystemExitCall();
         int code = -1;
         try {
-            System.out.println("----------------------------------------------");
 
             HeadlessController.runFile(assemblyFile, logFile);
         } catch (ExitTrappedException e) {
@@ -48,17 +49,29 @@ public class Launcher {
                 System.exit(code);
             }
         }
-        System.out.println("----------------------------------------------");
-        System.out.println(OutputParser.parseOutput(logFile));
-        System.out.println("----------------------------------------------");
+
 
 
         return OutputParser.parseOutput(logFile);
     }
     public static void run(String assemblyFile) {
         List<String> output = executeAndParseOutput(assemblyFile);
+        //Collections.reverse(output);
+
         System.out.println("---- PROGRAM OUTPUT ----");
-        output.forEach(System.out::println);
+        if (output.size()>0){
+            String chaine = reverse(output.get(output.size()-1));
+
+            if ((output.get(output.size()-1)).contains("-")){
+                String resultat = chaine.substring(0,chaine.length()-1);
+                System.out.println("-"+resultat);
+            }
+            else {
+                System.out.println(chaine);
+            }
+        }
+
+        //output.forEach(System.out::println);
         System.out.println("---- END PROGRAM OUTPUT ----");
     }
     public static void lireF(String name){
@@ -79,6 +92,9 @@ public class Launcher {
         {
             e.printStackTrace();
         }
+    }
+    public static String reverse(String str) {
+        return new StringBuilder(str).reverse().toString();
     }
 
 
