@@ -1,17 +1,41 @@
-/* Déclaration de variable array se fait par valeur (copie) */
-/* int */
+(
+    /* Déclaration de variable array se fait par valeur (copie) */
+    /* Array */
 
-let
-    var N := 2
+    let
+        var N := 2
 
-    type intArray = array of int
-    type intArrayArray = array of intArray
+        type intArray = array of int
+        type intArrayArray = array of intArray               /* Array de arrays */
 
-    var row := intArray[N] of 0
-    var board := intArrayArray[N] of row
-in
-    print(board[1][1]);
+        var row := intArray[N] of 0
+        var board := intArrayArray[N] of row
+    in
+        board[0][0] := 1;
+        print(board[1][0])                                /* On doit obtenir 0 */  
+    end;
 
-    board[1][1] := 1;
-    print(board[2][1])
-end
+
+
+    /* Déclaration de variable array se fait par valeur (copie) */
+    /* Record + string */
+
+    let
+        var N := 2
+
+        type student = {name : string, age : int}
+        type class = array of student                       /* Array de records contenant un string (copie récursive de profondeur 3) */
+
+        var steven := student{name = "Steven", age = 21}
+        var crew := class[N] of steven                      /* crew[0] et crew[1] sont indépendants */
+    in
+        crew[0].name := "Wenjia";
+                                                            
+        if crew[1].name = "Wenjia" then (
+            print(1)
+        );
+        if crew[1].name = "Steven" then (                   /* On doit obtenir 2 */
+            print(2)
+        )
+    end
+)
