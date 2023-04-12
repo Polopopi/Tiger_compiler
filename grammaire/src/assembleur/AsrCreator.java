@@ -649,10 +649,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         currentTds=getTds();
         forNode.debut.accept(this); 
-        asr.empilerSP("r0"); //on empile la variable i
+        asr.empiler("r0"); //on empile la variable i
         asr.newBlock(); //on entre dans le bloc (on met le chainage en place)
         forNode.fin.accept(this); 
-        asr.empilerSP("r0"); //on stock dans la pile la valeur limite
+        asr.empiler("r0"); //on stock dans la pile la valeur limite
         asr.label(forLabel);
         asr.lireValBP("r1", -1);         // récupère i
         asr.lireValBP("r2", 1);                  // récupère valeur limite
@@ -943,12 +943,16 @@ public class AsrCreator implements AstVisitor<String> {
             asr.str("R4", "R2");
         }
         else{
-            asr.empilerSP("R1, R2, R3");
+            asr.empiler("R1");
+            asr.empiler("R2");
+            asr.empiler("R3");
             asr.lireVarReg("R4", "R3"); // Pointe vers l'array composite
             asr.empiler("R4");
             copyType(typeComposite);
             asr.decrementerSp(1); // On décrémente car plus besoin de R4
-            asr.depilerSP("R1, R2, R3");
+            asr.depiler("R3");
+            asr.depiler("R2");
+            asr.depiler("R1");
 
             asr.str("R0", "R2");
         }
@@ -1005,12 +1009,14 @@ public class AsrCreator implements AstVisitor<String> {
                 asr.str("R3", "R1");
             }
             else{
-                asr.empilerSP("R1, R2");
+                asr.empiler("R1");
+                asr.empiler("R2");
                 asr.lireVarReg("R3", "R2"); // Pointe vers le field
                 asr.empiler("R3");
                 copyType(typeField);
                 asr.decrementerSp(1); // On décrémente car plus besoin de R3
-                asr.depilerSP("R1, R2");
+                asr.depiler("R2");
+                asr.depiler("R1");
 
                 asr.str("R0", "R1");
             }
@@ -1087,9 +1093,11 @@ public class AsrCreator implements AstVisitor<String> {
 
         // ASR va boucler sur l'expr2 qui peut donc générer en boucle des strings ou des array/record
         // Et tout simplement renvoyer le pointeur dans R0
-        asr.empilerSP("R1, R2");
+        asr.empiler("R1");
+        asr.empiler("R2");
         array.exprOr2.accept(this);
-        asr.depilerSP("R1, R2");
+        asr.depiler("R2");
+        asr.depiler("R1");
         asr.mov("R3", "R0"); // R3 = pointeur vers chaque élément de l'array à copier (dans le tas) OU int à copier
 
         asr.label(loopLabel);
@@ -1100,12 +1108,16 @@ public class AsrCreator implements AstVisitor<String> {
             asr.str("R3", "R2");
         }
         else{
-            asr.empilerSP("R1, R2, R3");
+            asr.empiler("R1");
+            asr.empiler("R2");
+            asr.empiler("R3");
             //asr.lireVarReg("R4", "R3");
             //asr.empiler("R4"); // On empile le pointeur vers le 1er élément de l'array composite à copier
             copyType(typeComposite);
             //asr.decrementerSp(1); // On décrémente car plus besoin de R4
-            asr.depilerSP("R1, R2, R3");
+            asr.depiler("R3");
+            asr.depiler("R2");
+            asr.depiler("R1");
 
             asr.str("R0", "R2");
         }
@@ -1147,12 +1159,17 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.label(beginLabel);
         asr.mov("r1","SP");
-        asr.empilerSP("r12,LR");
+        asr.empiler("r12");
+        asr.empiler("LR");
         asr.mov("r12","r1");
         
         fctDeclaration.exprAffect.accept(this);
 
-        asr.depilerSP("r12,PC");
+        asr.mov("R2", "SP");
+        asr.decrementerSp(1);
+        asr.depiler("R12");
+        asr.lireVarReg("PC", "R2");
+
         asr.label(endLabel);
 
         asr.comment("END FCTN DECLARATION");
@@ -1180,12 +1197,16 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.label(beginLabel);
         asr.mov("r1","SP");
-        asr.empilerSP("r12,LR");
+        asr.empiler("r12");
+        asr.empiler("LR");
         asr.mov("r12","r1");
         
         procDeclaration.exprAffect.accept(this);
 
-        asr.depilerSP("r12,PC");
+        asr.mov("R2", "SP");
+        asr.decrementerSp(1);
+        asr.depiler("R12");
+        asr.lireVarReg("PC", "R2");
         asr.label(endLabel);
         System.out.println("TDS : " + oldTds.getId());
 
@@ -1321,10 +1342,10 @@ public class AsrCreator implements AstVisitor<String> {
         asr.mov("LR", "PC");
         asr.mov("PC","R0");              // code à générer
 
-        asr.depilerSP("R1"); // on depile le CS
+        asr.depiler("R1"); // on depile le CS
 
         for (int i=0;i<nb_param;i++) {
-            asr.depilerSP("R1"); // depiler les parametres
+            asr.depiler("R1"); // depiler les parametres
         }
 
     
