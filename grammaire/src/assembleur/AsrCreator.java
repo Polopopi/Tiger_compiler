@@ -846,13 +846,9 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(LvalueRecord lvalueRecord) {
         asr.comment("START LVALUE RECORD " + ((Idf)lvalueRecord.id).name);
         asr.empiler("R11"); // On empile l'adresse de la 1ère case du record
-<<<<<<< HEAD
 
         TypeEntry oldTypeEntry = currentTypeEntry;
-
-=======
-        TypeEntry oldTypeEntry = currentTypeEntry;
->>>>>>> 881d0b24fd85184a43524f0e4abd743d14cf3f25
+        
         currentTypeEntry = this.currentTds.getTypeEntry(((Idf)lvalueRecord.id).name);
         if (currentTypeEntry == null){
             System.out.println("Type non déclaré");
