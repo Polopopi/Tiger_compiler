@@ -19,6 +19,7 @@ public class AsrCreator implements AstVisitor<String> {
     private ArrayList<String> loopLabel;
     private TypeEntry currentTypeEntry;
     private boolean nameIdf = false;
+    private LinkList linkList;
 
 
 
@@ -35,12 +36,13 @@ public class AsrCreator implements AstVisitor<String> {
         return("label"+generateId());
     }
 
-    public AsrCreator(ArrayList<Tds> listTds){
+    public AsrCreator(ArrayList<Tds> listTds, LinkList linkList){
         this.listTds = listTds;
         this.asr=new Asr();
         this.idGenerator = 0;
         this.loopLabel = new ArrayList<String>();
         this.oldTdsId = 0;
+        this.linkList = linkList;
     }
 
     public void asrFichier(String asrFileName) throws IOException {
@@ -606,7 +608,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START LET");
 
         Tds oldTds = currentTds;
-        currentTds = getTds();
+        currentTds = linkList.getTds(let);
 
         int nbVar = currentTds.getVarFuncEntries().size();
         asr.incrementerSp(nbVar);
@@ -639,7 +641,7 @@ public class AsrCreator implements AstVisitor<String> {
         String forEndLabel = generateLabel();
         Tds oldTds = currentTds;
 
-        currentTds=getTds();
+        currentTds=linkList.getTds(forNode);
         forNode.debut.accept(this); 
         asr.empilerSP("r0"); //on empile la variable i
         asr.newBlock(); //on entre dans le bloc (on met le chainage en place)
@@ -1123,7 +1125,7 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(FctDeclaration fctDeclaration) {
         asr.comment("START FCTN DECLARATION");
         Tds oldTds = currentTds;
-        currentTds = getTds();
+        currentTds = linkList.getTds(fctDeclaration);
 
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
@@ -1155,7 +1157,7 @@ public class AsrCreator implements AstVisitor<String> {
     public String visit(ProcDeclaration procDeclaration) {
         asr.comment("START PROC DECLARATION");
         Tds oldTds = currentTds;
-        currentTds = getTds();
+        currentTds = linkList.getTds(procDeclaration);
 
         String beginLabel = generateLabel();
         String endLabel = generateLabel();
