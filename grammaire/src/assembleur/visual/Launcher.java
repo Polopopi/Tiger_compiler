@@ -18,7 +18,7 @@ public class Launcher {
     /* we make sure that the output buffer is always the first symbol in memory */
     private static final int outputBufferAddress = instMemSize;
     /* VisUAL offsets line numbers by one for some reason */
-    private static final List<Integer> breakpoints = List.of(12-1,17-1,23-1,29-1);//6
+    private static final List<Integer> breakpoints = List.of(40-1);//12-1,17-1,23-1,29-1
     private Launcher() {}
     /* array of all word addresses in the output buffer */
     private static String[] getOutputRange() {
@@ -59,10 +59,12 @@ public class Launcher {
         //Collections.reverse(output);
 
         System.out.println("---- PROGRAM OUTPUT ----");
-        if (output.size()>0){
-            String chaine = reverse(output.get(output.size()-1));
+        //output.forEach(System.out::println);
+        System.out.println(output);
+        for (int i=0;i<output.size();i++){
+            String chaine = reverse(output.get(i));
 
-            if ((output.get(output.size()-1)).contains("-")){
+            if (chaine.contains("-")){
                 String resultat = chaine.substring(0,chaine.length()-1);
                 System.out.println("-"+resultat);
             }

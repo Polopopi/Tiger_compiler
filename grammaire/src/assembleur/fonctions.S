@@ -35,7 +35,17 @@ print_loop_
 
 
 
-exit_print  LDMFA   SP!,{PC, R0-R2}
+exit_print  MOV     R2,#3
+            ADD     R3,R3,#4
+            STR     R2,[R9,R3] ;end of string
+_clean_
+            MOV     R2,#0  ;nettoyage
+            STR     R2,[R9,R3]
+            CMP     R3,#0
+            SUBNE   R3,R3,#4
+            BNE     _clean_
+            STR     R2,[R9]
+            LDMFA   SP!,{PC, R0-R2}
             ;LDR     PC,[SP,#-4]!
 
 

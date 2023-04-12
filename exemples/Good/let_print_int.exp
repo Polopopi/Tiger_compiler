@@ -2,14 +2,15 @@ let
   var a := 1
 in
   a := (
-         print("ok\n");
-         print("okk\n");
+         print(1);
+         print(1);
          a := a + 1;
          a
        ) + 42;
-  print("valeur a est : ");
+  print(0);
   print(a);
-  print("\n")
+  print(156287);
+  print(-12)
 end
 
 /*syntaxique : ok
