@@ -85,7 +85,7 @@ public class Main {
             TdsCreator tdsCreator = new TdsCreator();
             ast.accept(tdsCreator);
             String asrFileName = "./out/asr.S";
-            AsrCreator asrCreator=new AsrCreator(tdsCreator.getTds());
+            AsrCreator asrCreator=new AsrCreator(tdsCreator.getTds(),tdsCreator.getLinkList());
             ast.accept(asrCreator);
             asrCreator.asrFichier(asrFileName);
             Launcher.run("./out/asr.S");

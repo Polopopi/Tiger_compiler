@@ -22,6 +22,7 @@ public class TdsCreator implements AstVisitor<String> {
     private boolean existTypeError = false;
     private boolean callError = false;
     private boolean recordCallError = false;
+    private LinkList linkList;
 
     public TdsCreator(){
         this.listeTds=new ArrayList<Tds>();
@@ -29,11 +30,16 @@ public class TdsCreator implements AstVisitor<String> {
         this.inFunctionDecBloc = false;
         this.inTypeDecBloc = false;
         this.verifList=new ArrayList<LaterVerif>();
+        linkList = new LinkList();
         this.isError = 0;
     }
 
     public ArrayList<Tds> getTds(){
         return this.listeTds;
+    }
+
+    public LinkList getLinkList() {
+        return linkList;
     }
 
     public Tds getCurentTds(){
@@ -634,6 +640,7 @@ public class TdsCreator implements AstVisitor<String> {
     public String visit(Let let){
         int imbrication = listeTds.get(idCurrentTds).getImbrication();
         Tds tds = new Tds(imbrication + 1, listeTds.get(idCurrentTds));
+        linkList.add(tds, let);
         listeTds.add(tds);
         idCurrentTds = tds.getId();
         
@@ -657,6 +664,7 @@ public class TdsCreator implements AstVisitor<String> {
 
         int imbrication = listeTds.get(idCurrentTds).getImbrication();
         Tds tds = new Tds(imbrication + 1, listeTds.get(idCurrentTds));
+        linkList.add(tds, forNode);
         listeTds.add(tds);
         idCurrentTds = tds.getId();
         VariableEntry newEntry = new VariableEntry("int",id);
@@ -1206,6 +1214,7 @@ public class TdsCreator implements AstVisitor<String> {
         
         //nouvelle tds
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
+        linkList.add(tdsFonction, affect);
         functionEntry.setTds(tdsFonction);
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
@@ -1264,6 +1273,7 @@ public class TdsCreator implements AstVisitor<String> {
         FunctionEntry procEntry=new FunctionEntry("", id);
 
         Tds tdsFonction=new Tds(this.listeTds.get(idCurrentTds).getImbrication()+1,this.listeTds.get(idCurrentTds));
+        linkList.add(tdsFonction, affect);
         procEntry.setTds(tdsFonction);
         //ajout de nouvelle tds
         this.listeTds.add(tdsFonction);
