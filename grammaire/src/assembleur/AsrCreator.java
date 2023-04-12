@@ -60,9 +60,10 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.getAddrOut();// load @ de print_out
 
-        asr.mov("R1","R0");
-        asr.strPost("PC","SP");
-        asr.b("print");
+        asr.mov("R1","R0"); // STEVEN ça sert à quoi ?
+        //asr.strPost("PC","SP"); // STEVEN Pk en post ? pcq ça écrase le sommet de la pile sinon
+        //asr.empiler("PC");
+        asr.link("print");
         //asr.ecrireValPrint("R0", "R1"); // mettre la val dans le label, faut se brancher vers fct print
 
         asr.comment("END PRINT");
@@ -636,9 +637,11 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(DeclarationList declarationList) {
+        asr.comment("START DECLARATION LIST");
         for (Ast expr:declarationList.listAst){
             expr.accept(this);
         }
+        asr.comment("END DECLARATION LIST");
         return null;
     }
 
@@ -833,7 +836,7 @@ public class AsrCreator implements AstVisitor<String> {
     // Appel d'un record avec initialisation des fields pour declaration variable
     @Override
     public String visit(LvalueRecord lvalueRecord) {
-        asr.comment("START LVALUE RECORD");
+        asr.comment("START LVALUE RECORD " + ((Idf)lvalueRecord.id).name);
         asr.empiler("R11"); // On empile l'adresse de la 1ère case du record
 
         currentTypeEntry = this.currentTds.getTypeEntry(((Idf)lvalueRecord.id).name);
@@ -845,7 +848,7 @@ public class AsrCreator implements AstVisitor<String> {
         lvalueRecord.fieldList.accept(this);
 
         asr.depiler("R0");
-        asr.comment("END LVALUER RECORD");
+        asr.comment("END LVALUER RECORD " + ((Idf)lvalueRecord.id).name);
         return null;
     }
 
@@ -865,7 +868,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(Field field) {
-        asr.comment("START FIELD");
+        asr.comment("START FIELD " + ((Idf)field.id).name);
         // Ajouter le field dans le tas à l'endroit correspondant à son déplacement
         field.expr.accept(this); // R0 contient la valeur du field
 
@@ -873,7 +876,7 @@ public class AsrCreator implements AstVisitor<String> {
         
         asr.lireVarReg("R1", "SP"); // R1 contient l'adresse de la 1ère case du record
         asr.str("R0", "R1",  -depl);
-        asr.comment("END FIELD");
+        asr.comment("END FIELD " + ((Idf)field.id).name);
         return null; 
     }
 
@@ -1144,7 +1147,7 @@ public class AsrCreator implements AstVisitor<String> {
 
     @Override
     public String visit(FctDeclaration fctDeclaration) {
-        asr.comment("START FCTN DECLARATION");
+        asr.comment("START FCTN DECLARATION " + ((Idf)fctDeclaration.fonctionID).name);
         Tds oldTds = currentTds;
         currentTds = linkList.getTds(fctDeclaration);
 
@@ -1174,7 +1177,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.label(endLabel);
 
-        asr.comment("END FCTN DECLARATION");
+        asr.comment("END FCTN DECLARATION " + ((Idf)fctDeclaration.fonctionID).name);
         System.out.println("TDS : " + oldTds.getId());
         currentTds = oldTds;
 

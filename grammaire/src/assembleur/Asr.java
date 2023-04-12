@@ -12,7 +12,7 @@ public class Asr {
 
     public Asr(){
         this.asr=new ArrayList<String>();
-        this.asr.add("_print_out FILL 0x1000");
+        this.asr.add("print_out FILL 0x1000");
     }
 
 
@@ -21,7 +21,7 @@ public class Asr {
     }
 
     public void getAddrOut(){
-        this.asr.add("    LDR R9, =_print_out");
+        this.asr.add("    LDR R9, =print_out");
     }
 
     public void setRetour(int valeur) {
