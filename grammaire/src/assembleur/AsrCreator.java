@@ -822,7 +822,7 @@ public class AsrCreator implements AstVisitor<String> {
         varDeclaration.expr.accept(this);
         int deplacement = this.currentTds.getVarFuncEntry(id).getDeplacement(); // deplacement est négatif
         asr.stockerValeurBP("R0", deplacement);
-        asr.comment("END DECLARATION");
+        asr.comment("END VAR DECLARATION");
 
         //La variable il faut juste l'empiler dans la pile
         return null;
@@ -839,6 +839,8 @@ public class AsrCreator implements AstVisitor<String> {
         asr.comment("START LVALUE RECORD " + ((Idf)lvalueRecord.id).name);
         asr.empiler("R11"); // On empile l'adresse de la 1ère case du record
 
+        TypeEntry oldTypeEntry = currentTypeEntry;
+
         currentTypeEntry = this.currentTds.getTypeEntry(((Idf)lvalueRecord.id).name);
         if (currentTypeEntry == null){
             System.out.println("Type non déclaré");
@@ -849,6 +851,9 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.depiler("R0");
         asr.comment("END LVALUER RECORD " + ((Idf)lvalueRecord.id).name);
+
+        currentTypeEntry = oldTypeEntry;
+        
         return null;
     }
 
@@ -874,6 +879,13 @@ public class AsrCreator implements AstVisitor<String> {
 
         int depl = ((RecordEntry)currentTypeEntry).getFieldDeplacement(((Idf)field.id).name);
         
+        if (depl == -1){
+            System.out.println("RECORD " + currentTypeEntry.getSymbol());
+            System.out.println("Field non déclaré " + ((Idf)field.id).name);
+            System.out.println(((Idf)field.id).name);
+            System.exit(1);
+        }
+
         asr.lireVarReg("R1", "SP"); // R1 contient l'adresse de la 1ère case du record
         asr.str("R0", "R1",  -depl);
         asr.comment("END FIELD " + ((Idf)field.id).name);
