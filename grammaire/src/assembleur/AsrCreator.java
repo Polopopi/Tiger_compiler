@@ -24,7 +24,6 @@ public class AsrCreator implements AstVisitor<String> {
 
 
     private Tds getTds(){
-        System.out.println("TDS ++ : " + (listTds.get(oldTdsId).getId()));
         return(listTds.get(oldTdsId++));
     }
 
@@ -112,6 +111,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         String texte = program.affect.accept(this);
 
+        asr.label("fin");
         asr.end();
 
         return null;
@@ -613,7 +613,6 @@ public class AsrCreator implements AstVisitor<String> {
     @Override
     public String visit(Let let) {
         asr.comment("START LET");
-        System.out.println("LET");
 
         Tds oldTds = currentTds;
         currentTds = linkList.getTds(let);
@@ -629,7 +628,6 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.decrementerSp(nbVar);
 
-        System.out.println("TDS : " + oldTds.getId());
         currentTds = oldTds;
         asr.comment("END LET");
         return type;
@@ -677,7 +675,6 @@ public class AsrCreator implements AstVisitor<String> {
         asr.moins("r13","r13", "#4"); //depile la valeur limite
         asr.quitBlock();
         asr.moins("r13","r13", "#4"); // depile la variable i
-        System.out.println("TDS : " + oldTds.getId());
         currentTds=oldTds;
 
         asr.comment("END FOR");
@@ -1175,7 +1172,7 @@ public class AsrCreator implements AstVisitor<String> {
         String endLabel = generateLabel();
 
         String fctId =((Idf) fctDeclaration.fonctionID).name;
-        System.out.println("FCT " + fctId);
+
         int dep = currentTds.getVarFuncEntry(fctId).getDeplacement();
         asr.mov("r1","PC");
         asr.plus("r1", "r1", "#8");
@@ -1198,7 +1195,7 @@ public class AsrCreator implements AstVisitor<String> {
         asr.label(endLabel);
 
         asr.comment("END FCTN DECLARATION " + ((Idf)fctDeclaration.fonctionID).name);
-        System.out.println("TDS : " + oldTds.getId());
+
         currentTds = oldTds;
 
         return(null);
@@ -1233,7 +1230,6 @@ public class AsrCreator implements AstVisitor<String> {
         asr.depiler("R12");
         asr.lireVarReg("PC", "R2");
         asr.label(endLabel);
-        System.out.println("TDS : " + oldTds.getId());
 
         currentTds=oldTds;
 
@@ -1261,10 +1257,7 @@ public class AsrCreator implements AstVisitor<String> {
 
         asr.lireAdrBP("R9");// enregistrer l'adresse de BP dans R9
 
-        System.out.println(id);
-
         while (tdsCourant.existLocalVarFunc(id) == false){ // s'il y a pas de var ou fonctions locales, alors on doit
-            System.out.println("BP " + tdsCourant.getId());
             // se déplacer dans la dernière imbrication
             asr.lireValBP("R10",0);//lire le chaînage statique et l'enregistre dans R0
             asr.positionnerBP("R10");//positionne BP vers l'adresse du chaînage statique
@@ -1327,8 +1320,14 @@ public class AsrCreator implements AstVisitor<String> {
         asr.depiler("R1"); // on récupère l'adresse de l'array (la 1ère case)
         asr.lireVarReg("R3", "R1"); // R3 contient la taille de l'array
         asr.mov("R2", "R0"); // R2 contient l'indice
+        asr.plus("R2", "R2", "#1"); // on ajoute 1 car l'array commence à l'indice 0
         
-        asr.cmp( "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
+        String errorLabel = generateLabel();
+
+        asr.cmp("R2", "#0");
+        asr.b("LE", errorLabel);
+        asr.cmp("GT", "r3",  "r2"); // j'ai un doute la dessus entre r2 et r3
+        
         //Pas besoin pcq les array commencent à l'indice 1
         //asr.plus("GT", "R2", "R2", "#1"); // plus 1 car le premier de la liste c'est la taille
 
@@ -1338,6 +1337,16 @@ public class AsrCreator implements AstVisitor<String> {
         asr.moins("GE","R1","R1","R2"); // on descend dans le tas
         asr.mov("GE","R10","R1"); // on met l'adresse de l'array dans R10
         asr.lireVarReg("GE", "R0", "R10");
+        
+        String skipLabel = generateLabel();
+        asr.b("GE", skipLabel);
+        asr.label(errorLabel);
+        asr.mov("R0", "#255");
+        asr.getAddrOut();
+        asr.mov("R1","R0");
+        asr.link("print");
+        asr.b("fin");
+        asr.label(skipLabel);
 
         return typeComposite;
     }
@@ -1345,7 +1354,6 @@ public class AsrCreator implements AstVisitor<String> {
     @Override           // ATTENTION TROP DE KAWAIIII
     public String visit(Call call) {
         asr.comment("START CALL");
-        System.out.println("CALL");
 
         call.listExpr.accept(this); // on empile les parametres
 

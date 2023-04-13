@@ -9,19 +9,16 @@ let
 
     var row := stringArray[N] of "Steven"
     var board := stringArrayArray[N] of row
-
-    var a := 1
 in
     if (board[1][1] = "Steven") then (
-        a := 0
+        print(0)
     );
 
     board[1][1] := "John";
     if (board[2][1] = "John") then (
-        a := 2
+        print(1)
     );
     if (board[2][1] = "Steven") then (
-        a := 3
+        print(2)
     );
-    a
 end
