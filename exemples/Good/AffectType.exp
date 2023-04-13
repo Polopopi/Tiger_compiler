@@ -1,0 +1,6 @@
+let 
+    type vecteur = {x : int, y : int}
+    var u : vecteur := nil
+in
+    u
+end

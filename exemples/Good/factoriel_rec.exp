@@ -1,8 +1,9 @@
 let 
-    var n := 2
+    var n := 5
     function fact(k : int) : int =
         if k = 0 then (1)
         else (k * fact(k-1))
 in
-    fact(n)
+    print(fact(n))
+    print(fact(6))
 end

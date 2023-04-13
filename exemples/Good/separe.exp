@@ -1,0 +1,24 @@
+let 
+    type list = {head : int, tail : list}
+    type coupleList = {L1 : list, L2: list}
+    var L := list{head = 5, tail = list{head = 2, tail = list{head = 3,tail = nil}}}
+    
+    function separe(L : list) : coupleList =
+        if L = nil then(
+            coupleList{L1 = nil, L2 = nil}
+        )
+        else(
+            if L.tail = nil then (
+                coupleList{L1 = list{head = L.head, tail = nil}, L2 = nil}
+            )
+            else(
+                let
+                    var couple := separe(L.tail.tail)
+                in
+                    coupleList{L1 = list{head = L.head, tail = couple.L1},L2 = list{head=L.tail.head, tail = couple.L2}}
+                end
+            )
+        )
+in
+    separe(L)
+end
