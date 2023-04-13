@@ -60,7 +60,7 @@ public class Launcher {
 
         System.out.println("---- PROGRAM OUTPUT ----");
         //output.forEach(System.out::println);
-        System.out.println(output);
+        //System.out.println(output);
         for (int i=0;i<output.size();i++){
             String chaine = reverse(output.get(i));
 

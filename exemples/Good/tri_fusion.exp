@@ -55,6 +55,14 @@ let
             end
         )
 in
+    list_ptr := L;
+    while list_ptr <> nil do (
+        print(list_ptr.head);
+        list_ptr := list_ptr.tail
+    );
+
+    print(1111111);
+
     sortedList := triFusion(L);
 
     list_ptr := sortedList;
